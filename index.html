@@ -52,7 +52,58 @@ h1 small{display:block;font-family:"Barlow",sans-serif;font-weight:400;font-size
 .tips summary{cursor:pointer;font-weight:600;color:var(--machine)}
 .tips ul{margin:8px 0 0;padding-left:20px;color:var(--muted);font-size:.92rem}
 .tips li+li{margin-top:5px}
-.targets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.targets{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px;margin-top:12px}
+.brief{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.brief h2{margin:0}
+.mix{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px}
+.mix div{background:var(--paper);border-radius:6px;padding:6px 8px;min-width:0}
+.mix b{display:block;font-size:1.25rem;line-height:1.1}
+.mix span{font-size:.76rem;color:var(--muted);line-height:1.2;display:block}
+@media (max-width:480px){.mix{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.form{margin:0 0 12px;border:1px solid rgba(255,255,255,.18);border-radius:8px;overflow:hidden;font-size:.9rem}
+.form table{width:100%;border-collapse:collapse}
+.form th,.form td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.1);text-align:right;font-variant-numeric:tabular-nums}
+.form th{font-weight:600;color:#AFC0B8;font-size:.78rem}
+.form th:first-child,.form td:first-child{text-align:left}
+.form caption{caption-side:top;text-align:left;padding:7px 8px;font-weight:600;background:rgba(255,255,255,.06)}
+.form .eng td{color:#AFC0B8}
+.form .verdict{display:flex;justify-content:space-between;padding:7px 8px;font-weight:700}
+.order{border-left:4px solid var(--signal);padding:2px 0 2px 12px}
+.order-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.order-who{font-size:.85rem;color:var(--muted)}
+.order h2{margin:0}
+.order-mult{flex:none;font-size:1.05rem;color:var(--signal);font-weight:700;white-space:nowrap}
+.order-ctl{margin-top:10px}
+.order-ctl .pbtn{padding:7px 12px;font-size:14px}
+.order-ctl .pbtn:disabled{opacity:.5;cursor:default}
+.chk{display:inline-flex;align-items:center;gap:7px;font-size:.9rem;color:var(--ink);cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--machine)}
+.chk input:disabled+span{opacity:.55}
+.alarm{margin-top:10px;border-radius:10px;padding:10px 12px;background:#3A1B17;border:1px solid #8A3326;color:#FBE3DC}
+.alarm.fixing{background:#3A2C14;border-color:#8A6526;color:#FBEBD0}
+.alarm.ok{background:#15301F;border-color:#2F7D4F;color:#D8F2E1}
+.alarm-head{display:flex;align-items:center;gap:9px}
+.alarm-head b{font-size:1.02rem}
+.alarm-head span{margin-left:auto;font-size:.95rem;opacity:.85}
+.alarm p{margin:6px 0 0;font-size:.92rem;line-height:1.4}
+.alarm .meter{margin-top:8px;background:rgba(0,0,0,.35)}
+.alarm .meter div{background:linear-gradient(90deg,#C98A1F,#F2B04A);transition:none}
+.alarm-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px;margin-top:9px}
+.abtn{min-height:44px;padding:7px 10px;border-radius:8px;border:1px solid #9B4A3C;background:#522820;color:#FFF3EF;font:600 14px "Barlow",system-ui,sans-serif;line-height:1.2;cursor:pointer;touch-action:manipulation}
+.abtn:hover{background:#65332A}
+.abtn:disabled{cursor:default}
+.abtn:focus-visible{outline:3px solid #F2A93B;outline-offset:2px}
+.alarm-miss{color:#F7B9A8}
+.alarm-note{opacity:.75;font-size:.85rem!important}
+.abtn small{display:block;font-weight:500;font-size:.78rem;margin-top:2px}
+.abtn.st-ok{border-color:#3E7A55;background:#1F3A2A;opacity:.85;text-decoration:none}
+.abtn.st-bad{opacity:.5;text-decoration:none}
+.abtn.busy{border-color:#C98A1F;background:#4A3616;opacity:1}
+.lamp.alert{background:#FF5A3C;box-shadow:0 0 10px rgba(255,90,60,.9);animation:pulse .6s ease-in-out infinite}
+.result .inc{margin:0 0 12px;display:grid;gap:4px;font-size:.92rem}
+.result .inc div{display:flex;gap:8px}
+.result .inc .y{color:#7FD19E} .result .inc .n{color:#F2977F}
+.result .order-line{font-size:.9rem;color:#FFD08A;margin:6px 0 0}
 .target{border-left:3px solid var(--line);padding:2px 0 2px 10px}
 .target b{display:block;font-size:1.5rem;line-height:1.1}
 .target span{font-size:.82rem;color:var(--muted)}
@@ -88,6 +139,30 @@ input[type=range]{width:100%;accent-color:var(--machine);margin:6px 0 0;height:2
 #prepStatus{margin-top:10px;font-weight:600}
 #prepStatus.ready{color:var(--ok)} #prepStatus.warn{color:var(--bad)}
 #prep.flash,#player.flash{box-shadow:0 0 0 3px var(--signal)}
+.sop-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.sop-score{font-size:1.1rem;color:var(--machine);white-space:nowrap}
+.gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0 4px}
+.gauge-box{background:var(--paper);border-radius:8px;padding:8px 10px}
+.gauge-box .what{display:flex;gap:8px;font-size:.88rem;font-weight:600}
+.gauge-box .hint{font-size:.8rem;color:var(--muted)}
+#prep h3{font:600 1rem "Barlow",sans-serif;margin:14px 0 2px}
+.sop-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--line)}
+.sop-row .what{display:flex;align-items:center;gap:10px;min-width:0}
+.sop-n{flex:none;width:1.6em;color:var(--muted);font-weight:600;text-align:right}
+.sop-read{display:block;font-size:.82rem;color:var(--machine);font-weight:600}
+.sop-note{font-size:.82rem;color:var(--muted);flex:none}
+.sop-mode{margin-top:6px;display:flex;flex-direction:column;gap:3px;font-size:.82rem;color:var(--muted)}
+.sop-mode select{font:14px "Barlow",sans-serif;padding:6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);max-width:100%}
+.sbtn.go{border-color:#12803F;color:#12803F}
+.sbtn.go.on{background:#12803F;color:#fff}
+.sop-hint{font-size:.88rem;color:var(--muted);margin-top:8px!important}
+.sop-done{margin-top:12px;padding:8px 10px;border-radius:8px;background:rgba(47,125,79,.12);font-size:.92rem}
+.sop-c{margin:4px 0 0;padding-left:20px;color:var(--muted);font-size:.9rem}
+.sop-log{margin:10px 0 0;padding:0;list-style:none;font-size:.86rem}
+.sop-log li{padding:4px 0;border-top:1px dashed var(--line);color:var(--ink)}
+.sop-log li b{color:var(--bad);margin-right:4px}
+.sop-log li.info{color:var(--muted)}
+
 .run-hint{margin:10px 2px 0;font-size:.86rem;color:#F2B880}
 .run-hint:empty{display:none}
 .hmi{background:#434A58;border-radius:10px;padding:9px;color:#E8ECF2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -158,7 +233,7 @@ input[type=range]{width:100%;accent-color:var(--machine);margin:6px 0 0;height:2
 .cbtn[aria-pressed="true"]{border-color:#5E8F2A;background:linear-gradient(180deg,#2E3B2A,#243021)}
 .cbtn[aria-pressed="true"] .led{background:#8DC63F;box-shadow:0 0 8px rgba(141,198,63,.9)}
 @media (max-width:480px){.wrap{padding:12px 10px 24px}.readouts{grid-template-columns:minmax(0,1fr)}.clock-cell{min-width:0}.digits{font-size:1.6rem}.status b{font-size:1rem}.readout{padding:8px 10px}.status-cell .status{padding-right:88px}.console-brand{right:8px;top:25px;width:80px;max-height:26px}.hmi{gap:6px;padding:7px}.stepper{grid-template-columns:30px minmax(0,1fr) 30px;gap:2px}.stepper button{min-height:46px;font-size:20px}.controls-row{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}.cbtn span{white-space:normal}.cbtn{font-size:13px;gap:4px;padding:7px 5px}.cbtn .ic{width:17px;height:17px}}
-@media (prefers-reduced-motion: reduce){.lamp.run,.clock-cell.low .digits{animation:none}.meter div{transition:none}}
+@media (prefers-reduced-motion: reduce){.lamp.run,.lamp.alert,.clock-cell.low .digits{animation:none}.meter div{transition:none}}
 .round-box{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
 .line,.round-box .line{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .round-box select{font:16px "Barlow",sans-serif;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}
@@ -242,6 +317,7 @@ details.checker summary{cursor:pointer;font-weight:600}
           </button>
         </div>
         <p class="run-hint" id="runHint"></p>
+        <div class="alarm" id="alarm" role="alert" hidden></div>
       </div>
       <div class="result" id="result" role="dialog" aria-live="polite"></div>
     </div>
@@ -271,36 +347,27 @@ details.checker summary{cursor:pointer;font-weight:600}
       </section>
 
       <section class="panel" id="prep" tabindex="-1">
-        <h2>Chuẩn bị trước vận hành</h2>
-        <p>Làm đủ các bước dưới đây thì máy mới chạy được.</p>
-        <div class="prep-group">
-          <h3>1. Khí nén</h3>
-          <div class="prep-row"><div class="what"><span class="dot" id="dDryer">✓</span><span>Mở máy sấy khí</span></div><button class="sbtn" id="bDryer">Bật</button></div>
-          <div class="prep-row"><div class="what"><span class="dot" id="dComp">✓</span><span>Mở máy nén khí</span></div><button class="sbtn" id="bComp">Bật</button></div>
-          <div class="prep-row" style="display:block">
-            <div class="what" style="justify-content:space-between"><span style="display:flex;gap:10px;align-items:center"><span class="dot" id="dPress">✓</span><label for="pSet">Áp suất hơi (cần 0,65–0,75 MPa)</label></span><b class="num" id="pVal" style="font-size:1.3rem">0,00 MPa</b></div>
-            <div class="gauge" aria-hidden="true"><div class="band"></div><div class="needle" id="pNeedle"></div></div>
+        <div class="sop-head"><h2>Quy trình vận hành</h2><b class="num sop-score" id="sopScore"></b></div>
+        <p>Làm đúng thứ tự quy trình. Thiếu bước hoặc sai thứ tự bị trừ điểm quy trình, và máy sẽ chạy kém đi thật.</p>
+        <div class="gauges">
+          <div class="gauge-box">
+            <div class="what" style="justify-content:space-between"><span>Áp suất nguồn khí nén (cần ≥ 0,65)</span><b class="num" id="srcVal">0,00 MPa</b></div>
+            <div class="gauge" aria-hidden="true"><div class="band" style="left:65%;width:35%"></div><div class="needle" id="srcNeedle"></div></div>
             <div class="gauge-scale" aria-hidden="true"><span>0</span><span>0,5</span><span>1,0 MPa</span></div>
-            <input type="range" id="pSet" min="0.4" max="0.9" step="0.01" value="0.55" aria-describedby="pSetHint">
-            <div class="ctrl"><div class="hint" id="pSetHint" style="margin:0">Van điều áp: đặt <span class="num" id="pSetVal">0,55</span> MPa. Áp suất thực tăng dần khi máy nén chạy.</div></div>
           </div>
-          <div class="prep-row"><div class="what"><span class="dot" id="dTank">✓</span><span>Xả nước, dầu tại bình chứa khí</span></div><button class="sbtn" id="bTank">Xả</button></div>
-          <div class="prep-row"><div class="what"><span class="dot" id="dFilter">✓</span><span>Xả nước, dầu tại các bộ lọc</span></div><button class="sbtn" id="bFilter">Xả</button></div>
+          <div class="gauge-box">
+            <div class="what" style="justify-content:space-between"><label for="regSet">Van điều áp trong máy (0,25–0,30)</label><b class="num" id="regVal">0,00 MPa</b></div>
+            <div class="gauge" aria-hidden="true"><div class="band" style="left:50%;width:10%"></div><div class="needle" id="regNeedle"></div></div>
+            <div class="gauge-scale" aria-hidden="true"><span>0</span><span>0,25</span><span>0,5 MPa</span></div>
+            <input type="range" id="regSet" min="0.1" max="0.5" step="0.01" value="0.27">
+            <div class="hint">Núm van đặt ở <span class="num" id="regSetVal">0,27</span> MPa. Kéo lên, xoay để chỉnh, nhấn xuống để khóa.</div>
+          </div>
         </div>
-        <div class="prep-group">
-          <h3>2. Hút bụi</h3>
-          <div class="prep-row"><div class="what"><span class="dot" id="dDust">✓</span><span>Khởi động hệ thống hút bụi</span></div><button class="sbtn" id="bDust">Bật</button></div>
-        </div>
-        <div class="prep-group">
-          <h3>3. Điện</h3>
-          <div class="prep-row"><div class="what"><span class="dot" id="dStab">✓</span><span>Mở ổn áp máy tách màu</span></div><button class="sbtn" id="bStab">Bật</button></div>
-        </div>
-        <div class="prep-group">
-          <h3>4. Nguồn</h3>
-          <div class="prep-row"><div class="what"><span class="dot" id="dPower">✓</span><span>Mở nguồn máy tách màu</span></div><button class="sbtn" id="bPower">Bật</button></div>
-        </div>
+        <div id="sop"></div>
+        <ul class="sop-log" id="sopLog"></ul>
         <p id="prepStatus" role="status" aria-live="polite"></p>
       </section>
+
 
       <section class="panel">
         <h2 id="lvName" hidden></h2>
@@ -309,6 +376,8 @@ details.checker summary{cursor:pointer;font-weight:600}
           <summary>Gợi ý vận hành</summary>
           <ul id="lvTips"></ul>
         </details>
+        <div class="brief" id="brief"></div>
+        <div class="order" id="order"></div>
         <div class="targets" id="targets"></div>
       </section>
 
@@ -322,8 +391,8 @@ details.checker summary{cursor:pointer;font-weight:600}
       <section class="panel">
         <h2>Kết quả lô đang chạy</h2>
         <div class="stats">
-          <div class="stat"><b class="num" id="sPurity">–</b><span>Độ sạch thành phẩm</span></div>
-          <div class="stat"><b class="num" id="sLoss">–</b><span>Phế lẫn</span></div>
+          <div class="stat"><b class="num" id="sPurity">–</b><span>Tạp chất thành phẩm</span></div>
+          <div class="stat"><b class="num" id="sLoss">–</b><span>Phế phẩm lẫn (hạt tốt trong phế)</span></div>
         </div>
         <div class="progress" aria-hidden="true"><div id="prog"></div></div>
         <p id="progText" style="margin-top:6px;font-size:.85rem"></p>
@@ -345,29 +414,38 @@ details.checker summary{cursor:pointer;font-weight:600}
 // Thời gian nội bộ tính bằng giây mô phỏng; 1 ms thực = 0.1 s mô phỏng (quay chậm ×100).
 const SIM = (() => {
   const CH = 1152;        // số kênh / số van thổi (SC16 Pro thực tế: 1152 kênh)
-  const RATE = 12;        // hạt/giây mô phỏng cho mỗi đơn vị tải
+  const RATE = 40;        // hạt/giây mô phỏng cho mỗi đơn vị tải (lô 15.000 hạt chạy khoảng 1,5 phút ở 15 t/h)
   const L = 0.03;         // nửa chiều dài hạt (theo thời gian) = 0.3 ms
   const FEED_T = 1.3;     // thời gian từ phễu tới camera
   const LAND_T = 0.55;    // thời gian rơi vào thùng
 
+  // Số liệu gốc: phiếu lưu mẫu chạy máy thực tế SC16 Pro (tagname SC16PRO-JX26010333) tại Thành Tín, 18/06/2026.
+  // Nguyên liệu 1,8% tạp (vàng, đen hư 0,4%; bạc bụng 1,4%). Thành phẩm 1,2% tạp. Phế phẩm lẫn 4,4% hạt tốt.
+  // Năng suất đầu vào 15,3 t/h. Kết luận: Đạt. Lô 2–4 là tình huống huấn luyện dựng từ lô thực tế này.
   const LEVELS = [
-    { name: 'Lô 1: Gạo trắng thường', desc: 'Lô cơ bản nhưng camera và van vẫn có sai số thực tế. Hạt lỗi chủ yếu là vàng hư, thêm một ít bạc bụng. Hãy cân bằng độ sạch, thất thoát và năng suất.',
-      mix: { vang_hu: 0.03, chalky: 0.01 }, T0: 0.32, pReq: 0, batch: 4000,
-      cameraMiss: 0.006, falseFlag: 0.0015, timingJitter: 0.012, ejectCap: 0.985, extraNoise: 0.005,
-      targets: { purity: 99.7, loss: 2, feed: 18 } },
-    { name: 'Lô 2: Có hạt vàng mơ', desc: 'Hạt vàng mơ gần giống hạt tốt, ánh sáng và màu nguyên liệu dao động theo từng hạt. Giảm ngưỡng quá sâu sẽ làm tăng tỷ lệ hạt tốt bị loại.',
-      mix: { vang_mo: 0.03, vang_hu: 0.02, chalky: 0.01 }, T0: 0.32, pReq: 0, batch: 4500,
-      cameraMiss: 0.012, falseFlag: 0.0025, timingJitter: 0.017, ejectCap: 0.975, extraNoise: 0.012,
-      targets: { purity: 99.6, loss: 3, feed: 18 } },
-    { name: 'Lô 3: Gạo thơm hạt dài', desc: 'Hạt dài rơi nhanh và không đồng đều. Độ trễ cơ khí dao động rõ hơn; tăng độ rộng giúp thổi chắc nhưng dễ loại nhầm hạt tốt.',
-      mix: { vang_hu: 0.025, chalky: 0.015, vang_mo: 0.01 }, T0: 0.26, pReq: 0.6, batch: 5000,
-      cameraMiss: 0.018, falseFlag: 0.0035, timingJitter: 0.023, ejectCap: 0.965, extraNoise: 0.018,
-      targets: { purity: 99.5, loss: 4, feed: 20 } },
-    { name: 'Lô 4: Lô gạo xấu có chấm kim', desc: 'Gần 12% hạt lỗi, đủ bốn loại. Chấm kim gần màu hạt tốt, mật độ hạt cao và sai số van khiến kết quả tuyệt đối gần như không thể xảy ra.',
-      mix: { cham_kim: 0.03, vang_mo: 0.03, chalky: 0.03, vang_hu: 0.03 }, T0: 0.30, pReq: 0.5, batch: 6000,
-      cameraMiss: 0.028, falseFlag: 0.005, timingJitter: 0.030, ejectCap: 0.96, extraNoise: 0.025,
-      targets: { purity: 97.8, loss: 5, feed: 18 } },
+    { name: 'Lô 1: Đầu bài thực tế Thành Tín', real: true,
+      desc: 'Đúng nguyên liệu của lần chạy máy ngày 18/06/2026 tại Thành Tín. Kỹ sư đạt thành phẩm 1,2% tạp, phế phẩm lẫn 4,4%, năng suất 15,3 t/h. Hãy chạy bằng hoặc tốt hơn kỹ sư.',
+      mix: { vang_hu: 0.004, chalky: 0.014 }, T0: 0.32, pReq: 0, batch: 15000, thr: 0.26, durB: 0.55,
+      cameraMiss: 0.004, falseFlag: 0.00008, timingJitter: 0.012, ejectCap: 0.985, extraNoise: 0.004,
+      targets: { purity: 98.8, loss: 4.4, feed: 15.3 } },
+    { name: 'Lô 2: Khách đòi thành phẩm sạch hơn',
+      desc: 'Cùng nguyên liệu Thành Tín, nhưng khách yêu cầu thành phẩm chỉ còn tối đa 1,0% tạp. Phải bắt thêm hạt bạc bụng nhẹ, chấp nhận phế lẫn cao hơn.',
+      mix: { vang_hu: 0.004, chalky: 0.014 }, T0: 0.32, pReq: 0, batch: 15000, thr: 0.24, durB: 0.60,
+      cameraMiss: 0.005, falseFlag: 0.0001, timingJitter: 0.015, ejectCap: 0.98, extraNoise: 0.006,
+      targets: { purity: 99.0, loss: 12, feed: 15.3 } },
+    { name: 'Lô 3: Tăng năng suất lên 18 t/h',
+      desc: 'Cùng nguyên liệu, nhưng nhà máy cần chạy 18 t/h. Dòng hạt dày hơn nên camera nhiễu hơn, van dễ thổi ké.',
+      mix: { vang_hu: 0.004, chalky: 0.014 }, T0: 0.30, pReq: 0.3, batch: 15000, thr: 0.25, durB: 0.60,
+      cameraMiss: 0.006, falseFlag: 0.00012, timingJitter: 0.018, ejectCap: 0.975, extraNoise: 0.008,
+      targets: { purity: 98.8, loss: 6, feed: 18 } },
+    { name: 'Lô 4: Nguyên liệu xấu 4% tạp',
+      desc: 'Nguyên liệu kém: 1% vàng, đen hư (có vàng mơ, chấm kim khó bắt) và 3% bạc bụng. Mật độ hạt lỗi cao làm kết quả dao động mạnh.',
+      mix: { vang_hu: 0.006, vang_mo: 0.002, cham_kim: 0.002, chalky: 0.03 }, T0: 0.30, pReq: 0.3, batch: 15000, thr: 0.24, durB: 0.70,
+      cameraMiss: 0.01, falseFlag: 0.00015, timingJitter: 0.02, ejectCap: 0.97, extraNoise: 0.01,
+      targets: { purity: 97.5, loss: 6, feed: 15.3 } },
   ];
+  // Gom nhóm theo phiếu lưu mẫu thực tế
+  const GROUP = { vang_hu: 'vd', vang_mo: 'vd', cham_kim: 'vd', chalky: 'bb' };
 
   function rng(seed) {
     let a = seed >>> 0;
@@ -386,8 +464,8 @@ const SIM = (() => {
       sensOpt: ri(48, 207),
       delayOpt: ri(20, 80),
       durOpt: ri(25, 75),
-      thresholdBase: [0.30, 0.24, 0.23, 0.19][levelIdx],
-      durationBase: [0.55, 0.60, 0.90, 0.85][levelIdx]
+      thresholdBase: LEVELS[levelIdx].thr,
+      durationBase: LEVELS[levelIdx].durB
     };
   }
 
@@ -398,8 +476,12 @@ const SIM = (() => {
       level: LEVELS[levelIdx], levelIdx, seed: base, r, rg, t: 0, spawned: 0, spawnAcc: 0, done: 0, nextId: 0,
       calibration: makeCalibration(levelIdx),
       grains: [], windows: [], recent: [], finished: false, minFeed: Infinity,
+      // fx: tác động của sự cố đang xảy ra (0 = không có). Lớp giao diện cập nhật mỗi khung hình.
+      // stuck: kênh không thổi được; open: kênh thổi liên tục; weak: [từ, đến, mức giảm lực thổi]
+      fx: { camDirt: 0, dust: 0, stuck: null, open: null, weak: null, thrShift: 0, falseAdd: 0, lightOff: false, noFeed: false, noPower: false },
       stats: { acceptGood: 0, acceptBad: 0, rejectGood: 0, rejectBad: 0,
-        undetected: 0, timingMiss: 0, weakBlow: 0, falseReject: 0, collateral: 0 },
+        undetected: 0, timingMiss: 0, weakBlow: 0, falseReject: 0, collateral: 0, passByType: {}, rejByType: {} },
+      feedSum: 0, feedTime: 0,
     };
   }
   function gauss(r) { let u = 0, v = 0; while (u === 0) u = r(); v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
@@ -413,7 +495,9 @@ const SIM = (() => {
     switch (type) {
       case 'good': return Math.abs(gauss(r) * 0.05) + (r() < 0.008 ? 0.06 + r() * 0.08 : 0);
       case 'vang_hu': return 0.68 + r() * 0.30;   // dễ bắt nhất nhưng màu không hoàn toàn đồng nhất
-      case 'chalky': return 0.39 + r() * 0.26;    // bạc bụng có vùng chồng lấn nhẹ với hạt tốt
+      // Bạc bụng: phần lớn chỉ đục nhẹ nên màu rất gần hạt tốt. Thực tế máy chỉ loại được
+      // khoảng một phần ba lượng bạc bụng (1,4% → 0,9%) mà vẫn giữ phế lẫn 4,4%.
+      case 'chalky': return 0.04 + Math.pow(r(), 3) * 0.6;
       case 'vang_mo': return 0.26 + r() * 0.21;
       case 'cham_kim': return 0.18 + r() * 0.17;  // khó bắt nhất, nhiều hạt gần như trắng
     }
@@ -453,25 +537,31 @@ const SIM = (() => {
     if (s.finished) return;
     s.t += dt;
     const lv = s.level, r = s.r;
-    if (s.spawned < lv.batch) {
+    if (s.spawned < lv.batch && !s.fx.noFeed) {
       s.minFeed = Math.min(s.minFeed, P.feed);
+      s.feedSum += P.feed * dt; s.feedTime += dt;
       s.spawnAcc += LOAD(P.feed) * RATE * dt;
       while (s.spawnAcc >= 1 && s.spawned < lv.batch) { s.spawnAcc -= 1; spawn(s, P); }
     }
     for (const g of s.grains) {
       if (g.stage === 0 && s.t >= g.tCam) {
-        const measured = g.score + gauss(r) * (0.02 + lv.extraNoise + 0.006 * LOAD(P.feed));
+        const fx = s.fx;
+        const mk = fx.modeK ? (g.type === 'good' ? 1 : GROUP[g.type] === 'bb' ? fx.modeK.bb : fx.modeK.vd) : 1;   // chế độ phân loại
+        const measured = g.score * mk + gauss(r) * (0.02 + lv.extraNoise + 0.006 * LOAD(P.feed) + fx.dust * 0.035 + fx.camDirt * 0.02);
         const cfg = effective(P, s);
-        g.flagged = measured > cfg.threshold;
+        g.flagged = measured > cfg.threshold + fx.thrShift;
+        if (fx.lightOff && r() < 0.93) g.flagged = false;              // buồng quét tối, camera gần như không thấy
         // Máy thật luôn có xác suất nhận sai tối thiểu do bụi, ánh sáng, hạt
         // chồng nhau và sai khác tự nhiên giữa các hạt cùng loại.
-        if (g.type === 'good' && r() < lv.falseFlag) g.flagged = true;
-        if (g.type !== 'good' && r() < lv.cameraMiss) g.flagged = false;
-        if (g.flagged) {
+        if (g.type === 'good' && r() < lv.falseFlag + fx.dust * 0.02 + fx.falseAdd) g.flagged = true;
+        if (g.type !== 'good' && r() < lv.cameraMiss + fx.camDirt * 0.16) g.flagged = false;
+        const stuck = fx.stuck && g.ch >= fx.stuck[0] && g.ch < fx.stuck[1];   // van nhóm này kẹt, không mở được
+        if (g.flagged && !stuck) {
           const a = g.tCam + cfg.delay / 10;
-          const spreadRisk = nbProb(blowForce(P, s));
+          const pw0 = blowForce(P, s) + (fx.pAdj || 0);        // áp lực van điều áp lệch làm lực thổi lệch
+          const spreadRisk = nbProb(pw0);
           const spread = r() < spreadRisk ? (r() < spreadRisk * 0.35 ? 2 : 1) : 0;
-          s.windows.push({ ch: g.ch, a, b: a + cfg.dur / 10, spread, owner: g.id, p: blowForce(P, s) });
+          s.windows.push({ ch: g.ch, a, b: a + cfg.dur / 10, spread, owner: g.id, p: pw0 });
         }
         g.stage = 1;
       } else if (g.stage === 1 && s.t >= g.tArr + L) {
@@ -481,14 +571,18 @@ const SIM = (() => {
             hit = true; pw = w.p; if (w.owner === g.id) ownHit = true;
           }
         }
+        const fx = s.fx;
+        if (fx.open && g.ch >= fx.open[0] && g.ch < fx.open[1]) hit = true;                  // đầu phun thổi liên tục
+        if (fx.weak && g.ch >= fx.weak[0] && g.ch < fx.weak[1]) pw -= fx.weak[2];            // đầu phun rò hơi, thổi yếu
         g.rejected = hit && r() < pSucc(pw - lv.pReq, lv, P.feed);
         const st = s.stats;
+        if (g.type !== 'good' && g.rejected) st.rejByType[g.type] = (st.rejByType[g.type] || 0) + 1;
         if (g.type === 'good') {
           if (g.rejected) { st.rejectGood++; g.flagged ? st.falseReject++ : st.collateral++; }
           else st.acceptGood++;
         } else {
           if (g.rejected) st.rejectBad++;
-          else { st.acceptBad++; if (!g.flagged) st.undetected++; else if (!hit) st.timingMiss++; else st.weakBlow++; }
+          else { st.acceptBad++; st.passByType[g.type] = (st.passByType[g.type] || 0) + 1; if (!g.flagged) st.undetected++; else if (!hit) st.timingMiss++; else st.weakBlow++; }
         }
         if (g.flagged) {
           s.recent.push({ rel: (g.tArr - g.tCam) * 10, hit: ownHit, t: s.t });
@@ -512,7 +606,7 @@ const SIM = (() => {
     return { purity: acc ? st.acceptGood / acc * 100 : 100, loss: rejected ? st.rejectGood / rejected * 100 : 0 };
   }
 
-  return { LEVELS, LOAD, CH, L, FEED_T, create, step, summary, effective, threshold, blowForce };
+  return { LEVELS, GROUP, LOAD, CH, L, FEED_T, create, step, summary, effective, threshold, blowForce, rng };
 })();
 if (typeof module !== 'undefined') module.exports = SIM;
 
@@ -524,7 +618,7 @@ $('consoleBrand').src = document.querySelector('.brand').src;
 const P = { feed: 12, sens: 128, delay: 50, dur: 50 };
 const CTRLS = [
   { k: 'feed', name: 'Cấp liệu', min: 8, max: 26, step: 0.5, unit: 't/h', dp: 1,
-    hint: 'SC16 Pro thiết kế cho 16–22 t/h. Cấp càng nhiều thì hạt càng dày đặc, camera dễ nhìn sai và van dễ thổi ké.' },
+    hint: 'Lần chạy thực tế tại Thành Tín đạt 15,3 t/h đầu vào. Cấp càng nhiều thì hạt càng dày đặc, camera dễ nhìn sai và van dễ thổi ké.' },
   { k: 'sens', name: 'Độ nhạy', min: 0, max: 255, step: 1, unit: '', dp: 0,
     hint: 'Thang cài đặt 0–255. Thấp thì bắt được hạt lỗi màu nhạt, nhưng dễ loại nhầm hạt tốt.' },
   { k: 'delay', name: 'Độ trễ', min: 0, max: 100, step: 1, unit: '', dp: 0,
@@ -534,31 +628,78 @@ const CTRLS = [
 ];
 const LEVEL_TIPS = [
   [
-    'Bắt đầu với cấp liệu vừa phải để quan sát rõ tác động của từng lần chỉnh.',
-    'Nếu hạt lỗi còn lọt vào thành phẩm, ưu tiên tinh chỉnh độ nhạy trước.',
-    'Dùng biểu đồ thời điểm hạt tới van để căn độ trễ; chỉ tăng độ rộng khi lực thổi chưa đủ.'
+    'Nguyên liệu chỉ 1,8% tạp, phần lớn là bạc bụng nhẹ gần màu hạt tốt, nên không thể loại hết.',
+    'Căn độ trễ trước theo biểu đồ để bắt hết hạt vàng, đen hư, rồi mới hạ độ nhạy từng bước nhỏ.',
+    'Hạ độ nhạy quá sâu thì phế phẩm lẫn tăng vọt vì máy bắt nhầm hạt tốt.'
   ],
   [
-    'Hạt vàng mơ gần màu hạt tốt, vì vậy hãy chỉnh độ nhạy từng bước nhỏ.',
-    'Theo dõi đồng thời độ sạch và tỷ lệ hạt tốt bị loại để tránh chỉnh quá tay.',
-    'Giữ cấp liệu ổn định trong lúc đánh giá một thay đổi.'
+    'Muốn thành phẩm còn 1,0% tạp phải bắt thêm bạc bụng nhẹ, nên phế phẩm lẫn chắc chắn cao hơn lô 1.',
+    'Tìm điểm độ nhạy thấp nhất mà phế lẫn vẫn dưới chỉ tiêu.',
+    'Giữ năng suất 15,3 t/h ổn định trong lúc đánh giá một thay đổi.'
   ],
   [
-    'Hạt dài có thời gian rơi dao động hơn; ưu tiên căn độ trễ theo biểu đồ.',
-    'Nếu thổi trượt nhiều, tăng độ rộng từng bước và kiểm tra lượng hạt tốt bị cuốn theo.',
-    'Chỉ tăng cấp liệu sau khi đường thời gian và lực thổi đã ổn định.'
+    'Ở 18 t/h dòng hạt dày hơn, camera nhiễu hơn và hạt tới van dao động hơn.',
+    'Căn lại độ trễ theo biểu đồ sau khi tăng cấp liệu.',
+    'Nếu thổi trượt nhiều, tăng độ rộng từng bước và theo dõi phế lẫn.'
   ],
   [
-    'Lô nhiều hạt lỗi cần cân bằng cả khả năng nhận diện, thời điểm thổi và mật độ dòng hạt.',
-    'Nếu kết quả biến động mạnh, giảm cấp liệu rồi điều chỉnh từng thông số một.',
-    'Ưu tiên đạt đủ ba chỉ tiêu thay vì cố tối đa hóa riêng độ sạch.'
+    'Nguyên liệu 4% tạp có hạt vàng mơ và chấm kim gần màu hạt tốt.',
+    'Ưu tiên đạt tạp chất thành phẩm trước, sau đó nới độ nhạy dần để kéo phế lẫn xuống.',
+    'Kết quả dao động nhiều giữa các lần chạy, đừng chỉnh quá nhiều thông số một lúc.'
   ]
 ];
 
+// ===== Kịch bản 2: Đơn hàng của khách =====
+// Mỗi lô gạo đi kèm một đơn hàng. Đơn hàng dịch chỉ tiêu của lô và nhân điểm theo độ khó.
+const ORDERS = [
+  { id: 'std', who: 'Nhà phân phối nội địa', title: 'Đơn tiêu chuẩn', note: 'Giao đúng chỉ tiêu của lô.', mult: 1, adj: {} },
+  { id: 'export', who: 'Khách nhập khẩu', title: 'Gạo xuất khẩu', note: 'Tạp chất thành phẩm phải thấp hơn chỉ tiêu lô 0,1 điểm %. Giá bán cao nên điểm nhân nhiều.', mult: 1.25, adj: { purity: 0.1 } },
+  { id: 'rush', who: 'Xe tải đang chờ bốc hàng', title: 'Giao gấp', note: 'Năng suất đầu vào phải cao hơn 2 t/h. Khách nới tạp chất thêm 0,15 điểm %.', mult: 1.15, adj: { feed: 2, purity: -0.15 } },
+  { id: 'saver', who: 'Chủ kho', title: 'Giảm hao hụt', note: 'Phế phẩm lẫn phải thấp hơn chỉ tiêu 1 điểm %. Khách nới tạp chất thêm 0,1 điểm %.', mult: 1.15, adj: { loss: -1, purity: -0.1 } },
+  { id: 'yellow', who: 'Chuỗi siêu thị', title: 'Không lẫn hạt vàng, đen hư', note: 'Ngoài chỉ tiêu lô, số hạt vàng, đen hư lọt vào thành phẩm bị giới hạn.', mult: 1.2, adj: { vh: true } },
+];
+const VH_MAX = [6, 5, 10, 28];    // số hạt vàng, đen hư tối đa (trong lô 15.000 hạt) cho đơn "Không lẫn hạt vàng, đen hư"
+function orderTargets(li, ord) {
+  const T = SIM.LEVELS[li].targets, a = ord ? ord.adj : {};
+  return { purity: +(T.purity + (a.purity || 0)).toFixed(2), loss: Math.max(0.5, T.loss + (a.loss || 0)), feed: T.feed + (a.feed || 0), vh: a.vh ? VH_MAX[li] : null };
+}
+
+// ===== Kịch bản 1: Lỗi thường gặp khi vận hành =====
+// Theo bảng "Lỗi thường gặp – Thiết bị cần kiểm tra" của máy SC16 Pro.
+// Mỗi lần xảy ra lỗi, máy chọn ngẫu nhiên 1 hạng mục kiểm tra làm nguyên nhân thật.
+// Kiểm tra hạng mục thuộc đúng lỗi nhưng chưa phải nguyên nhân: chỉ mất thời gian.
+// Kiểm tra hạng mục không liên quan: bị trừ điểm.
+const FAULTS = {
+  power:   { name: 'Máy không hoạt động', symptom: 'Máy dừng đột ngột, màn hình bộ xử lý và đèn tắt hết. Bấm Chạy không có phản hồi.',
+    checks: [{ c: 'Kiểm tra nguồn điện đầu vào', f: 'Đấu lại nguồn điện đầu vào' }, { c: 'Kiểm tra nút nhấn', f: 'Thay nút nhấn hỏng' }, { c: 'Kiểm tra cầu chì', f: 'Thay cầu chì bị đứt' }] },
+  vib:     { name: 'Bộ rung không làm việc', symptom: 'Máy vẫn chạy nhưng máng rung đứng yên, không còn hạt chảy xuống máng trượt.',
+    checks: [{ c: 'Kiểm tra mạch bộ rung', f: 'Sửa mạch bộ rung' }, { c: 'Kiểm tra kết nối điện bộ rung', f: 'Siết lại đầu nối điện bộ rung' }] },
+  ejOff:   { name: 'Đầu phun không làm việc', symptom: 'Camera vẫn đánh dấu hạt lỗi nhưng không đầu phun nào thổi, hạt lỗi rơi hết vào thành phẩm.',
+    checks: [{ c: 'Kiểm tra cầu chì đầu phun', f: 'Thay cầu chì đầu phun' }, { c: 'Kiểm tra kết nối điện đầu phun', f: 'Siết lại đầu nối điện đầu phun' }] },
+  ejLeak:  { name: 'Đầu phun bị rò rỉ hơi', symptom: 'Có tiếng xì hơi ở dãy đầu phun, một nhóm kênh thổi yếu, áp suất hơi giảm nhẹ.',
+    checks: [{ c: 'Kiểm tra chất lạ trong đầu phun', g: 'nozzle', f: 'Làm sạch hoặc thay đầu phun' }, { c: 'Kiểm tra nước trong đầu phun', g: 'nozzle', f: 'Loại bỏ nước hoặc thay đầu phun mới' }] },
+  sortBad: { name: 'Tách màu không đạt', symptom: 'Máy chạy bình thường nhưng hạt lỗi lọt vào thành phẩm nhiều hơn hẳn.',
+    checks: [{ c: 'Kiểm tra tham số có bị thay đổi', g: 'param', f: 'Khôi phục bộ tham số chuẩn' }, { c: 'Kiểm tra kính có sạch', g: 'glass', f: 'Lau sạch kính' }, { c: 'Kiểm tra súng hơi hoạt động bình thường', f: 'Chỉnh lại súng hơi' }] },
+  light:   { name: 'Đèn chiếu sáng không hoạt động', symptom: 'Buồng quét tối, camera gần như không nhận ra hạt lỗi.',
+    checks: [{ c: 'Kiểm tra nguồn đèn 44V-8A hoặc 48V-7,3A', f: 'Đấu lại nguồn đèn chiếu sáng' }] },
+  autoFire:{ name: 'Tự động phun (tách)', symptom: 'Đầu phun tự thổi cả hạt tốt, thùng phế phẩm đầy nhanh bất thường.',
+    checks: [{ c: 'Kiểm tra kính có dơ không', g: 'glass', f: 'Lau sạch kính' }, { c: 'Kiểm tra tham số cài đặt', g: 'param', f: 'Cài lại tham số' }] },
+  alwaysOn:{ name: 'Phun luôn luôn thổi', symptom: 'Một nhóm đầu phun thổi liên tục không ngắt, hạt ở các kênh đó bị thổi hết sang phế phẩm.',
+    checks: [{ c: 'Kiểm tra đầu phun có nước hay chất lạ', g: 'nozzle', f: 'Làm sạch đầu phun' }] },
+  wiper:   { name: 'Lau kính bị sự cố', symptom: 'Cần lau kính đứng yên, kính bám bụi dần, hạt lỗi lọt vào thành phẩm tăng theo thời gian.',
+    checks: [{ c: 'Kiểm tra cao su, ron lau kính', f: 'Thay cao su, ron lau kính' }, { c: 'Kiểm tra lò xo lau kính', f: 'Thay lò xo' }, { c: 'Kiểm tra xy lanh hơi lau kính', f: 'Sửa xy lanh hơi' }] },
+};
+const CHECK_TIME = 1.2;           // giây cho mỗi lần kiểm tra
+const INC_COUNT = [1, 2, 2, 3];   // số sự cố mỗi lô
+const FIX_TIME = 2.5;             // giây khắc phục sau khi tìm đúng nguyên nhân
+let order = null, incPref = true, leakDrop = 0, orderLocked = null;
+const incOn = () => mode === 'contest' || incPref;
+const fmtSec = v => v.toFixed(1).replace('.', ',') + ' giây';
+
 let levelIdx = 0, sim = null, running = false, fast = false, resultShown = false;
 let passed = [];
-try { passed = JSON.parse(localStorage.getItem('rice-sorter-passed') || '[]') || []; } catch (e) { passed = []; }
-function savePassed() { try { localStorage.setItem('rice-sorter-passed', JSON.stringify(passed)); } catch (e) {} }
+try { passed = JSON.parse(localStorage.getItem('rice-sorter-passed-v2') || '[]') || []; } catch (e) { passed = []; }
+function savePassed() { try { localStorage.setItem('rice-sorter-passed-v2', JSON.stringify(passed)); } catch (e) {} }
 
 // ---- Level tabs
 function renderLevelTabs() {
@@ -571,8 +712,20 @@ function renderLevelTabs() {
     nav.appendChild(b);
   });
 }
+function mixPct(lv) {
+  const vd = ['vang_hu', 'vang_mo', 'cham_kim'].reduce((a, k) => a + (lv.mix[k] || 0), 0) * 100, bb = (lv.mix.chalky || 0) * 100;
+  return { vd, bb, bad: vd + bb, good: 100 - vd - bb };
+}
+function renderBrief() {
+  const lv = SIM.LEVELS[levelIdx], x = mixPct(lv);
+  const extra = lv.mix.vang_mo || lv.mix.cham_kim ? ' (gồm vàng mơ, chấm kim)' : '';
+  $('brief').innerHTML = `<span class="order-who">${lv.real ? 'Đầu bài lấy từ phiếu lưu mẫu SC16 Pro JX26010333, Thành Tín, 18/06/2026' : 'Tình huống huấn luyện dựng từ lô thực tế Thành Tín'}</span>
+    <h2>${lv.name}</h2><p>${lv.desc}</p>
+    <div class="mix"><div><b class="num">${fmtP1(x.bad)}</b><span>Tạp nguyên liệu</span></div><div><b class="num">${fmtP1(x.good)}</b><span>Hạt tốt</span></div><div><b class="num">${fmtP1(x.vd)}</b><span>Vàng, đen hư${extra}</span></div><div><b class="num">${fmtP1(x.bb)}</b><span>Bạc bụng</span></div></div>`;
+}
 function renderLevelInfo() {
   const lv = SIM.LEVELS[levelIdx];
+  renderBrief();
   $('lvName').textContent = lv.name;
   $('lvDesc').textContent = lv.desc;
   $('lvTips').innerHTML = LEVEL_TIPS[levelIdx].map(t => `<li>${t}</li>`).join('');
@@ -618,23 +771,29 @@ function renderControls() {
 
 // ---- Targets & stats
 function fmtPct(v) { return v.toFixed(2).replace('.', ',') + '%'; }
+const fmtP1 = v => (Math.round(v * 10) / 10).toFixed(1).replace('.', ',') + '%';
+const fmtT = v => v.toFixed(1).replace('.', ',');
+const tap = purity => 100 - purity;     // tạp chất thành phẩm, như trên phiếu lưu mẫu
 function currentFeedForTarget() { return sim && sim.spawned > 0 ? Math.min(sim.minFeed, P.feed) : P.feed; }
+const curTargets = () => orderTargets(levelIdx, order);
+const vhCount = () => sim ? ['vang_hu', 'vang_mo', 'cham_kim'].reduce((a, k) => a + (sim.stats.passByType[k] || 0), 0) : 0;
 function updateTargets() {
   if (!sim) return;
-  const lv = SIM.LEVELS[levelIdx], T = lv.targets, m = SIM.summary(sim);
+  const lv = SIM.LEVELS[levelIdx], T = curTargets(), m = SIM.summary(sim);
   const hasData = sim.done > 30;
   const feed = sim.spawned >= lv.batch ? sim.minFeed : currentFeedForTarget();
   const rows = [
-    { label: 'Độ sạch tối thiểu', val: '≥ ' + fmtPct(T.purity), ok: m.purity >= T.purity, show: hasData },
-    { label: 'Phế lẫn tối đa', val: '≤ ' + fmtPct(T.loss), ok: m.loss <= T.loss, show: hasData },
-    { label: 'Cấp liệu tối thiểu', val: '≥ ' + T.feed + ' t/h', ok: feed >= T.feed, show: true },
+    { label: 'Tạp chất thành phẩm tối đa', val: '≤ ' + fmtPct(tap(T.purity)), ok: m.purity >= T.purity, show: hasData },
+    { label: 'Phế phẩm lẫn tối đa', val: '≤ ' + fmtPct(T.loss), ok: m.loss <= T.loss, show: hasData },
+    { label: 'Năng suất đầu vào tối thiểu', val: '≥ ' + fmtT(T.feed) + ' t/h', ok: feed >= T.feed, show: true },
   ];
+  if (T.vh !== null) rows.push({ label: 'Vàng, đen hư lọt (đang có ' + vhCount() + ')', val: '≤ ' + T.vh + ' hạt', ok: vhCount() <= T.vh, show: sim.done > 0 });
   $('targets').innerHTML = rows.map(r => `<div class="target ${r.show ? (r.ok ? 'pass' : 'fail') : ''}"><b class="num">${r.val}</b><span>${r.label}</span></div>`).join('');
 }
 function updateStats() {
   const m = SIM.summary(sim), lv = SIM.LEVELS[levelIdx];
   const any = sim.done > 0;
-  $('sPurity').textContent = any ? fmtPct(m.purity) : '–';
+  $('sPurity').textContent = any ? fmtPct(tap(m.purity)) : '–';
   $('sLoss').textContent = any ? fmtPct(m.loss) : '–';
   $('prog').style.width = (sim.done / lv.batch * 100) + '%';
   $('progText').textContent = `Đã tách ${sim.done} / ${lv.batch} hạt`;
@@ -665,7 +824,7 @@ const roundEnd = () => round ? round.start + round.dur * 60000 : 0;
 const roundActive = () => !!round && !round.ended && Date.now() < roundEnd();
 const fmtClock = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
 const fmtDate = t => new Date(t).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-const roundTotal = () => round ? Object.values(round.levels).reduce((a, l) => a + (l.score || 0), 0) : 0;
+const roundTotal = () => round ? Object.values(round.levels).reduce((a, l) => a + (l.score || 0), 0) + ((round.proc && round.proc.open) || 0) + ((round.proc && round.proc.close) || 0) : 0;
 
 const SALT = 'DTC-SC16Pro-2026', EPOCH = Date.UTC(2026, 0, 1), M4 = 36 ** 4;
 const normName = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().replace(/\s+/g, ' ').trim();
@@ -697,8 +856,8 @@ function startRound() {
   if (round && Date.now() - confirmNew > 4000 && Object.keys(round.levels).length) {
     confirmNew = Date.now(); renderRound(true); return;
   }
-  round = { start: Date.now(), dur: +$('rMins').value || 15, name: player.name, levels: {}, ended: false };
-  saveRound(); newBatch(); renderRound();
+  round = { start: Date.now(), dur: +$('rMins').value || 15, name: player.name, levels: {}, proc: {}, ended: false };
+  saveRound(); resetSession(); newBatch(); renderRound();
 }
 function endRound() {
   if (!round || round.ended) return;
@@ -741,7 +900,7 @@ function recordRound(li, sc, m, feed) {
   const key = 'L' + (li + 1), cur = round.levels[key] || { score: 0, attempts: 0 };
   const prev = cur.score || 0;
   cur.attempts++;
-  if (sc && sc.total > prev) Object.assign(cur, { score: sc.total, purity: +m.purity.toFixed(2), loss: +m.loss.toFixed(2), feed });
+  if (sc && sc.total > prev) Object.assign(cur, { score: sc.total, purity: +m.purity.toFixed(2), loss: +m.loss.toFixed(2), feed, order: order ? order.title : '' });
   round.levels[key] = cur; saveRound(); renderRound();
   return prev;
 }
@@ -750,13 +909,14 @@ function showCard() {
   const total = roundTotal(), code = makeCode(round.name, total, round.start);
   const rows = [0, 1, 2, 3].map(i => {
     const l = round.levels['L' + (i + 1)];
-    return `<tr><td>Lô ${i + 1}</td><td>${l && l.score ? l.purity.toFixed(2).replace('.', ',') + '%' : '–'}</td><td>${l && l.score ? l.loss.toFixed(2).replace('.', ',') + '%' : '–'}</td><td>${l && l.score ? l.feed.toFixed(1) : '–'}</td><td><b>${l && l.score ? l.score.toLocaleString('vi-VN') : '0'}</b></td></tr>`;
+    return `<tr><td>Lô ${i + 1}${l && l.score && l.order ? '<br><small style="color:#5B6778">' + esc(l.order) + '</small>' : ''}</td><td>${l && l.score ? (100 - l.purity).toFixed(2).replace('.', ',') + '%' : '–'}</td><td>${l && l.score ? l.loss.toFixed(2).replace('.', ',') + '%' : '–'}</td><td>${l && l.score ? l.feed.toFixed(1) : '–'}</td><td><b>${l && l.score ? l.score.toLocaleString('vi-VN') : '0'}</b></td></tr>`;
   }).join('');
   $('rcard').innerHTML = `<img src="${WM.src}" alt="DTC Group" width="130" height="24">
     <h3>Phiếu kết quả thi vận hành máy tách màu gạo SC16 Pro</h3>
     <div class="sub">${round.ended ? 'Vòng thi đã kết thúc' : 'Kết quả tạm thời, vòng thi đang diễn ra'}</div>
     <div class="who"><span>Tên người chơi</span><b>${esc(round.name)}</b><span>Bắt đầu</span><b>${fmtDate(round.start)} (${round.dur} phút)</b></div>
-    <table><thead><tr><th>Lô</th><th>Độ sạch</th><th>Phế lẫn</th><th>t/h</th><th>Điểm</th></tr></thead><tbody>${rows}</tbody></table>
+    <table><thead><tr><th>Lô</th><th>Tạp TP</th><th>Phế lẫn</th><th>t/h</th><th>Điểm</th></tr></thead><tbody>${rows}</tbody></table>
+    <table style="margin-top:6px"><tbody><tr><td>Quy trình mở máy</td><td><b>${round.proc && round.proc.open != null ? round.proc.open + ' / ' + OPEN_MAX : '–'}</b></td></tr><tr><td>Quy trình tắt máy</td><td><b>${round.proc && round.proc.close != null ? round.proc.close + ' / ' + CLOSE_MAX : '–'}</b></td></tr></tbody></table>
     <div class="total"><span>Tổng điểm</span><b>${total.toLocaleString('vi-VN')}</b></div>
     <div class="code"><b>${code}</b><span>Mã xác thực. Chụp màn hình phiếu này để nộp cho ban tổ chức.</span></div>
     <div class="actions"><button type="button" class="pbtn ghost" id="cardClose">Đóng</button></div>`;
@@ -773,22 +933,32 @@ function setMode(m) {
   $('mPractice').setAttribute('aria-pressed', m === 'practice');
   $('mContest').setAttribute('aria-pressed', m === 'contest');
   $('modeNote').textContent = m === 'contest'
-    ? 'Thi đấu: mỗi lô là một đề cố định, ai cũng gặp đúng cùng một mẻ gạo. Trong thời gian vòng thi, điểm cao nhất ở mỗi lô được cộng vào phiếu kết quả.'
+    ? 'Thi đấu: mỗi lô là một đề cố định, ai cũng gặp đúng cùng một mẻ gạo, cùng đơn hàng và cùng các sự cố. Trong thời gian vòng thi, điểm cao nhất ở mỗi lô được cộng vào phiếu kết quả.'
     : 'Luyện tập: mỗi lần chạy là một mẻ gạo ngẫu nhiên. Có tính điểm để bạn tham khảo, nhưng không ghi vào phiếu kết quả.';
   newBatch(); renderRound(); updateClock();
 }
 $('mPractice').onclick = () => setMode('practice');
 $('mContest').onclick = () => setMode('contest');
 
-// Điểm chỉ tính khi lô đạt đủ 3 chỉ tiêu
+// Điểm xử lý sự cố: xử lý nhanh được cộng, chọn sai hoặc bỏ mặc bị trừ
+function incidentPoints() {
+  let b = 0;
+  for (const e of (sim && sim.inc) || []) {
+    if (e.fixed) b += Math.max(0, 200 - Math.round(e.resp * 8)) - 60 * e.wrong;
+    else if (e.on) b -= 150 + 60 * e.wrong;
+  }
+  return b;
+}
+// Điểm chỉ tính khi lô đạt đủ chỉ tiêu của đơn hàng
 function scoreOf(li, m, feed) {
-  const T = SIM.LEVELS[li].targets;
+  const T = orderTargets(li, order);
   const base = 1000;
   const bPur = Math.max(0, (m.purity - T.purity) * 400);
   const bLoss = Math.max(0, (T.loss - m.loss) * 50);
   const bFeed = Math.max(0, (Math.min(feed, 22) - 16) * 60);
-  const mult = LEVEL_MULT[li];
-  return { total: Math.round((base + bPur + bLoss + bFeed) * mult), base, bPur: Math.round(bPur), bLoss: Math.round(bLoss), bFeed: Math.round(bFeed), mult };
+  const bInc = incidentPoints();
+  const mult = LEVEL_MULT[li], om = order ? order.mult : 1;
+  return { total: Math.max(100, Math.round((base + bPur + bLoss + bFeed + bInc) * mult * om)), base, bPur: Math.round(bPur), bLoss: Math.round(bLoss), bFeed: Math.round(bFeed), bInc, mult, om };
 }
 
 // Bảng xếp hạng dùng kho dữ liệu chung của trang đã xuất bản
@@ -813,7 +983,7 @@ function recordContest(li, sc, m, feed) {
   const key = 'L' + (li + 1), prev = doc.levels[key] ? doc.levels[key].score : 0;
   const cur = doc.levels[key] || { score: 0, attempts: 0 };
   cur.attempts = (cur.attempts || 0) + 1;
-  if (sc && sc.total > prev) Object.assign(cur, { score: sc.total, purity: +m.purity.toFixed(2), loss: +m.loss.toFixed(2), feed, at: new Date().toISOString() });
+  if (sc && sc.total > prev) Object.assign(cur, { score: sc.total, purity: +m.purity.toFixed(2), loss: +m.loss.toFixed(2), feed, order: order ? order.title : '', at: new Date().toISOString() });
   doc.levels[key] = cur;
   doc.total = Object.values(doc.levels).reduce((a, l) => a + (l.score || 0), 0);
   doc.passed = Object.values(doc.levels).filter(l => l.score > 0).length;
@@ -850,58 +1020,276 @@ function renderBoard() {
   } catch (e) { boardState = 'off'; renderBoard(); }
 })();
 
-// ---- Chuẩn bị trước vận hành
-const prep = { comp: false, dryer: false, tank: 0, filter: 0, dust: false, stab: false, power: false, set: 0.55, p: 0, msg: '' };  // tank/filter: 0 chưa, 1 đang xả, 2 xong
-const pressOK = () => prep.comp && prep.p >= 0.65 && prep.p <= 0.75;
-const prepReady = () => prep.comp && pressOK() && prep.dryer && prep.tank === 2 && prep.filter === 2 && prep.dust && prep.stab && prep.power;
-const fmtMPa = v => v.toFixed(2).replace('.', ',');
-function prepMsg(m) { prep.msg = m; renderPrep(); }
-function drain(key) {
-  if (!prep.comp || prep.p < 0.3) { prepMsg('Cần bật máy nén khí để có hơi trong hệ thống rồi mới xả được.'); return; }
-  if (prep[key] === 1) return;
-  prep[key] = 1; prep.msg = ''; renderPrep();
-  setTimeout(() => { prep[key] = 2; renderPrep(); }, 1500);
+// ===== Quy trình vận hành (SOP đã được xác nhận) =====
+// A. Chuẩn bị trước vận hành (1–10), B. Mở máy (11–14), C. Trong khi vận hành (15–18), D. Tắt máy (19–24).
+// Điểm quy trình: mở máy tối đa 300, tắt máy tối đa 150. Mức trừ ở bảng PEN để dễ chỉnh.
+const PEN = { skip: 50, late: 30, dryerShort: 40, wrongMode: 50, skipClose: 40, lateClose: 30, cleanOn: 60, drainComp: 100 };
+const OPEN_MAX = 300, CLOSE_MAX = 150;
+const SIM_SCALE = 30;             // 1 giây thực = 30 giây trong nhà máy (để chờ máy sấy 3 phút không quá lâu)
+const MODES = [
+  { id: 'VANG-HU', name: 'Bắn hạt khác màu (vàng hư)', k: { vd: 1, bb: 0.25 } },
+  { id: 'BAC-BUNG', name: 'Bắn hạt bạc bụng', k: { vd: 0.55, bb: 1 } },
+  { id: 'TRONG-SUOT', name: 'Bắn hạt trong suốt (nếp)', k: { vd: 0.4, bb: 0.2 } },
+  { id: 'VANG-BAC-BUNG', name: 'Bắn hạt vàng – bạc bụng', k: { vd: 1, bb: 1 } },
+  { id: 'VANG-TRONG-SUOT', name: 'Bắn hạt vàng – trong suốt (nếp)', k: { vd: 1, bb: 0.2 } },
+];
+const RIGHT_MODE = 'VANG-BAC-BUNG';   // gạo có cả vàng, đen hư và bạc bụng
+const SOP_OPEN = [
+  { id: 'dryer',  n: 1,  sec: 'A', t: 'Bật máy sấy khí (trước máy nén 3–5 phút)', dev: 'Máy sấy khí' },
+  { id: 'comp',   n: 2,  sec: 'A', t: 'Bật máy nén khí', dev: 'Máy nén khí' },
+  { id: 'drainF', n: 3,  sec: 'A', t: 'Kiểm tra và xả nước trong các bộ lọc', dev: 'Bộ lọc khí' },
+  { id: 'srcP',   n: 4,  sec: 'A', t: 'Kiểm tra áp suất nguồn khí nén ≥ 0,65 MPa', dev: 'Đồng hồ nguồn khí' },
+  { id: 'dust',   n: 5,  sec: 'A', t: 'Khởi động hệ thống hút bụi', dev: 'Hệ thống hút bụi' },
+  { id: 'hopper', n: 6,  sec: 'A', t: 'Vệ sinh phễu và các kênh (máng)', dev: 'Phễu, máng' },
+  { id: 'reg',    n: 7,  sec: 'A', t: 'Kiểm tra van điều áp trong máy 0,25 MPa (0,25–0,3)', dev: 'Van điều áp' },
+  { id: 'volt',   n: 8,  sec: 'A', t: 'Kiểm tra nguồn điện ổn áp 220V ± 5%', dev: 'Ổn áp' },
+  { id: 'stab',   n: 9,  sec: 'A', t: 'Mở ổn áp', dev: 'Ổn áp' },
+  { id: 'glass',  n: 10, sec: 'A', t: 'Kiểm tra và vệ sinh kính camera', dev: 'Kính camera' },
+  { id: 'power',  n: 11, sec: 'B', t: 'Bật nguồn điện cho máy (đèn đỏ sáng)', dev: 'Hộp điều khiển' },
+  { id: 'start',  n: 12, sec: 'B', t: 'Ấn nút khởi động màu xanh', dev: 'Hộp điều khiển' },
+  { id: 'mode',   n: 13, sec: 'B', t: 'Kiểm tra máy đang ở đúng chế độ phân loại', dev: 'Màn hình máy' },
+  { id: 'run',    n: 14, sec: 'B', t: 'Chạy máy (nút Chạy ở bảng điều khiển)', dev: 'Màn hình máy' },
+];
+const SOP_CLOSE = [
+  { id: 'stop',   n: 19, t: 'Nhấn nút Dừng' },
+  { id: 'off',    n: 20, t: 'Nhấn nút nguồn trên màn hình' },
+  { id: 'clean',  n: 21, t: 'Vệ sinh máy' },
+  { id: 'cut',    n: 22, t: 'Tắt nguồn điện và máy nén khí' },
+  { id: 'drainT', n: 23, t: 'Xả van máy nén và bình chứa: mở từ từ, khi áp suất giảm thì mở lớn' },
+  { id: 'drainF2',n: 24, t: 'Xả nước các bộ lọc' },
+];
+const prep = {};   // trạng thái thiết bị và quy trình của một ca
+function resetSession() {
+  const r = mode === 'contest' ? SIM.rng(777) : Math.random;
+  const regs = [0.18, 0.21, 0.27, 0.36, 0.42];
+  Object.assign(prep, {
+    dryer: false, dryerAt: 0, comp: false, dust: false, stab: false, power: false, booted: false, bootLeft: 0,
+    src: 0, pm: 0, p: 0, reg: regs[Math.floor(r() * regs.length)], volt: 214 + Math.floor(r() * 13),
+    mode: MODES[Math.floor(r() * MODES.length)].id, busy: null,
+    done: {}, skippedOver: {}, pen: [], phase: 'open', openScore: null, closeScore: null, waterHit: false,
+    cdone: {}, cskipped: {}, msg: '', voltSeen: false,
+  });
+  const rs = $('regSet'); if (rs) { rs.value = prep.reg; $('regSetVal').textContent = fmtMPa(prep.reg); }
+  if (running) { running = false; }
+  renderPrep();
 }
-$('bComp').onclick = () => { prep.comp = !prep.comp; prep.msg = ''; renderPrep(); };
-$('bDryer').onclick = () => { prep.dryer = !prep.dryer; prep.msg = ''; renderPrep(); };
-$('bTank').onclick = () => drain('tank');
-$('bFilter').onclick = () => drain('filter');
-$('bDust').onclick = () => { prep.dust = !prep.dust; prep.msg = ''; renderPrep(); };
-$('bStab').onclick = () => {
-  if (!prep.stab && !prep.dust) { prepMsg('Khởi động hệ thống hút bụi trước rồi mới mở ổn áp máy tách màu.'); return; }
-  prep.stab = !prep.stab; if (!prep.stab) prep.power = false; prep.msg = ''; renderPrep();
+const pressOK = () => prep.pm >= 0.2;                      // máy báo lỗi và tự dừng khi áp lực dưới mức cài đặt
+const prepReady = () => prep.power && prep.booted;
+const fmtMPa = v => v.toFixed(2).replace('.', ',');
+const lc = t => t.charAt(0).toLowerCase() + t.slice(1);
+const dryerMin = () => prep.dryer ? (performance.now() - prep.dryerAt) / 1000 * SIM_SCALE / 60 : 0;
+const fmtMin = m => Math.floor(m) + ':' + String(Math.floor((m % 1) * 60)).padStart(2, '0');
+const openPts = () => Math.max(0, OPEN_MAX - prep.pen.filter(p => p.ph === 'open').reduce((a, p) => a + p.pts, 0));
+const closePts = () => Math.max(0, CLOSE_MAX - prep.pen.filter(p => p.ph === 'close').reduce((a, p) => a + p.pts, 0));
+function penal(pts, msg, ph) { prep.pen.push({ pts, msg, ph: ph || (prep.phase === 'close' ? 'close' : 'open') }); }
+function prepMsg(m) { prep.msg = m; renderPrep(); }
+
+// Ghi nhận một bước mở máy. Bị làm muộn (sau bước có số lớn hơn) thì trừ điểm sai thứ tự.
+function doneOpen(id) {
+  if (prep.done[id] || prep.phase !== 'open') return;
+  const st = SOP_OPEN.find(s => s.id === id);
+  SOP_OPEN.filter(s => s.n < st.n && !prep.done[s.id]).forEach(s => { prep.skippedOver[s.id] = st.n; });
+  if (prep.skippedOver[id]) penal(PEN.late, `Sai thứ tự: bước ${st.n} “${lc(st.t)}” phải làm trước bước ${prep.skippedOver[id]}.`);
+  prep.done[id] = true;
+}
+function doneClose(id) {
+  if (prep.cdone[id]) return;
+  const st = SOP_CLOSE.find(s => s.id === id);
+  SOP_CLOSE.filter(s => s.n < st.n && !prep.cdone[s.id]).forEach(s => { prep.cskipped[s.id] = st.n; });
+  if (prep.cskipped[id]) penal(PEN.lateClose, `Sai thứ tự: bước ${st.n} “${lc(st.t)}” phải làm trước bước ${prep.cskipped[id]}.`, 'close');
+  prep.cdone[id] = true;
+}
+function busy(key, secs, then) {
+  if (prep.busy) return;
+  prep.busy = key; prep.msg = ''; renderPrep();
+  setTimeout(() => { prep.busy = null; then(); renderPrep(); }, secs * 1000);
+}
+
+// ---- Thao tác từng bước mở máy
+const ACT = {
+  dryer() { prep.dryer = !prep.dryer; prep.dryerAt = performance.now(); if (prep.dryer) doneOpen('dryer'); prep.msg = ''; },
+  comp() {
+    if (!prep.comp) {
+      if (prep.phase === 'open' && prep.dryer && dryerMin() < 3) penal(PEN.dryerShort, `Bật máy nén khi máy sấy mới chạy ${fmtMin(dryerMin())} phút (cần chạy trước 3–5 phút).`);
+      prep.comp = true; doneOpen('comp');
+    } else prep.comp = false;
+    prep.msg = '';
+  },
+  drainF() {
+    if (prep.src < 0.3) return prepMsg('Chưa có khí nén trong hệ thống nên chưa xả được. Bật máy nén khí trước.');
+    busy('drainF', 1.5, () => doneOpen('drainF'));
+  },
+  srcP() {
+    if (prep.src < 0.65) return prepMsg(`Áp suất nguồn đang ${fmtMPa(prep.src)} MPa, chưa đạt ≥ 0,65 MPa. Chờ máy nén nạp đủ rồi kiểm tra lại.`);
+    prep.msg = ''; doneOpen('srcP');
+  },
+  dust() { prep.dust = !prep.dust; if (prep.dust) doneOpen('dust'); prep.msg = ''; },
+  hopper() { busy('hopper', 2, () => doneOpen('hopper')); },
+  reg() {
+    if (prep.src < 0.3) return prepMsg('Chưa có khí nén nên đồng hồ van điều áp chỉ 0. Bật máy nén khí trước.');
+    if (prep.reg < 0.25 || prep.reg > 0.3 + 1e-9) return prepMsg(`Van điều áp đang ${fmtMPa(prep.reg)} MPa. Kéo núm lên, xoay về 0,25–0,30 MPa rồi xác nhận lại.`);
+    prep.msg = ''; doneOpen('reg');
+  },
+  volt() { prep.msg = ''; prep.voltSeen = true; doneOpen('volt'); },
+  stab() { prep.stab = !prep.stab; if (prep.stab) doneOpen('stab'); else { prep.power = false; prep.booted = false; } prep.msg = ''; },
+  glass() { busy('glass', 2, () => doneOpen('glass')); },
+  power() {
+    if (!prep.power && !prep.stab) return prepMsg('Chưa có điện vào máy. Mở ổn áp trước.');
+    prep.power = !prep.power; if (prep.power) doneOpen('power'); else prep.booted = false; prep.msg = '';
+  },
+  start() {
+    if (!prep.power) return prepMsg('Máy chưa có nguồn. Bật nguồn điện cho máy trước (đèn đỏ sáng).');
+    if (prep.booted || prep.bootLeft > 0) return;
+    prep.bootLeft = 3; prep.msg = ''; doneOpen('start');
+  },
+  mode() {
+    if (!prep.booted) return prepMsg('Máy chưa khởi động xong nên chưa xem được chế độ phân loại.');
+    const v = $('modeSel').value; prep.mode = v; prep.msg = ''; doneOpen('mode');
+  },
 };
-$('bPower').onclick = () => {
-  if (!prep.power && !prep.stab) { prepMsg('Mở ổn áp máy tách màu trước rồi mới mở nguồn máy.'); return; }
-  prep.power = !prep.power; prep.msg = ''; renderPrep();
+// Lần Chạy đầu tiên của ca: chốt điểm quy trình mở máy
+function firstRun() {
+  if (prep.phase !== 'open') return;
+  doneOpen('run');
+  SOP_OPEN.filter(s => !prep.done[s.id]).forEach(s => penal(PEN.skip, `Bỏ bước ${s.n}: ${lc(s.t)}.`));
+  if (prep.mode !== RIGHT_MODE) penal(PEN.wrongMode, `Chạy sai chế độ phân loại (${MODES.find(m => m.id === prep.mode).name}). Gạo có vàng, đen hư và bạc bụng cần chế độ vàng – bạc bụng.`);
+  prep.phase = 'run'; prep.openScore = openPts();
+  if (roundActive()) { round.proc = round.proc || {}; round.proc.open = prep.openScore; saveRound(); renderRound(); }
+  renderPrep();
+}
+// ---- Tắt máy
+const CACT = {
+  stop() { if (running) setRunning(false); doneClose('stop'); },
+  off() { prep.booted = false; if (running) setRunning(false); doneClose('off'); },
+  clean() {
+    if (prep.booted) penal(PEN.cleanOn, 'Vệ sinh máy khi máy chưa tắt. Phải nhấn nút nguồn tắt máy trước.', 'close');
+    busy('clean', 2, () => doneClose('clean'));
+  },
+  cut() { prep.power = false; prep.booted = false; prep.stab = false; prep.comp = false; doneClose('cut'); },
+  drainT() {
+    if (prep.comp) penal(PEN.drainComp, 'Xả bình chứa khi máy nén chưa cắt điện. Phải cắt điện máy nén rồi mới xả.', 'close');
+    busy('drainT', 2.5, () => { prep.src = Math.min(prep.src, 0.02); doneClose('drainT'); });
+  },
+  drainF2() { busy('drainF2', 1.5, () => doneClose('drainF2')); },
 };
-$('pSet').addEventListener('input', e => { prep.set = parseFloat(e.target.value); $('pSetVal').textContent = fmtMPa(prep.set); });
+function finishShift() {
+  SOP_CLOSE.filter(s => !prep.cdone[s.id]).forEach(s => penal(PEN.skipClose, `Bỏ bước ${s.n}: ${lc(s.t)}.`, 'close'));
+  prep.closeScore = closePts();
+  if (roundActive()) { round.proc = round.proc || {}; round.proc.close = prep.closeScore; saveRound(); renderRound(); }
+  const o = prep.openScore, c = prep.closeScore;
+  const log = prep.pen.slice();
+  resetSession();
+  prep.lastShift = { o, c, log };
+  renderPrep();
+}
+
+// ---- Hậu quả khi bỏ bước (áp vào mô phỏng suốt ca)
+function applyPrepFx(fx) {
+  if (prep.phase === 'open') return;
+  if (!prep.dust) fx.dust = Math.max(fx.dust, 0.5);                  // không hút bụi: buồng quét mù bụi
+  if (!prep.done.glass) fx.camDirt = Math.max(fx.camDirt, 0.45);     // không vệ sinh kính
+  const m = MODES.find(x => x.id === prep.mode); fx.modeK = m.k;
+  const pr = prep.reg;
+  fx.pAdj = pr < 0.25 ? -(0.25 - pr) * 18 : pr > 0.3 ? (pr - 0.3) * 12 : 0;   // áp lực thổi lệch khỏi 0,25–0,3
+}
+// Không xả nước bộ lọc hoặc không bật máy sấy: nước theo khí vào đầu phun
+function maybeWater() {
+  if (prep.phase !== 'run' || prep.waterHit || !sim || !sim.inc || !incOn()) return;
+  if (prep.done.drainF && prep.done.dryer) return;
+  if (sim.spawned / SIM.LEVELS[levelIdx].batch < 0.3 || activeInc()) return;
+  prep.waterHit = true;
+  const F = FAULTS.ejLeak, own = F.checks.map(x => x.c);
+  const opts = own.map((c, k) => ({ c, kind: k === 1 ? 'cause' : 'ok' })).concat([{ c: 'Kiểm tra cầu chì', kind: 'bad' }, { c: 'Kiểm tra mạch bộ rung', kind: 'bad' }]);
+  const c0 = Math.floor(Math.random() * SIM.CH * 0.8);
+  sim.inc.push({ type: 'ejLeak', cause: 1, at: 0, opts: opts.sort(() => Math.random() - 0.5), grp: [c0, c0 + Math.floor(SIM.CH * 0.15)],
+    on: true, fixed: false, t0: sim.t, real0: performance.now(), resp: 0, wrong: 0, fixing: 0, checking: null, tried: {}, doneAt: 0, fromPrep: true });
+  renderAlarm(); renderConsole();
+}
+
+// ---- Giao diện
+function stepCtl(s) {
+  const on = (k, a, b) => `<button type="button" class="sbtn${prep[k] ? ' on' : ''}" data-a="${s.id}" aria-pressed="${!!prep[k]}">${prep[k] ? a : b}</button>`;
+  const task = (lbl, doneLbl) => `<button type="button" class="sbtn" data-a="${s.id}" ${prep.busy || prep.done[s.id] ? 'disabled' : ''}>${prep.busy === s.id ? 'Đang làm…' : prep.done[s.id] ? doneLbl : lbl}</button>`;
+  switch (s.id) {
+    case 'dryer': return on('dryer', 'Đang chạy', 'Bật');
+    case 'comp': return on('comp', 'Đang chạy', 'Bật');
+    case 'dust': return on('dust', 'Đang chạy', 'Bật');
+    case 'stab': return on('stab', 'Đã mở', 'Mở');
+    case 'power': return on('power', 'Có điện', 'Bật');
+    case 'drainF': return task('Xả', 'Đã xả');
+    case 'hopper': case 'glass': return task('Vệ sinh', 'Đã vệ sinh');
+    case 'srcP': case 'reg': case 'volt': return `<button type="button" class="sbtn" data-a="${s.id}" ${prep.done[s.id] ? 'disabled' : ''}>${prep.done[s.id] ? 'Đã kiểm tra' : 'Kiểm tra'}</button>`;
+    case 'start': return `<button type="button" class="sbtn go${prep.booted ? ' on' : ''}" data-a="start" ${prep.booted || prep.bootLeft > 0 ? 'disabled' : ''}>${prep.booted ? 'Đã khởi động' : prep.bootLeft > 0 ? 'Đang khởi động…' : 'Nút xanh'}</button>`;
+    case 'mode': return `<button type="button" class="sbtn" data-a="mode">${prep.done.mode ? 'Áp dụng lại' : 'Áp dụng'}</button>`;
+    case 'run': return `<span class="sop-note">${prep.phase === 'open' ? 'Bấm Chạy dưới máy' : 'Đã chạy'}</span>`;
+  }
+}
+function stepExtra(s) {
+  switch (s.id) {
+    case 'dryer': return prep.dryer ? `<span class="sop-read">Đã chạy ${fmtMin(dryerMin())} phút</span>` : '';
+    case 'volt': return prep.voltSeen ? `<span class="sop-read">Đồng hồ ổn áp: ${prep.volt} V</span>` : '';
+    case 'mode': return `<div class="sop-mode"><label for="modeSel">Chế độ đang chạy</label><select id="modeSel" ${prep.booted ? '' : 'disabled'}>${MODES.map(m => `<option value="${m.id}" ${m.id === prep.mode ? 'selected' : ''}>${m.id}: ${m.name}</option>`).join('')}</select></div>`;
+  }
+  return '';
+}
 function renderPrep() {
-  const tog = (id, on, onTxt, offTxt) => { const b = $(id); b.textContent = on ? onTxt : offTxt; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); };
-  tog('bComp', prep.comp, 'Đang chạy', 'Bật');
-  tog('bDryer', prep.dryer, 'Đang chạy', 'Bật');
-  tog('bDust', prep.dust, 'Đang chạy', 'Bật');
-  tog('bStab', prep.stab, 'Đã mở', 'Bật');
-  tog('bPower', prep.power, 'Đã mở', 'Bật');
-  [['bTank', 'tank'], ['bFilter', 'filter']].forEach(([id, k]) => { const b = $(id); b.textContent = prep[k] === 2 ? 'Đã xả' : prep[k] === 1 ? 'Đang xả…' : 'Xả'; b.disabled = prep[k] > 0; });
-  const dot = (id, ok) => $(id).classList.toggle('ok', ok);
-  dot('dComp', prep.comp); dot('dPress', pressOK()); dot('dDryer', prep.dryer);
-  dot('dTank', prep.tank === 2); dot('dFilter', prep.filter === 2); dot('dDust', prep.dust); dot('dStab', prep.stab); dot('dPower', prep.power);
-  const left = [prep.comp, pressOK(), prep.dryer, prep.tank === 2, prep.filter === 2, prep.dust, prep.stab, prep.power].filter(x => !x).length;
+  const box = $('sop'); if (!box) return;
+  const contest = mode === 'contest';
+  let rows = SOP_OPEN.slice();
+  if (contest) { const r = SIM.rng(4242); rows = rows.map(s => [r(), s]).sort((a, b) => a[0] - b[0]).map(x => x[1]); }
+  const row = s => {
+    const ok = s.id === 'run' ? prep.phase !== 'open' : !!prep.done[s.id];
+    return `<div class="sop-row${ok ? ' ok' : ''}"><div class="what"><span class="dot${ok ? ' ok' : ''}">✓</span>${contest ? '' : `<span class="sop-n num">${s.n}</span>`}<span>${contest ? s.dev + ': ' : ''}${s.t}${stepExtra(s)}</span></div>${stepCtl(s)}</div>`;
+  };
+  let html = '';
+  if (prep.phase === 'open') {
+    html += contest ? '<p class="sop-hint">Thi đấu: các bước không đánh số và bị xáo trộn. Hãy làm theo đúng thứ tự quy trình bạn đã học.</p>'
+      : '<h3>A. Chuẩn bị trước vận hành</h3>' + rows.filter(s => s.sec === 'A').map(row).join('') + '<h3>B. Mở máy</h3>';
+    html += (contest ? rows : rows.filter(s => s.sec === 'B')).map(row).join('');
+  } else {
+    html += `<div class="sop-done">Đã mở máy. Điểm quy trình mở máy: <b class="num">${prep.openScore} / ${OPEN_MAX}</b></div>`;
+    html += contest ? '' : `<h3>C. Trong khi vận hành</h3><ul class="sop-c"><li>Chỉnh độ rung (cấp liệu) và độ nhạy ở bảng thông số máy.</li><li>Xả nước bộ lọc mỗi 2 giờ; xả nước máy nén, bình chứa, bộ lọc mỗi 1–3 giờ.</li><li>Quan sát thiết bị và kết quả phân loại liên tục.</li><li>Nếu có lỗi, kiểm tra theo bảng lỗi thường gặp trong khung cảnh báo.</li></ul>`;
+    let cr = SOP_CLOSE.slice();
+    if (contest) { const r = SIM.rng(9191); cr = cr.map(s => [r(), s]).sort((a, b) => a[0] - b[0]).map(x => x[1]); }
+    html += '<h3>D. Tắt máy (kết thúc ca)</h3>' + cr.map(s => {
+      const ok = !!prep.cdone[s.id];
+      return `<div class="sop-row${ok ? ' ok' : ''}"><div class="what"><span class="dot${ok ? ' ok' : ''}">✓</span>${contest ? '' : `<span class="sop-n num">${s.n}</span>`}<span>${s.t}</span></div><button type="button" class="sbtn" data-c="${s.id}" ${ok || prep.busy ? 'disabled' : ''}>${prep.busy === s.id ? 'Đang làm…' : ok ? 'Xong' : 'Làm'}</button></div>`;
+    }).join('') + `<div class="line"><button type="button" class="pbtn" id="finishShift">Hoàn tất tắt máy, kết thúc ca</button></div>`;
+  }
+  box.innerHTML = html;
+  box.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { ACT[b.dataset.a](); renderPrep(); });
+  box.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { CACT[b.dataset.c](); renderPrep(); });
+  const fs = $('finishShift'); if (fs) fs.onclick = finishShift;
+  // Điểm và nhật ký
+  const live = prep.phase === 'open' ? openPts() : closePts();
+  $('sopScore').textContent = prep.phase === 'open' ? `Mở máy: ${live}/${OPEN_MAX}` : `Tắt máy: ${live}/${CLOSE_MAX}`;
+  const cur = prep.pen.filter(p => p.ph === (prep.phase === 'open' ? 'open' : 'close'));
+  const shownLog = prep.phase === 'run' ? prep.pen : cur;
+  let logHtml = shownLog.map(p => `<li><b class="num">−${p.pts}</b> ${p.msg}</li>`).join('');
+  if (prep.lastShift && prep.phase === 'open' && !cur.length) logHtml = `<li class="info">Ca trước: mở máy ${prep.lastShift.o ?? '–'}/${OPEN_MAX}, tắt máy ${prep.lastShift.c}/${CLOSE_MAX}. Các thiết bị đã tắt, bắt đầu ca mới.</li>`;
+  $('sopLog').innerHTML = logHtml;
   const st = $('prepStatus');
   if (prep.msg) { st.textContent = prep.msg; st.className = 'warn'; }
-  else if (left === 0) { st.textContent = 'Sẵn sàng vận hành. Nhấn Chạy.'; st.className = 'ready'; }
-  else { st.textContent = 'Còn ' + left + ' bước chưa xong.'; st.className = ''; }
-  $('runHint').textContent = left === 0 ? '' : 'Còn ' + left + ' bước chuẩn bị trước vận hành chưa xong.';
+  else if (prep.phase === 'open' && prepReady()) { st.textContent = 'Máy đã khởi động. Nhấn Chạy ở bảng điều khiển.'; st.className = 'ready'; }
+  else { st.textContent = ''; st.className = ''; }
+  $('runHint').textContent = prepReady() ? '' : prep.phase === 'open' ? 'Máy chưa khởi động. Làm theo quy trình chuẩn bị và mở máy.' : 'Máy đã tắt.';
   if (typeof renderConsole === 'function') renderConsole();
 }
 function updatePressure(dt) {
-  const target = prep.comp ? prep.set : 0;
-  prep.p += (target - prep.p) * Math.min(1, dt * (prep.comp ? 1.2 : 2));
-  if (Math.abs(target - prep.p) < 0.002) prep.p = target;
-  $('pVal').textContent = fmtMPa(prep.p) + ' MPa';
-  $('pNeedle').style.left = Math.min(100, prep.p * 100) + '%';
+  const srcT = prep.comp ? Math.max(0, 0.78 - leakDrop) : prep.src > 0.05 && !prep.cdone.drainT ? prep.src - dt * 0.004 : prep.src;
+  prep.src += (srcT - prep.src) * Math.min(1, dt * (prep.comp ? 0.5 : 1));
+  const pmT = Math.min(prep.reg, prep.src);
+  prep.pm += (pmT - prep.pm) * Math.min(1, dt * 2);
+  prep.p = prep.pm;
+  if (prep.bootLeft > 0) { prep.bootLeft -= dt; if (prep.bootLeft <= 0) { prep.bootLeft = 0; prep.booted = prep.power; renderPrep(); } }
+  $('srcVal').textContent = fmtMPa(prep.src) + ' MPa';
+  $('srcNeedle').style.left = Math.min(100, prep.src * 100) + '%';
+  $('regVal').textContent = fmtMPa(prep.pm) + ' MPa';
+  $('regNeedle').style.left = Math.min(100, prep.pm / 0.5 * 100) + '%';
+  $('regSetVal').textContent = fmtMPa(prep.reg);
+  if (prep.dryer && prep.phase === 'open' && !prep.comp && (uiTick & 15) === 0) renderPrep();
 }
+$('regSet').addEventListener('input', e => { prep.reg = parseFloat(e.target.value); $('regSetVal').textContent = fmtMPa(prep.reg); });
 function needPlayer() {
   const el = $('player'); el.classList.add('flash'); el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   const tgt = !player.name ? $('pName') : ($('rStart') || $('pName'));
@@ -914,8 +1302,8 @@ function flashPrep() {
 }
 
 // ---- Transport
-function setRunning(v) { if (v && mode === 'contest' && !hasPlayer()) { needPlayer(); v = false; } if (v && mode === 'contest' && hasPlayer() && !roundActive()) { needPlayer(); v = false; } if (v && !prepReady()) { flashPrep(); v = false; } running = v; renderConsole(); }
-$('runBtn').onclick = () => { if (sim.finished) { newBatch(); setRunning(true); return; } setRunning(!running); };
+function setRunning(v) { if (v && sim && sim.fx.noPower) v = false; if (v && mode === 'contest' && !hasPlayer()) { needPlayer(); v = false; } if (v && mode === 'contest' && hasPlayer() && !roundActive()) { needPlayer(); v = false; } if (v && !prepReady()) { flashPrep(); v = false; } if (v) firstRun(); running = v; renderConsole(); }
+$('runBtn').onclick = () => { if (sim.finished) { newBatch(true); setRunning(true); return; } setRunning(!running); };
 // Bảng điều khiển: nút Chạy, đèn trạng thái, tiến độ lô
 const ICON_PLAY = 'M8 5v14l11-7z', ICON_PAUSE = 'M7 5h4v14H7zM13 5h4v14h-4z';
 function renderConsole() {
@@ -923,13 +1311,16 @@ function renderConsole() {
   $('runLbl').textContent = running ? 'Tạm dừng' : (sim && sim.t > 0 && !sim.finished ? 'Chạy tiếp' : 'Chạy');
   $('runIcon').setAttribute('d', running ? ICON_PAUSE : ICON_PLAY);
   btn.classList.toggle('pause', running);
-  btn.classList.toggle('blocked', !running && !ready);
-  let cls = 'off', txt = 'Chưa sẵn sàng';
-  if (ready) {
-    if (running) { cls = 'run'; txt = 'Đang chạy'; }
+  btn.classList.toggle('blocked', !running && (!ready || !!(sim && sim.fx.noPower)));
+  let cls = 'off', txt = prep.power ? 'Có điện, chưa khởi động' : 'Máy tắt';
+  if (prep.bootLeft > 0) { cls = 'pause'; txt = 'Đang khởi động (12.1Y)…'; }
+  else if (ready) {
+    if (sim && sim.fx.noPower) { cls = 'off'; txt = 'Mất nguồn, máy không hoạt động'; }
+    else if (running && activeInc()) { cls = 'alert'; txt = 'Đang chạy, có cảnh báo'; }
+    else if (running) { cls = 'run'; txt = 'Đang chạy'; }
     else if (sim && sim.finished) { cls = 'done'; txt = 'Hoàn thành lô'; }
     else if (sim && sim.t > 0) { cls = 'pause'; txt = 'Tạm dừng'; }
-    else { cls = 'ready'; txt = 'Sẵn sàng'; }
+    else { cls = 'ready'; txt = 'Sẵn sàng phân loại'; }
   }
   $('lamp').className = 'lamp ' + cls;
   $('statusTxt').textContent = txt;
@@ -939,22 +1330,194 @@ function renderConsole() {
     $('batchTxt').textContent = 'Lô ' + (levelIdx + 1) + ': đã tách ' + sim.done.toLocaleString('vi-VN') + ' / ' + b.toLocaleString('vi-VN') + ' hạt';
   }
 }
-$('resetBtn').onclick = () => { newBatch(); };
+$('resetBtn').onclick = () => { newBatch(true); };
 
-function newBatch() {
+function newBatch(keepOrder) {
   sim = SIM.create(levelIdx, mode === 'contest' ? CONTEST_SEED(levelIdx) : undefined);
   resultShown = false; $('result').classList.remove('show');
+  if (!keepOrder || !order || mode === 'contest') order = pickOrder();
+  planIncidents(); renderAlarm();
   setRunning(false);
-  renderLevelTabs(); renderLevelInfo(); updateTargets(); updateStats();
+  renderLevelTabs(); renderLevelInfo(); renderOrder(); updateTargets(); updateStats();
+}
+
+// ---- Đơn hàng
+function pickOrder() {
+  if (mode === 'contest') { const r = SIM.rng(sim.seed * 13 + 5); return ORDERS[Math.floor(r() * ORDERS.length)]; }
+  let o; do { o = ORDERS[Math.floor(Math.random() * ORDERS.length)]; } while (order && o.id === order.id);
+  return o;
+}
+function renderOrder() {
+  const el = $('order');
+  if (!order || !sim) { el.innerHTML = ''; return; }
+  const canChange = sim.t === 0;
+  orderLocked = !canChange;
+  el.innerHTML = `<div class="order-head"><div><span class="order-who">${order.who}</span><h2>Đơn hàng: ${order.title}</h2></div>
+      <b class="order-mult num" title="Hệ số điểm của đơn hàng">× ${order.mult.toFixed(2).replace('.', ',')}</b></div>
+    <p>${order.note}</p>
+    <div class="line order-ctl">
+      ${mode === 'practice' ? `<button type="button" class="pbtn ghost" id="oSwap" ${canChange ? '' : 'disabled'}>Nhận đơn khác</button>` : ''}
+      <label class="chk"><input type="checkbox" id="incTgl" ${incOn() ? 'checked' : ''} ${mode === 'contest' || !canChange ? 'disabled' : ''}><span>Có lỗi thường gặp xảy ra khi vận hành</span></label>
+    </div>`;
+  const sw = $('oSwap');
+  if (sw) sw.onclick = () => { if (sim.t > 0) return; order = pickOrder(); renderOrder(); updateTargets(); };
+  $('incTgl').onchange = e => { if (sim.t > 0) return; incPref = e.target.checked; planIncidents(); renderAlarm(); };
+}
+
+// ---- Lỗi thường gặp
+function planIncidents() {
+  sim.inc = []; leakDrop = 0; resetFx();
+  if (!incOn()) return;
+  const r = SIM.rng(sim.seed * 31 + 7), keys = Object.keys(FAULTS);
+  for (let i = keys.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [keys[i], keys[j]] = [keys[j], keys[i]]; }
+  const n = INC_COUNT[levelIdx], span = 0.65 / n;
+  for (let i = 0; i < n; i++) {
+    const type = keys[i], F = FAULTS[type], cause = Math.floor(r() * F.checks.length);
+    const own = F.checks.map(x => x.c);
+    // 2 hạng mục gây nhiễu lấy từ các lỗi khác, không trùng với hạng mục của lỗi này
+    const tags = F.checks.map(x => x.g).filter(Boolean);
+    const pool = [...new Set(keys.filter(k => k !== type).flatMap(k => FAULTS[k].checks.filter(x => !x.g || !tags.includes(x.g)).map(x => x.c)))].filter(c => !own.includes(c));
+    const decoys = [];
+    while (decoys.length < 2) { const c = pool[Math.floor(r() * pool.length)]; if (!decoys.includes(c)) decoys.push(c); }
+    const opts = own.map((c, k) => ({ c, kind: k === cause ? 'cause' : 'ok' })).concat(decoys.map(c => ({ c, kind: 'bad' })));
+    for (let a = opts.length - 1; a > 0; a--) { const b = Math.floor(r() * (a + 1)); [opts[a], opts[b]] = [opts[b], opts[a]]; }
+    const c0 = Math.floor(r() * SIM.CH * 0.85);
+    sim.inc.push({ type, cause, at: 0.12 + span * i + r() * span * 0.6, opts, grp: [c0, c0 + Math.floor(SIM.CH * 0.12)],
+      on: false, fixed: false, t0: 0, real0: 0, resp: 0, wrong: 0, fixing: 0, checking: null, tried: {}, doneAt: 0 });
+  }
+}
+function resetFx() {
+  const fx = sim.fx;
+  fx.camDirt = 0; fx.dust = 0; fx.stuck = null; fx.open = null; fx.weak = null;
+  fx.thrShift = 0; fx.falseAdd = 0; fx.lightOff = false; fx.noFeed = false; fx.noPower = false; fx.pAdj = 0; fx.modeK = null;
+}
+function activeInc() { return sim && sim.inc ? sim.inc.find(e => e.on) : null; }
+const causeOf = e => FAULTS[e.type].checks[e.cause];
+const causeName = e => causeOf(e).c.replace('Kiểm tra ', '');
+function updateIncidents(dt) {
+  if (!sim || !sim.inc) return;
+  const prog = sim.spawned / SIM.LEVELS[levelIdx].batch;
+  let changed = false;
+  for (const e of sim.inc) {
+    if (!e.on && !e.fixed && running && !sim.finished && prog >= e.at && !activeInc()) { e.on = true; e.t0 = sim.t; e.real0 = performance.now(); changed = true; }
+    if (e.on && e.checking) {
+      e.checking.left -= dt;
+      if (e.checking.left <= 0) {
+        const o = e.opts[e.checking.i];
+        e.tried[e.checking.i] = o.kind;
+        if (o.kind === 'cause') { e.resp = (performance.now() - e.real0) / 1000; e.fixing = FIX_TIME; }
+        else if (o.kind === 'bad') e.wrong++;
+        e.checking = null; changed = true;
+      }
+    } else if (e.on && e.fixing > 0) {
+      e.fixing -= dt;
+      if (e.fixing <= 0) { e.fixing = 0; e.on = false; e.fixed = true; e.doneAt = performance.now(); changed = true; if (prep.msg) { prep.msg = ''; renderPrep(); } }
+    }
+  }
+  const e = activeInc(), fx = sim.fx;
+  resetFx(); leakDrop = 0; applyPrepFx(fx);
+  if (e) {
+    const age = sim.t - e.t0, sev = Math.min(1, 0.3 + age / 12);   // lỗi nặng dần nếu để lâu
+    switch (e.type) {
+      case 'power': fx.noPower = true; break;
+      case 'vib': fx.noFeed = true; break;
+      case 'ejOff': fx.stuck = [0, SIM.CH]; break;
+      case 'ejLeak': fx.weak = [e.grp[0], e.grp[1], 1.5 + 1.5 * sev]; leakDrop = Math.min(0.06, 0.01 + age * 0.002); break;
+      case 'sortBad':
+        if (e.cause === 0) fx.thrShift = 0.06 + 0.08 * sev;          // tham số bị đổi: ngưỡng lệch cao, bỏ sót hạt lỗi
+        else if (e.cause === 1) fx.camDirt = sev;                     // kính bẩn
+        else fx.weak = [0, SIM.CH, 1.2 + 1.5 * sev];                  // súng hơi thổi yếu toàn dãy
+        break;
+      case 'light': fx.lightOff = true; break;
+      case 'autoFire':
+        fx.falseAdd = 0.004 + 0.012 * sev;
+        if (e.cause === 0) fx.camDirt = 0.35 * sev; else fx.thrShift = -0.05 * sev;
+        break;
+      case 'alwaysOn': fx.open = [e.grp[0], e.grp[0] + Math.floor(SIM.CH * 0.06)]; break;
+      case 'wiper': fx.camDirt = Math.min(1, age / 18); break;
+    }
+  }
+  if (changed) { renderAlarm(); renderConsole(); }
+}
+function chooseCheck(i) {
+  const e = activeInc();
+  if (!e || e.fixing > 0 || e.checking || e.tried[i]) return;
+  e.checking = { i, left: CHECK_TIME };
+  renderAlarm();
+}
+function renderAlarm() {
+  const el = $('alarm'), e = activeInc();
+  const last = sim && sim.inc ? sim.inc.filter(x => x.fixed).sort((a, b) => b.doneAt - a.doneAt)[0] : null;
+  if (e) {
+    const F = FAULTS[e.type];
+    el.hidden = false; el.className = 'alarm' + (e.fixing ? ' fixing' : '');
+    let body;
+    if (e.fixing) body = `<p><b>Tìm ra nguyên nhân:</b> ${causeName(e)}. Đang khắc phục: ${causeOf(e).f.toLowerCase()}.</p><div class="meter" aria-hidden="true"><div id="fixBar"></div></div>`;
+    else {
+      const btn = (o, i) => {
+        const st = e.tried[i], busy = e.checking && e.checking.i === i;
+        const tag = busy ? '<small>Đang kiểm tra…</small>' : st === 'ok' ? '<small>✓ Bình thường</small>' : st === 'bad' ? '<small>✗ Không liên quan</small>' : '';
+        return `<button type="button" class="abtn${st ? ' st-' + st : ''}${busy ? ' busy' : ''}" data-i="${i}" ${st || e.checking ? 'disabled' : ''}>${o.c}${tag}</button>`;
+      };
+      body = `<div class="alarm-opts" role="group" aria-label="Chọn thiết bị cần kiểm tra">${e.opts.map(btn).join('')}</div>` +
+        (e.wrong ? '<p class="alarm-miss">Hạng mục vừa kiểm tra không thuộc lỗi này. Mỗi lần kiểm tra sai bị trừ 60 điểm.</p>'
+          : '<p class="alarm-note">Chọn thiết bị cần kiểm tra. Mỗi lần kiểm tra mất khoảng 1 giây.</p>');
+    }
+    el.innerHTML = `<div class="alarm-head"><i class="lamp alert"></i><b>Lỗi: ${F.name}</b><span class="num" id="alarmAge"></span></div><p>${F.symptom}</p>` + body;
+    el.querySelectorAll('.abtn').forEach(b => b.onclick = () => chooseCheck(+b.dataset.i));
+    tickAlarm();
+  } else if (last && performance.now() - last.doneAt < 4000) {
+    el.hidden = false; el.className = 'alarm ok';
+    el.innerHTML = `<div class="alarm-head"><i class="lamp ready"></i><b>Đã khắc phục: ${FAULTS[last.type].name}</b></div><p>Nguyên nhân: ${causeName(last)}. Xử lý sau ${fmtSec(last.resp)}${last.wrong ? ', kiểm tra sai ' + last.wrong + ' lần' : ''}.${last.type === 'power' ? ' Bấm Chạy để tiếp tục.' : ''}</p>`;
+  } else { el.hidden = true; el.innerHTML = ''; el.className = 'alarm'; }
+}
+function tickAlarm() {
+  const e = activeInc(), el = $('alarm');
+  if (e) {
+    const a = $('alarmAge'); if (a) a.textContent = e.fixing ? '' : 'đã ' + Math.floor((performance.now() - e.real0) / 1000) + ' giây';
+    const f = $('fixBar'); if (f) f.style.width = (100 - e.fixing / FIX_TIME * 100) + '%';
+  } else if (el.classList.contains('ok')) {
+    const last = sim.inc.filter(x => x.fixed).sort((a, b) => b.doneAt - a.doneAt)[0];
+    if (!last || performance.now() - last.doneAt >= 4000) renderAlarm();
+  }
+}
+
+// ---- Phiếu lưu mẫu: trình bày kết quả giống phiếu chạy máy thực tế
+function sampleForm(lv, T, m, pass) {
+  const st = sim.stats, G = SIM.GROUP;
+  const grp = (obj, g) => Object.keys(obj).reduce((a, k) => a + (G[k] === g ? obj[k] : 0), 0);
+  const accN = st.acceptGood + st.acceptBad, rejN = st.rejectGood + st.rejectBad, allN = accN + rejN;
+  const pv = (n, d) => d ? fmtP1(n / d * 100) : '–';
+  const inVd = grp(st.passByType, 'vd') + grp(st.rejByType, 'vd'), inBb = grp(st.passByType, 'bb') + grp(st.rejByType, 'bb');
+  const nsIn = sim.feedTime ? sim.feedSum / sim.feedTime : P.feed;
+  const nsAcc = nsIn * accN / allN, nsRej = nsIn * rejN / allN;
+  return `<div class="form"><table>
+    <caption>Phiếu lưu mẫu</caption>
+    <thead><tr><th></th><th>Tạp</th><th>Hạt tốt</th><th>Vàng, đen hư</th><th>Bạc bụng</th></tr></thead>
+    <tbody>
+      <tr><td>Nguyên liệu</td><td>${pv(inVd + inBb, allN)}</td><td>${pv(allN - inVd - inBb, allN)}</td><td>${pv(inVd, allN)}</td><td>${pv(inBb, allN)}</td></tr>
+      <tr><td>Thành phẩm</td><td>${pv(st.acceptBad, accN)}</td><td>${pv(st.acceptGood, accN)}</td><td>${pv(grp(st.passByType, 'vd'), accN)}</td><td>${pv(grp(st.passByType, 'bb'), accN)}</td></tr>
+      <tr><td>Phế phẩm</td><td colspan="2">Hạt tốt (phế lẫn): ${pv(st.rejectGood, rejN)}</td><td colspan="2">Hạt phế: ${pv(st.rejectBad, rejN)}</td></tr>
+    </tbody></table>
+    <table><thead><tr><th>Năng suất (t/h)</th><th>Đầu vào</th><th>Thành phẩm</th><th>Phế phẩm</th></tr></thead>
+    <tbody><tr><td>Đo được</td><td>${fmtT(nsIn)}</td><td>${fmtT(nsAcc)}</td><td>${nsRej.toFixed(2).replace('.', ',')}</td></tr></tbody></table>
+    <div class="verdict"><span>Kết luận</span><span style="color:${pass ? '#7FD19E' : '#F2977F'}">${pass ? 'Đạt' : 'Không đạt'}</span></div></div>`;
 }
 
 // ---- Result
+function scoreParts(sc) {
+  const inc = sc.bInc ? (sc.bInc > 0 ? ' + xử lý sự cố ' + sc.bInc : ' − sự cố ' + (-sc.bInc)) : '';
+  return `Cơ bản ${sc.base} + tạp chất thấp ${sc.bPur} + hạn chế loại nhầm ${sc.bLoss} + năng suất ${sc.bFeed}${inc}, nhân hệ số lô ${sc.mult} và hệ số đơn hàng ${String(sc.om).replace('.', ',')}.`;
+}
 function showResult() {
   resultShown = true; setRunning(false);
-  const lv = SIM.LEVELS[levelIdx], T = lv.targets, m = SIM.summary(sim), st = sim.stats;
+  for (const e of sim.inc || []) if (e.on && e.fixing > 0) { e.on = false; e.fixed = true; e.fixing = 0; e.doneAt = performance.now(); }
+  resetFx(); leakDrop = 0; applyPrepFx(sim.fx);
+  renderAlarm();
+  const lv = SIM.LEVELS[levelIdx], T = curTargets(), m = SIM.summary(sim), st = sim.stats;
   const feed = sim.minFeed;
-  const okP = m.purity >= T.purity, okL = m.loss <= T.loss, okF = feed >= T.feed;
-  const pass = okP && okL && okF;
+  const okP = m.purity >= T.purity, okL = m.loss <= T.loss, okF = feed >= T.feed, okV = T.vh === null || vhCount() <= T.vh;
+  const pass = okP && okL && okF && okV;
   if (pass && !passed.includes(levelIdx)) { passed.push(levelIdx); savePassed(); renderLevelTabs(); }
   const tips = [];
   if (!okP) {
@@ -970,7 +1533,14 @@ function showResult() {
     if (st.collateral) c.push([st.collateral, `${st.collateral} hạt tốt bị thổi ké cùng hạt lỗi gần nó. Giảm độ rộng hoặc giảm cấp liệu.`]);
     c.sort((a, b) => b[0] - a[0]).forEach(x => tips.push(x[1]));
   }
-  if (!okF) tips.push(`Năng suất chưa đạt. Cấp liệu phải giữ ở mức ${T.feed} t/h trở lên suốt cả lô.`);
+  if (!okF) tips.push(`Năng suất chưa đạt. Cấp liệu phải giữ ở mức ${fmtT(T.feed)} t/h trở lên suốt cả lô.`);
+  if (!okV) tips.push(`Có ${vhCount()} hạt vàng, đen hư lọt vào thành phẩm, đơn hàng chỉ cho phép ${T.vh}. Hạt vàng, đen hư dễ bắt nhất: kiểm tra độ trễ và lực thổi.`);
+  const formHtml = sampleForm(lv, T, m, pass);
+  const incs = (sim.inc || []).filter(e => e.on || e.fixed);
+  if (incs.some(e => !e.fixed)) tips.push('Còn lỗi chưa được xử lý khi hết lô. Đọc tên lỗi trong khung cảnh báo và kiểm tra đúng các thiết bị thuộc lỗi đó.');
+  const incHtml = incs.length ? '<div class="inc">' + incs.map(e => e.fixed
+    ? `<div class="y">✓ <span>${FAULTS[e.type].name}, nguyên nhân: ${causeOf(e).c.replace('Kiểm tra ', '')}. Xử lý sau ${fmtSec(e.resp)}${e.wrong ? ', kiểm tra sai ' + e.wrong + ' lần' : ''}</span></div>`
+    : `<div class="n">✗ <span>${FAULTS[e.type].name}: chưa tìm ra nguyên nhân (${causeOf(e).c.replace('Kiểm tra ', '')})</span></div>`).join('') + '</div>' : '';
   const next = levelIdx < SIM.LEVELS.length - 1;
   const sc = pass ? scoreOf(levelIdx, m, feed) : null;
   let scoreHtml = '';
@@ -979,20 +1549,24 @@ function showResult() {
     if (DB) recordContest(levelIdx, sc, m, feed);
     const note = prev === null ? 'Vòng thi đã hết giờ nên lô này không được tính.' : !sc ? '' : sc.total > prev ? (prev ? 'Kỷ lục mới cho lô này! Trước đó: ' + prev.toLocaleString('vi-VN') + '.' : 'Đã ghi vào phiếu kết quả.') : 'Chưa vượt điểm cũ của lô này (' + prev.toLocaleString('vi-VN') + '), phiếu giữ điểm cao nhất.';
     scoreHtml = sc
-      ? `<div class="score-box"><div class="big num">${sc.total.toLocaleString('vi-VN')} điểm</div><div class="parts">Cơ bản ${sc.base} + độ sạch ${sc.bPur} + hạn chế loại nhầm ${sc.bLoss} + năng suất ${sc.bFeed}, nhân hệ số lô ${sc.mult}. ${note}</div></div>`
+      ? `<div class="score-box"><div class="big num">${sc.total.toLocaleString('vi-VN')} điểm</div><div class="parts">${scoreParts(sc)} ${note}</div></div>`
       : '<div class="score-box"><div class="parts">Lô chưa đạt nên không có điểm. Lượt chơi vẫn được ghi nhận. ' + note + '</div></div>';
   } else if (sc) {
-    scoreHtml = `<div class="score-box"><div class="big num">${sc.total.toLocaleString('vi-VN')} điểm</div></div>`;
+    scoreHtml = `<div class="score-box"><div class="big num">${sc.total.toLocaleString('vi-VN')} điểm</div><div class="parts">${scoreParts(sc)}</div></div>`;
   }
   const el = $('result');
   el.innerHTML = `
     <h3>${pass ? 'Lô đạt chuẩn' : 'Lô chưa đạt'}</h3>
-    <p style="color:#C7D3CC;margin:0">${pass ? (next ? 'Máy chạy ổn. Sang lô tiếp theo khó hơn nhé.' : 'Bạn đã qua cả bốn lô. Thử chạy lại với cấp liệu cao hơn xem sao.') : 'Xem nguyên nhân bên dưới rồi chỉnh máy và chạy lại.'}</p>
+    <p style="color:#C7D3CC;margin:0">${pass ? (next ? 'Giao hàng đạt yêu cầu. Sang lô tiếp theo khó hơn nhé.' : 'Bạn đã qua cả bốn lô. Thử chạy lại với đơn hàng khó hơn xem sao.') : 'Xem nguyên nhân bên dưới rồi chỉnh máy và chạy lại.'}</p>
+    <p class="order-line">Đơn hàng: ${order.title} (${order.who})</p>
     ${scoreHtml}
+    ${formHtml}
+    ${incHtml}
     <div class="rows">
-      <div class="row"><span>Độ sạch thành phẩm</span><b class="${okP ? 'ok' : 'no'}">${fmtPct(m.purity)} <small style="opacity:.7">(cần ≥ ${fmtPct(T.purity)})</small></b></div>
-      <div class="row"><span>Phế lẫn</span><b class="${okL ? 'ok' : 'no'}">${fmtPct(m.loss)} <small style="opacity:.7">(cần ≤ ${fmtPct(T.loss)})</small></b></div>
-      <div class="row"><span>Cấp liệu thấp nhất</span><b class="${okF ? 'ok' : 'no'}">${feed.toFixed(1)} t/h <small style="opacity:.7">(cần ≥ ${T.feed})</small></b></div>
+      <div class="row"><span>Tạp chất thành phẩm</span><b class="${okP ? 'ok' : 'no'}">${fmtPct(tap(m.purity))} <small style="opacity:.7">(cần ≤ ${fmtPct(tap(T.purity))})</small></b></div>
+      <div class="row"><span>Phế phẩm lẫn</span><b class="${okL ? 'ok' : 'no'}">${fmtPct(m.loss)} <small style="opacity:.7">(cần ≤ ${fmtPct(T.loss)})</small></b></div>
+      <div class="row"><span>Năng suất đầu vào thấp nhất</span><b class="${okF ? 'ok' : 'no'}">${fmtT(feed)} t/h <small style="opacity:.7">(cần ≥ ${fmtT(T.feed)})</small></b></div>
+      ${T.vh !== null ? `<div class="row"><span>Vàng, đen hư lọt vào thành phẩm</span><b class="${okV ? 'ok' : 'no'}">${vhCount()} hạt <small style="opacity:.7">(cần ≤ ${T.vh})</small></b></div>` : ''}
     </div>
     ${tips.length ? '<ul>' + tips.map(t => '<li>' + t + '</li>').join('') + '</ul>' : ''}
     <div class="actions">
@@ -1002,7 +1576,7 @@ function showResult() {
     </div>`;
   el.classList.add('show');
   const n = $('rNext'); if (n) n.onclick = () => { levelIdx++; newBatch(); setRunning(true); };
-  $('rRetry').onclick = () => { newBatch(); setRunning(true); };
+  $('rRetry').onclick = () => { newBatch(true); setRunning(true); };
   $('rClose').onclick = () => el.classList.remove('show');
   (n || $('rRetry')).focus();
 }
@@ -1034,7 +1608,7 @@ function grainPos(g, t) {
   const dj = (g.depth - 0.5) * 8;
   if (t < tTrayEnd) {
     const u = Math.max(0, (t - g.tSpawn) / 0.45);
-    const vib = running ? Math.sin(t * 90 + g.wob) * SIM.LOAD(P.feed) * 0.18 : 0;
+    const vib = running && !sim.fx.noFeed ? Math.sin(t * 90 + g.wob) * SIM.LOAD(P.feed) * 0.18 : 0;
     const x = 356 + HOP_DX - (40 + HOP_DX) * u + dj * 0.3;
     return { x, y: 101 + (396 - x) * 11 / 82 - 2 - g.depth * 2 + vib, a: Math.PI + 0.13 + Math.sin(g.wob + t * 40) * 0.4 };
   }
@@ -1057,11 +1631,15 @@ function label(txt, x, y, align) {
 }
 function rrect(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
 
-function drawCamera(x, y, ang, lit) {
+function drawCamera(x, y, ang, lit, dirt) {
   ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
   ctx.fillStyle = '#4B5566'; rrect(-15, -9, 24, 18, 3); ctx.fill(); ctx.strokeStyle = '#8795A8'; ctx.lineWidth = 1; ctx.stroke();
   ctx.fillStyle = '#2E3542'; ctx.fillRect(9, -6, 7, 12);
   ctx.fillStyle = lit ? '#F08D3A' : '#7FD8E8'; ctx.beginPath(); ctx.arc(16, 0, 3, 0, 7); ctx.fill();
+  if (dirt) {   // kính bám bụi: lớp mờ nâu phủ lên ống kính
+    ctx.fillStyle = `rgba(132,104,64,${0.35 + dirt * 0.6})`; ctx.beginPath(); ctx.arc(16, 0, 4.6, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(70,52,30,.8)'; [[15, -2], [17.5, 1.5], [14.5, 2]].forEach(([a, b]) => ctx.fillRect(a, b, 1.2, 1.2));
+  }
   ctx.restore();
 }
 // Đèn có chóa phản quang, chiếu một vùng sáng hình quạt về phía dòng hạt
@@ -1107,6 +1685,7 @@ function drawBin(x, w, name, n, badN, tint, fillColor, lv, scale) {
   label(name + '  ' + n, x + 2, top - 7);
 }
 
+const powered = () => prep.power && prep.booted && !(sim && sim.fx.noPower);
 function drawMachine(t) {
   ctx.setTransform(msc.sx, 0, 0, msc.sy, 0, 0);
   const lv = SIM.LEVELS[levelIdx];
@@ -1139,7 +1718,7 @@ function drawMachine(t) {
   ctx.restore();
 
   // ===== Bộ rung: máng inox có thành bên và vách sau cao, đặt trên thân rung điện từ vỏ trắng =====
-  const vib = running ? Math.sin(t * 90) * SIM.LOAD(P.feed) * 0.18 : 0;
+  const vib = running && !(sim && sim.fx.noFeed) ? Math.sin(t * 90) * SIM.LOAD(P.feed) * 0.18 : 0;
   // tấm đế
   ctx.fillStyle = '#C9CFD6'; ctx.fillRect(330, 150, 76, 3);
   ctx.fillStyle = '#8D96A3'; ctx.fillRect(330, 153, 76, 1.5);
@@ -1206,7 +1785,7 @@ function drawMachine(t) {
   const lamps = [at(-D_LAMP, -S_LAMP), at(-D_LAMP, S_LAMP), at(D_LAMP, -S_LAMP), at(D_LAMP, S_LAMP)].map(q => [q.x, q.y]);
   const bgFront = at(D_BG, S_BG);     // LED nền phía sau dòng hạt → nền cho camera trước
   const bgRear = at(-D_BG, -S_BG);    // LED nền phía trước dòng hạt → nền cho camera sau
-  if (prep.power) lamps.forEach(([x, y]) => drawLight(x, y));
+  if (powered() && !(sim && sim.fx.lightOff)) lamps.forEach(([x, y]) => drawLight(x, y));
   // trục nhìn chung của 2 camera (mũi tên hai đầu)
   {
     const x0 = cam1.x + nx * 17, y0 = cam1.y + ny * 17, x1 = cam2.x - nx * 17, y1 = cam2.y - ny * 17;
@@ -1226,8 +1805,16 @@ function drawMachine(t) {
   };
   drawBg(bgFront, -1);   // nằm phía +n, quay mặt sáng về -n (vào dòng hạt)
   drawBg(bgRear, 1);     // nằm phía -n, quay mặt sáng về +n
-  drawCamera(cam1.x, cam1.y, nAng, flash);
-  drawCamera(cam2.x, cam2.y, nAng + Math.PI, flash);
+  const fx = sim ? sim.fx : { camDirt: 0, dust: 0, stuck: null };
+  drawCamera(cam1.x, cam1.y, nAng, flash, fx.camDirt);
+  drawCamera(cam2.x, cam2.y, nAng + Math.PI, flash, fx.camDirt);
+  if (fx.dust) {   // bụi mù trong buồng quét
+    const gd = ctx.createRadialGradient(TARGET.x, TARGET.y, 6, TARGET.x, TARGET.y, 78);
+    gd.addColorStop(0, `rgba(196,186,164,${0.2 + fx.dust * 0.35})`); gd.addColorStop(1, 'rgba(196,186,164,0)');
+    ctx.fillStyle = gd; ctx.beginPath(); ctx.arc(TARGET.x, TARGET.y, 78, 0, 7); ctx.fill();
+    ctx.fillStyle = `rgba(222,214,196,${0.4 + fx.dust * 0.4})`;
+    for (let i = 0; i < 26; i++) { const a = i * 2.39 + t * (0.4 + (i % 5) * 0.15), rr = 12 + (i * 23 % 60); ctx.fillRect(TARGET.x + Math.cos(a) * rr, TARGET.y + Math.sin(a * 1.3) * rr * 0.8, 1.6, 1.6); }
+  }
   ctx.strokeStyle = 'rgba(232,238,246,.5)'; ctx.lineWidth = 0.8;
   ctx.beginPath(); ctx.moveTo(bgFront.x + 6, bgFront.y + 8); ctx.lineTo(284, 386); ctx.stroke();
   label('LED nền', 287, 390);
@@ -1246,17 +1833,17 @@ function drawMachine(t) {
   ctx.restore();
   ctx.fillStyle = '#3C4556'; rrect(322, 322, 80, 36, 4); ctx.fill(); ctx.strokeStyle = '#7C8A9E'; ctx.lineWidth = 1; ctx.stroke();
   ctx.fillStyle = '#12161E'; ctx.fillRect(328, 328, 44, 14);
-  ctx.fillStyle = prep.power ? '#FF4A3A' : '#12161E'; ctx.font = '600 12px "Barlow Condensed", "Arial Narrow", monospace'; ctx.textAlign = 'right';
+  ctx.fillStyle = powered() ? '#FF4A3A' : '#12161E'; ctx.font = '600 12px "Barlow Condensed", "Arial Narrow", monospace'; ctx.textAlign = 'right';
   ctx.fillText(String(sim ? sim.stats.rejectBad + sim.stats.rejectGood : 0).padStart(4, '0'), 370, 340);
   ctx.textAlign = 'left'; ctx.font = '500 11px Barlow, system-ui, sans-serif';
-  for (let i = 0; i < 4; i++) { ctx.fillStyle = i === 0 && prep.power ? (running ? '#43E36B' : '#2F9E55') : '#1F2530'; ctx.beginPath(); ctx.arc(330 + i * 10, 350, 2.4, 0, 7); ctx.fill(); }
+  for (let i = 0; i < 4; i++) { ctx.fillStyle = i === 0 && powered() ? (running ? '#43E36B' : '#2F9E55') : '#1F2530'; ctx.beginPath(); ctx.arc(330 + i * 10, 350, 2.4, 0, 7); ctx.fill(); }
   ctx.fillStyle = '#1F2530'; ctx.fillRect(378, 328, 18, 22);
   label('Bộ xử lý', 362, 314, 'center');
 
   // súng hơi + ống khí nén
   ctx.strokeStyle = '#5E6A7D'; ctx.lineWidth = 4; ctx.lineCap = 'round';
   ctx.beginPath(); ctx.moveTo(GUN.x + 26, 416); ctx.lineTo(GUN.x + 26, 446); ctx.lineTo(GUN.x + 70, 446); ctx.stroke();
-  label(prep.comp ? 'Khí nén ' + fmtMPa(prep.p) + ' MPa' : 'Khí nén: tắt', GUN.x + 76, 450);
+  label(prep.pm > 0.02 ? 'Khí nén ' + fmtMPa(prep.pm) + ' MPa' : 'Khí nén: không có', GUN.x + 76, 450);
   if (active) {
     const len = 22 + SIM.blowForce(P, sim) * 6, spread = active.spread ? 18 : 8;
     const gr = ctx.createLinearGradient(GUN.x, 0, GUN.x - len, 0);
@@ -1266,13 +1853,25 @@ function drawMachine(t) {
   }
   ctx.fillStyle = '#4B5566'; rrect(GUN.x + 12, 403, 30, 14, 3); ctx.fill(); ctx.strokeStyle = '#8795A8'; ctx.lineWidth = 1; ctx.stroke();
   ctx.fillStyle = '#6C7789'; ctx.fillRect(GUN.x, 406, 13, 8);
-  ctx.fillStyle = active ? '#F08D3A' : '#2A313D'; ctx.beginPath(); ctx.arc(GUN.x + 34, 410, 2.8, 0, 7); ctx.fill();
+  const blink = Math.floor(performance.now() / 350) % 2 === 0;
+  if (fx.open && running) {   // đầu phun thổi liên tục
+    const k = 0.8 + 0.2 * Math.sin(performance.now() / 40);
+    const g2 = ctx.createLinearGradient(GUN.x, 0, GUN.x - 44, 0);
+    g2.addColorStop(0, `rgba(255,120,90,${0.85 * k})`); g2.addColorStop(1, 'rgba(255,120,90,0)');
+    ctx.fillStyle = g2; ctx.beginPath(); ctx.moveTo(GUN.x, GUN.y - 2); ctx.lineTo(GUN.x - 44, GUN.y - 6); ctx.lineTo(GUN.x - 44, GUN.y + 6); ctx.lineTo(GUN.x, GUN.y + 2); ctx.closePath(); ctx.fill();
+  }
+  const gunFault = fx.stuck || fx.open || fx.weak;
+  ctx.fillStyle = gunFault ? (blink ? '#FF4A3A' : '#5A1E18') : active ? '#F08D3A' : '#2A313D'; ctx.beginPath(); ctx.arc(GUN.x + 34, 410, 2.8, 0, 7); ctx.fill();
   label('Súng hơi', GUN.x + 48, 426);
+  if (leakDrop > 0 && prep.comp) {   // hơi xì ra ở đầu phun
+    for (let i = 0; i < 3; i++) { const k = ((performance.now() / 500) + i / 3) % 1; ctx.strokeStyle = `rgba(230,240,250,${0.7 * (1 - k)})`; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(GUN.x + 6, 402 - k * 14, 2 + k * 7, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); }
+  }
+  if (sim && sim.fx.lightOff && powered()) { ctx.fillStyle = 'rgba(8,10,14,.45)'; ctx.beginPath(); ctx.arc(TARGET.x, TARGET.y, 95, 0, 7); ctx.fill(); }
 
   // thùng hứng
   const st = sim ? sim.stats : null;
-  drawBin(139, 90, 'Thành phẩm', st ? st.acceptGood + st.acceptBad : 0, st ? st.acceptBad : 0, 'rgba(120,200,140,.16)', '#DCD3B6', lv, 1);
-  drawBin(45, 90, 'Phế phẩm', st ? st.rejectGood + st.rejectBad : 0, 0, 'rgba(230,130,120,.16)', '#A6824E', lv, 6);
+  drawBin(139, 90, 'Thành phẩm', st ? st.acceptGood + st.acceptBad : 0, st ? Math.round(st.acceptBad / 4) : 0, 'rgba(120,200,140,.16)', '#DCD3B6', lv, 1);
+  drawBin(45, 90, 'Phế phẩm', st ? st.rejectGood + st.rejectBad : 0, 0, 'rgba(230,130,120,.16)', '#A6824E', lv, 40);
 
   // hạt gạo
   if (sim) for (const g of sim.grains) {
@@ -1290,7 +1889,7 @@ function drawMachine(t) {
 
   // chú thích loại hạt
   ctx.font = '500 10px Barlow, system-ui, sans-serif';
-  const key = [['good', 'Hạt tốt'], ['vang_hu', 'Vàng hư'], ['chalky', 'Bạc bụng'], ['vang_mo', 'Vàng mơ'], ['cham_kim', 'Chấm kim']];
+  const key = [['good', 'Hạt tốt'], ['vang_hu', 'Vàng, đen hư'], ['chalky', 'Bạc bụng'], ['vang_mo', 'Vàng mơ'], ['cham_kim', 'Chấm kim']];
   key.forEach(([k, n], i) => {
     const y = 30 + i * 16;
     ctx.fillStyle = GC[k]; ctx.beginPath(); ctx.ellipse(22, y - 3, 4, 2, 0, 0, 7); ctx.fill();
@@ -1342,27 +1941,27 @@ new ResizeObserver(resize).observe(cv); new ResizeObserver(resize).observe(tc);
 let last = performance.now(), uiTick = 0;
 function frame(now) {
   let dt = Math.min(0.05, (now - last) / 1000); last = now;
-  const wasOK = pressOK();
   updatePressure(dt);
-  if (wasOK !== pressOK()) renderPrep();
-  if (running && !prepReady()) {
-    setRunning(false);
-    prepMsg(!prep.power ? 'Máy dừng: nguồn máy tách màu đã tắt.' : !prep.comp ? 'Máy dừng: máy nén khí đã tắt.' : !pressOK() ? 'Máy dừng: áp suất hơi ngoài khoảng 0,65–0,75 MPa.' : 'Máy dừng: một bước chuẩn bị đã bị tắt.');
-  }
+  if (running && !prepReady()) { setRunning(false); prepMsg('Máy dừng: máy tách màu đã mất nguồn.'); }
+  if (running && prepReady() && !pressOK() && sim && sim.t > 0.5) { setRunning(false); prepMsg(`Máy báo lỗi áp lực khí thấp (${fmtMPa(prep.pm)} MPa) và tự dừng. Kiểm tra máy nén khí và van điều áp.`); }
+  updateIncidents(dt);
+  maybeWater();
+  if (running && sim && sim.fx.noPower) { setRunning(false); }
+  if (sim && orderLocked !== (sim.t > 0)) renderOrder();
   if (running && sim && !sim.finished) {
     let total = dt * (fast ? 6 : 1);
     while (total > 0) { const h = Math.min(1 / 120, total); SIM.step(sim, P, h); total -= h; }
     if (sim.finished && !resultShown) showResult();
   }
   drawMachine(sim ? sim.t : now / 1000);
-  if ((uiTick & 7) === 0) updateClock();
+  if ((uiTick & 7) === 0) { updateClock(); tickAlarm(); }
   drawTiming();
   if ((uiTick++ & 7) === 0 && sim) { updateStats(); updateTargets(); renderConsole(); }
   requestAnimationFrame(frame);
 }
 
 renderControls();
-renderPrep();
+resetSession();
 setMode('practice');
 newBatch();
 resize();
