@@ -38,8 +38,8 @@ h1 small{display:block;font-family:"Barlow",sans-serif;font-weight:400;font-size
 .levels button[aria-pressed="true"] .tick{color:inherit}
 .grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:20px;align-items:start}
 @media (max-width:860px){.grid{grid-template-columns:1fr}}
-.stagebox{position:sticky;top:calc(12px + env(safe-area-inset-top,0px));background:#DCE2EA;border-radius:14px;padding:10px;border:3px solid var(--machine)}
-@media (max-width:860px){.stagebox{position:relative;top:0}}
+.stagebox{position:relative;top:0;background:#DCE2EA;border-radius:14px;padding:10px;border:3px solid var(--machine)}
+.stagebox #controls{margin:10px 0}
 #machine{display:block;width:min(100%, calc(80vh * 0.75));aspect-ratio:420/560;margin:0 auto}
 .btn{font:600 15px "Barlow",sans-serif;padding:10px 16px;border-radius:8px;border:1px solid #B3BDCA;background:#FFFFFF;color:#1E2A36;cursor:pointer}
 .btn.primary{background:var(--signal);border-color:var(--signal);color:#1d1409}
@@ -215,6 +215,7 @@ details.checker summary{cursor:pointer;font-weight:600}
   <div class="grid">
     <div class="stagebox">
       <canvas id="machine" aria-label="Hình mô phỏng máy tách màu: phễu cấp liệu, bộ rung, máng trượt, đèn và camera, bộ xử lý, súng hơi, thùng thành phẩm và phế phẩm"></canvas>
+      <section class="panel" id="controls" aria-label="Thông số máy"></section>
       <div class="console">
         <div class="readouts">
           <div class="readout status-cell">
@@ -311,8 +312,6 @@ details.checker summary{cursor:pointer;font-weight:600}
         </details>
         <div class="targets" id="targets"></div>
       </section>
-
-      <section class="panel" id="controls" aria-label="Thông số máy"></section>
 
       <section class="panel">
         <h2>Thời điểm hạt tới van</h2>
