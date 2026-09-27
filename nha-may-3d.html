@@ -61,11 +61,11 @@ button{font:inherit}
 /* Khi đang dùng màn hình điều khiển / van điều áp: sơ đồ và khung lỗi nổi lên trên, sáng rõ, phóng to tối đa */
 body.ov-ingame #diag,body.ov-ingame #alarm{z-index:20}
 body.ov-ingame #diag{top:14px;left:14px;padding:10px;background:rgba(16,22,30,.97);box-shadow:0 8px 30px rgba(0,0,0,.5);
-  width:min(560px,calc((100vw - min(720px,44vw,(100vh - 140px) * 1.333)) / 2 - 34px),calc((100vh - 120px) / 1.62))}
+  width:min(560px,calc((100vw - min(720px,44vw,(100vh - 330px) * 1.333)) / 2 - 34px),calc((100vh - 120px) / 1.62))}
 body.ov-ingame #diag b{font-size:1.05rem}
 body.ov-ingame #diag .lg{font-size:.85rem}
 body.ov-ingame #alarm{top:14px;bottom:auto;right:14px;font-size:1.06rem;box-shadow:0 8px 30px rgba(0,0,0,.55);
-  width:min(540px,calc((100vw - min(720px,44vw,(100vh - 140px) * 1.333)) / 2 - 34px))}
+  width:min(540px,calc((100vw - min(720px,44vw,(100vh - 330px) * 1.333)) / 2 - 34px))}
 body.ov-ingame #alarm button{padding:10px 12px;font-size:1rem}
 #ov-hmi{background:rgba(8,12,18,.5)}
 /* Overlays */
@@ -97,8 +97,8 @@ body.ov-ingame #alarm button{padding:10px 12px;font-size:1rem}
 .card .score{font-size:1.6rem;font-weight:800;color:#12803F}.card .score small{display:block;font-size:.8rem;font-weight:500;color:#5B6964}
 .card ul{padding-left:18px}.card ul.pen li b{color:#B8412C}
 /* Màn hình ANYSORT */
-.hmiwrap{display:flex;flex-direction:column;align-items:center;gap:10px}
-.hmi{position:relative;width:min(720px,44vw,calc((100vh - 140px) * 1.333));aspect-ratio:4/3;border-radius:10px;border:10px solid #16191F;overflow:hidden;color:#E8ECF2;font-family:"Segoe UI",system-ui,sans-serif;user-select:none}
+.hmiwrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+.hmi{position:relative;width:min(720px,44vw,calc((100vh - 330px) * 1.333));aspect-ratio:4/3;border-radius:10px;border:10px solid #16191F;overflow:hidden;color:#E8ECF2;font-family:"Segoe UI",system-ui,sans-serif;user-select:none}
 .hmi.off{background:#050608}.hmi.boot{background:#5B3A8E}.hmi.on{background:linear-gradient(#39414D,#262C35)}
 .hmi .center{position:absolute;left:0;right:0;top:45%;text-align:center}.hmi .big{font-size:3rem;font-weight:600}.hmi .dim{color:#9AA4B2;font-size:.9rem}
 .hmi .topbar{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(0,0,0,.25)}
@@ -134,6 +134,18 @@ body.ov-ingame #alarm button{padding:10px 12px;font-size:1rem}
 .hmi .dlg .x{position:absolute;right:6px;top:3px;padding:2px 8px}
 .hmi .dlg .err{color:#FF8A78;padding:0 16px 10px}
 .hmiinfo{color:var(--mut);font-size:.88rem;text-align:center;max-width:760px}
+/* Dải nút chỉnh thông số ngay dưới màn hình điều khiển */
+.hmictl{width:min(720px,44vw,calc((100vh - 330px) * 1.333));display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:7px}
+.hmictl .pc{background:rgba(22,28,36,.97);border:1px solid #3A4452;border-radius:10px;padding:7px 7px 6px;color:#E8ECF2;text-align:center;min-width:0}
+.hmictl .pn{font-size:.82rem;font-weight:700;color:#C9D3DD}
+.hmictl .pr{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:5px 0 3px}
+.hmictl .pv{font:700 1.35rem/1 "Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums;min-width:2.6em}
+.hmictl .pv small{display:block;font-size:.7rem;font-weight:500;color:#9FB0BF;margin-top:3px}
+.hmictl button{flex:none;width:38px;height:38px;border-radius:8px;border:1px solid #6B7587;background:#4A5362;color:#fff;font-size:1.35rem;font-weight:700;cursor:pointer;touch-action:manipulation;user-select:none}
+.hmictl button:hover{background:#5A6475}
+.hmictl button:active{background:#12803F;border-color:#12803F}
+.hmictl .ph{font-size:.72rem;color:#9FB0BF;line-height:1.25}
+.hmictl.off{opacity:.45;pointer-events:none}
 .hmiinfo button{padding:8px 16px;border-radius:8px;border:1px solid #6B7587;background:#2A313B;color:#fff;cursor:pointer;margin-left:8px}
 /* Van điều áp */
 #regBody .dial{width:260px;margin:0 auto}
@@ -174,7 +186,8 @@ body.ov-ingame #alarm button{padding:10px 12px;font-size:1rem}
 
 <div class="ov" id="ov-hmi" hidden><div class="hmiwrap">
   <div id="hmiScreen" class="hmi"></div>
-  <div class="hmiinfo">Màn hình điều khiển máy tách màu. Mật khẩu người vận hành là Giờ và Phút đang hiện trên màn hình (ví dụ 14:46 → 1446).<button id="hmiBack">Rời màn hình (Esc)</button></div>
+  <div class="hmictl" id="hmiCtl" role="group" aria-label="Thông số phân loại"></div>
+  <div class="hmiinfo"><button id="hmiBack">Rời màn hình (Esc)</button></div>
 </div></div>
 
 <div class="ov" id="ov-reg" hidden><div class="card"><h2>Van điều áp trong máy tách màu</h2><p class="sub">Kéo núm lên để xoay. Xoay theo chiều kim đồng hồ tăng áp, ngược chiều giảm áp. Chỉnh xong nhấn núm xuống để khóa.</p><div id="regBody"></div></div></div>
@@ -4272,7 +4285,7 @@ const RUNG_TO_TH = 0.4;
 const G = {
   mode: 'practice', levelIdx: 0, incPref: true,
   running: false, sim: null, resultShown: false, lots: [],
-  rung: 30, sens: 128, P: { feed: 12, sens: 128, delay: 50, dur: 50 },
+  rung: 30, sens: 128, delay: 50, dur: 50, P: { feed: 12, sens: 128, delay: 50, dur: 50 },
 };
 const ui = { msg() {}, toast() {}, refresh() {}, alarm() {}, result() {}, shift() {} };   // giao diện gán sau
 const incOn = () => G.mode === 'contest' || G.incPref;
@@ -4295,10 +4308,10 @@ const SOP_OPEN = [
   { id: 'drainF', n: 3, sec: 'A', t: 'Kiểm tra và xả nước trong các bộ lọc' },
   { id: 'srcP', n: 4, sec: 'A', t: 'Kiểm tra áp suất nguồn khí nén ≥ 0,65 MPa' },
   { id: 'dust', n: 5, sec: 'A', t: 'Khởi động hệ thống hút bụi' },
-  { id: 'hopper', n: 6, sec: 'A', t: 'Vệ sinh phễu và các kênh (máng)' },
-  { id: 'reg', n: 7, sec: 'A', t: 'Xả lọc máy tách màu, kiểm tra van điều áp 0,25 MPa (0,25–0,3)' },
-  { id: 'volt', n: 8, sec: 'A', t: 'Kiểm tra nguồn điện ổn áp 220V ± 5%' },
-  { id: 'stab', n: 9, sec: 'A', t: 'Mở ổn áp' },
+  { id: 'volt', n: 6, sec: 'A', t: 'Kiểm tra nguồn điện ổn áp 220V ± 5%' },
+  { id: 'stab', n: 7, sec: 'A', t: 'Mở ổn áp' },
+  { id: 'hopper', n: 8, sec: 'A', t: 'Vệ sinh phễu và các kênh (máng)' },
+  { id: 'reg', n: 9, sec: 'A', t: 'Xả lọc máy tách màu, kiểm tra van điều áp 0,25 MPa (0,25–0,3)' },
   { id: 'glass', n: 10, sec: 'A', t: 'Kiểm tra và vệ sinh kính camera' },
   { id: 'start', n: 11, sec: 'B', t: 'Ấn nút khởi động màu xanh' },
   { id: 'mode', n: 12, sec: 'B', t: 'Kiểm tra máy đang ở đúng chế độ phân loại' },
@@ -4390,13 +4403,13 @@ const ACT = {
     if (prep.regPulled) return 'Núm van đang kéo lên. Nhấn núm xuống để khóa rồi mới xác nhận.';
     if (prep.reg < 0.25 - 1e-9 || prep.reg > 0.3 + 1e-9) return `Van điều áp đang ${fmtMPa(prep.reg)} MPa. Kéo núm lên, xoay về 0,25–0,30 MPa, nhấn xuống rồi xác nhận lại.`;
     prep.regOk = true; step7();
-    if (!prep.mfDrained) return 'Van điều áp đạt. Còn xả lọc máy tách màu để hoàn tất bước 7.';
+    if (!prep.mfDrained) return `Van điều áp đạt. Còn xả lọc máy tách màu để hoàn tất bước ${REG_N()}.`;
   },
-  // Bộ lọc trong máy tách màu (cạnh van điều áp): phần của bước 7
+  // Bộ lọc trong máy tách màu (cạnh van điều áp): một phần của bước xả lọc, kiểm tra van điều áp
   mfilters() {
     if (prep.phase === 'close') { busy('mf', 1.5, () => doneClose('drainF2')); return; }
     if (prep.src < 0.3) return 'Chưa có khí nén trong hệ thống nên chưa xả được. Bật máy nén khí trước.';
-    busy('mf', 1.5, () => { prep.mfDrained = true; step7(); if (!prep.regOk && prep.phase === 'open') ui.toast('Đã xả lọc máy tách màu. Còn kiểm tra van điều áp để hoàn tất bước 7.', 'info'); });
+    busy('mf', 1.5, () => { prep.mfDrained = true; step7(); if (!prep.regOk && prep.phase === 'open') ui.toast(`Đã xả lọc máy tách màu. Còn kiểm tra van điều áp để hoàn tất bước ${REG_N()}.`, 'info'); });
   },
   volt() { prep.voltSeen = true; doneOpen('volt'); return 'Đồng hồ ổn áp: ' + prep.volt + ' V.'; },
   stab() { prep.stab = !prep.stab; if (prep.stab) { doneOpen('stab'); prep.power = true; } else { prep.power = false; prep.booted = false; prep.bootLeft = 0; G.running = false; checkCut(); } },
@@ -4424,6 +4437,7 @@ const ACT = {
     busy('tank', 2.5, () => { prep.src = Math.min(prep.src, 0.02); doneClose('drainT'); });
   },
 };
+const REG_N = () => SOP_OPEN.find(x => x.id === 'reg').n;
 function step7() { if (prep.mfDrained && prep.regOk) doneOpen('reg'); }
 function checkCut() { if (prep.phase === 'close' && !prep.power && !prep.comp) doneClose('cut'); }
 // Nút phân loại trên màn hình: chạy / dừng
@@ -4578,7 +4592,6 @@ function incidentPoints() {
 function newBatch() {
   G.sim = SIM.create(G.levelIdx, G.mode === 'contest' ? 20260 + G.levelIdx * 101 : undefined);
   const c = G.sim.calibration;
-  G.P.delay = c.delayOpt - 14; G.P.dur = c.durOpt;         // độ trễ, độ rộng do kỹ sư cài sẵn
   G.resultShown = false; G.running = false;
   planIncidents(); ui.alarm(); ui.refresh();
 }
@@ -4594,7 +4607,7 @@ function engineStep(dt) {
   if (G.running && !pressOK() && G.sim.t > 0.5) { G.running = false; ui.msg(`Máy báo lỗi áp lực khí thấp (${fmtMPa(prep.pm)} MPa) và tự dừng.`); }
   updateIncidents(dt); maybeWater();
   if (G.running && G.sim.fx.noPower) { G.running = false; }
-  G.P.feed = G.rung * RUNG_TO_TH; G.P.sens = G.sens;
+  G.P.feed = G.rung * RUNG_TO_TH; G.P.sens = G.sens; G.P.delay = G.delay; G.P.dur = G.dur;   // kỹ sư tự chỉnh cả độ trễ, độ rộng
   if (G.running && !G.sim.finished) {
     let t = dt;
     while (t > 0) { const h = Math.min(1 / 120, t); SIM.step(G.sim, G.P, h); t -= h; }
@@ -5213,7 +5226,7 @@ ui.refresh = () => {
   $('hudKeyK').hidden = prep.phase === 'open';
   $('hudKeyK').textContent = prep.phase === 'run' ? 'K: bắt đầu kết thúc ca' : 'K: hoàn tất tắt máy, chấm điểm ca';
   renderChecklist();
-  if (overlay === 'hmi') renderHMI();
+  if (overlay === 'hmi') { renderHMI(); const hc = $('hmiCtl'); if (hc) hc.classList.toggle('off', !prepReady()); }
   if (overlay === 'reg') renderReg();
   if (overlay === 'pause') renderPause();
 };
@@ -5256,21 +5269,44 @@ ui.alarm = () => {
 // ---------- Màn hình điều khiển ANYSORT ----------
 let hmiPage = 'home', hmiDialog = null, pin = '', hmiAfterLogin = null, hmiShot = 1;
 const nowHM = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0'); };
-function openHMI() { hmiPage = 'home'; hmiDialog = null; showOverlay('hmi'); renderHMI(); }
-function needLogin(page) { if (prep.login) { hmiPage = page; } else { hmiAfterLogin = page; hmiDialog = { type: 'pin' }; pin = ''; } renderHMI(); }
+function openHMI() { hmiPage = 'home'; hmiDialog = null; showOverlay('hmi'); renderHMI(); renderHMICtl(); }
+// ---------- Dải nút chỉnh thông số dưới màn hình điều khiển ----------
+const PCTL = [
+  { k: 'rung', name: 'Bộ rung', min: 0, max: 100, sub: v => '≈ ' + fmtT(v * RUNG_TO_TH) + ' t/h', hint: 'Cấp liệu. Bình thường 20–60' },
+  { k: 'sens', name: 'Độ nhạy', min: 0, max: 255, sub: () => '0–255', hint: 'Thấp: bắt nhiều hạt lỗi, dễ loại nhầm hạt tốt' },
+  { k: 'delay', name: 'Độ trễ', min: 0, max: 100, sub: () => '0–100', hint: 'Lúc van mở: căn khung cam trùm vạch hạt' },
+  { k: 'dur', name: 'Độ rộng', min: 0, max: 100, sub: () => '0–100', hint: 'Thời gian mở van: rộng quá dễ thổi ké' },
+];
+function renderHMICtl() {
+  const el = $('hmiCtl'); if (!el) return;
+  el.classList.toggle('off', !prepReady());
+  el.innerHTML = PCTL.map(c => `<div class="pc"><div class="pn">${c.name}</div>
+    <div class="pr"><button type="button" data-k="${c.k}" data-d="-1" aria-label="Giảm ${c.name}">−</button>
+      <div class="pv" id="pv-${c.k}">${G[c.k]}<small>${c.sub(G[c.k])}</small></div>
+      <button type="button" data-k="${c.k}" data-d="1" aria-label="Tăng ${c.name}">+</button></div>
+    <div class="ph">${c.hint}</div></div>`).join('');
+  el.querySelectorAll('button[data-k]').forEach(b => {
+    const c = PCTL.find(x => x.k === b.dataset.k), d = +b.dataset.d; let t1, t2;
+    const stepV = () => { G[c.k] = Math.max(c.min, Math.min(c.max, G[c.k] + d)); const v = $('pv-' + c.k); if (v) v.innerHTML = `${G[c.k]}<small>${c.sub(G[c.k])}</small>`; renderQuickVals(); };
+    const stop = () => { clearTimeout(t1); clearInterval(t2); };
+    b.onpointerdown = e => { e.preventDefault(); stop(); stepV(); t1 = setTimeout(() => { t2 = setInterval(stepV, 55); }, 350); };
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, stop));
+  });
+}
+function needLogin(page) { hmiPage = page; renderHMI(); }   // không cần mật khẩu
 function renderHMI() {
   const sc = $('hmiScreen');
   const d = new Date(), clock = [d.getHours(), d.getMinutes(), d.getSeconds()].map(v => String(v).padStart(2, '0')).join(':');
   if (!prep.power) { sc.className = 'hmi off'; sc.innerHTML = '<div class="center dim">Màn hình tắt. Máy chưa có nguồn.</div>'; return; }
   if (!prep.booted) { sc.className = 'hmi boot'; sc.innerHTML = `<div class="center big">${prep.bootLeft > 0 ? '12.1Y' : ''}</div>` + (prep.bootLeft > 0 ? '' : '<div class="center dim" style="top:60%">Đèn đỏ sáng. Ấn nút khởi động màu xanh để khởi động máy.</div>'); return; }
   sc.className = 'hmi on';
-  const top = `<div class="topbar"><span>🔔</span><span class="clock">${clock}</span><span class="grow"></span><button data-h="login" title="Đăng nhập">👤</button><button data-h="home" title="Màn hình chính">⌂</button></div>`;
+  const top = `<div class="topbar"><span>🔔</span><span class="clock">${clock}</span><span class="grow"></span><button data-h="home" title="Màn hình chính">⌂</button></div>`;
   let body = '';
   if (hmiPage === 'home') {
     body = `<div class="brand">ANYSORT</div>
       <div class="big3"><button data-h="sort" class="rbtn ${G.running ? 'red' : ''}" title="Phân loại">⤓</button><button data-h="menu" class="rbtn" title="Danh mục">m</button><button data-h="power" class="rbtn" title="Tắt máy">⏻</button></div>
       <div class="corner-l"><button data-h="quick" title="Cài đặt nhanh">▥</button><button data-h="modes" title="Chọn chế độ">☰</button></div>
-      <div class="corner-r dim">${G.running ? 'Đang phân loại' : 'Chờ phân loại'} · Chế độ ${prep.mode}${prep.login ? ' · Kỹ sư' : ''}</div>`;
+      <div class="corner-r dim">${G.running ? 'Đang phân loại' : 'Chờ phân loại'} · Chế độ ${prep.mode}</div>`;
   } else if (hmiPage === 'modes') {
     body = `<div class="list">${MODES.map(m => `<div class="row${m.id === prep.mode ? ' cur' : ''}"><span>${m.id === prep.mode ? '★ ' : ''}${m.id}</span><small>${m.name}</small><button data-h="apply:${m.id}">Apply</button></div>`).join('')}</div>`;
   } else if (hmiPage === 'quick') {
@@ -5295,7 +5331,7 @@ function renderHMI() {
   sc.querySelectorAll('[data-h]').forEach(b => b.onclick = () => hmiAction(b.dataset.h));
   sc.querySelectorAll('[data-q]').forEach(b => {
     let t1, t2; const [k, dir] = b.dataset.q.split(':');
-    const stepQ = () => { if (k === 'rung') G.rung = Math.max(0, Math.min(100, G.rung + +dir)); if (k === 'sens') G.sens = Math.max(0, Math.min(255, G.sens + +dir)); renderQuickVals(); };
+    const stepQ = () => { if (k === 'rung') G.rung = Math.max(0, Math.min(100, G.rung + +dir)); if (k === 'sens') G.sens = Math.max(0, Math.min(255, G.sens + +dir)); renderQuickVals(); PCTL.forEach(c => { const v = $('pv-' + c.k); if (v) v.innerHTML = `${G[c.k]}<small>${c.sub(G[c.k])}</small>`; }); };
     b.onpointerdown = e => { e.preventDefault(); stepQ(); t1 = setTimeout(() => { t2 = setInterval(stepQ, 60); }, 350); };
     ['pointerup', 'pointerleave'].forEach(ev => b.addEventListener(ev, () => { clearTimeout(t1); clearInterval(t2); }));
   });
