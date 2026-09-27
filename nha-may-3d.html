@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vận hành máy tách màu SC16 Pro – nhà máy 3D</title>
 <style>
-:root{--ink:#E8EEF3;--mut:#9FB0BF;--pan:rgba(16,22,30,.86);--line:rgba(255,255,255,.12);--ok:#5FD08A;--bad:#FF7A62;--warn:#F2B04A;--acc:#8DC63F;--blue:#4C8BD8}
+:root{--muted:#9AA8A2;--line:#33413C;--signal:#F08D3A;--ink:#E8EEF3;--mut:#9FB0BF;--pan:rgba(16,22,30,.86);--line:rgba(255,255,255,.12);--ok:#5FD08A;--bad:#FF7A62;--warn:#F2B04A;--acc:#8DC63F;--blue:#4C8BD8}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:#0E1319;color:var(--ink);font:15px/1.45 Barlow,"Segoe UI",system-ui,sans-serif}
 #view{position:fixed;inset:0;width:100%;height:100%;display:block}
@@ -49,6 +49,14 @@ button{font:inherit}
 #alarm button.st-ok{background:#1F3A2A;border-color:#3E7A55}#alarm button.st-bad{opacity:.5}
 #alarm .note{opacity:.7;font-size:.8rem}
 #alarm .bar div{background:linear-gradient(90deg,#C98A1F,#F2B04A)}
+#diag{position:fixed;left:14px;top:108px;width:270px;background:var(--pan);border-radius:10px;padding:8px 8px 6px;pointer-events:none}
+#diag b{display:block;font-size:.86rem;margin:0 2px 5px}
+#diag canvas{display:block;width:100%;border-radius:6px}
+#diag #machine{aspect-ratio:420/560}
+#diag #timing{aspect-ratio:360/110;margin-top:6px;background:rgba(255,255,255,.04)}
+#diag .lg{display:flex;gap:10px;font-size:.72rem;color:var(--mut);margin:3px 2px 0}
+@media (max-height:820px){#diag{width:215px;top:100px}}
+#diag .lg i{display:inline-block;width:10px;height:8px;margin-right:4px;border-radius:2px;vertical-align:middle}
 /* Overlays */
 .ov{position:fixed;inset:0;background:rgba(8,12,18,.78);display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}
 .card{background:#F4F6F2;color:#1E2A27;border-radius:14px;max-width:760px;width:100%;max-height:calc(100vh - 40px);overflow:auto;padding:22px 26px}
@@ -129,7 +137,10 @@ button{font:inherit}
 <div id="toasts"></div>
 <div id="prog" hidden><div class="bar"><div id="progBar"></div></div><div id="progTxt"></div></div>
 <div id="alarm" hidden></div>
-<div id="hudKeys"><span><kbd>WASD</kbd>đi lại</span><span><kbd>Shift</kbd>chạy</span><span><kbd>E</kbd>/click thao tác</span><span><kbd>Tab</kbd>danh sách bước</span><span><kbd>1–5</kbd>kiểm tra lỗi</span><span id="hudKeyK" hidden></span><span><kbd>Esc</kbd>tạm dừng</span></div>
+<div id="diag" hidden><b>Sơ đồ phân loại (lần bắn 1)</b><canvas id="machine" aria-label="Sơ đồ máy tách màu: phễu cấp liệu, bộ rung, máng trượt, đèn và camera, súng hơi, thành phẩm và phế phẩm"></canvas>
+  <canvas id="timing" aria-label="Biểu đồ thời điểm hạt tới van"></canvas>
+  <div class="lg"><span><i style="background:rgba(240,141,58,.45)"></i>Van mở</span><span><i style="background:var(--ok)"></i>Thổi trúng</span><span><i style="background:var(--bad)"></i>Thổi trượt</span></div></div>
+<div id="hudKeys"><span><kbd>WASD</kbd>đi lại</span><span><kbd>Shift</kbd>chạy</span><span><kbd>E</kbd>/click thao tác</span><span><kbd>Tab</kbd>danh sách bước</span><span><kbd>M</kbd>sơ đồ máy</span><span><kbd>1–5</kbd>kiểm tra lỗi</span><span id="hudKeyK" hidden></span><span><kbd>Esc</kbd>tạm dừng</span></div>
 
 <div class="ov" id="ov-start" hidden><div class="card">
   <h1>Vận hành máy tách màu SC16 Pro</h1>
@@ -138,7 +149,7 @@ button{font:inherit}
   <label>Chế độ</label>
   <div class="modes"><label><input type="radio" name="stMode" value="practice">Luyện tập (có bảng quy trình, danh sách bước)</label><label><input type="radio" name="stMode" value="contest">Thi đấu</label></div>
   <label style="font-weight:500;display:flex;gap:8px;align-items:center"><input type="checkbox" id="stInc">Có lỗi thường gặp xảy ra khi vận hành</label>
-  <div class="keys"><kbd>W A S D</kbd><span>Đi lại, <kbd>Shift</kbd> để đi nhanh. Chuột để nhìn.</span><kbd>E</kbd><span>Thao tác thiết bị đang nhắm (hoặc click chuột trái)</span><kbd>Tab</kbd><span>Ẩn hoặc hiện danh sách bước</span><kbd>1–5</kbd><span>Chọn thiết bị cần kiểm tra khi có lỗi</span><kbd>K</kbd><span>Bắt đầu kết thúc ca, nhấn lại để chấm điểm ca</span><kbd>Esc</kbd><span>Tạm dừng, trả con trỏ chuột</span></div>
+  <div class="keys"><kbd>W A S D</kbd><span>Đi lại, <kbd>Shift</kbd> để đi nhanh. Chuột để nhìn.</span><kbd>E</kbd><span>Thao tác thiết bị đang nhắm (hoặc click chuột trái)</span><kbd>Tab</kbd><span>Ẩn hoặc hiện danh sách bước</span><kbd>M</kbd><span>Ẩn hoặc hiện sơ đồ phân loại khi máy chạy</span><kbd>1–5</kbd><span>Chọn thiết bị cần kiểm tra khi có lỗi</span><kbd>K</kbd><span>Bắt đầu kết thúc ca, nhấn lại để chấm điểm ca</span><kbd>Esc</kbd><span>Tạm dừng, trả con trỏ chuột</span></div>
   <p class="hint">Máy tách màu nằm trên sàn thao tác, lên bằng cầu thang. Máy nén khí, bình chứa, máy sấy và bộ lọc ở dưới đất bên trái; hệ thống hút bụi và tủ ổn áp bên phải.</p>
   <div class="row"><button id="stGo" class="pri">Bắt đầu ca làm việc</button></div>
 </div></div>
@@ -5244,12 +5255,381 @@ function renderPause() {
   $('pauseEnd').hidden = prep.phase !== 'run';
 }
 
+// ================== SƠ ĐỒ PHÂN LOẠI 2D (lấy từ bản 2D): cấp liệu → máng → camera → súng hơi → xả liệu ==================
+const DIAG = (() => {
+  let sim = null, running = false, P = G.P, levelIdx = 0;
+// ---- Machine drawing
+const WM = new Image(); WM.src = 'data:image/png;base64,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';
+const cv = $('machine'), ctx = cv.getContext('2d');
+const W = 420, H = 560;
+function fitCanvas(c, w, h) {
+  const r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  c.width = Math.round(r.width * dpr); c.height = Math.round(r.height * dpr);
+  return { sx: c.width / w, sy: c.height / h };
+}
+let msc = { sx: 1, sy: 1 };
+const GC = { good: '#E9E1C8', chalky: '#FFFFFF', vang_mo: '#E6CD7E', cham_kim: '#E9E1C8', vang_hu: '#A8742A' };
+// Hình học: máng trượt nghiêng ~58° so với phương ngang
+const CHUTE = { x0: 316, y0: 122, x1: 230, y1: 262 };
+const fallAt = u => ({ x: 230 - 46 * u, y: 262 + 88 * u + 60 * u * u });   // quỹ đạo rơi sau máng
+const TARGET = fallAt(0.27);          // điểm hạt đi qua vùng quét
+const S_ANG = Math.atan2(88 + 120 * 0.27, -46);   // hướng rơi tại điểm quét
+const GUN = { x: 222, y: 410 };
+const HOP_DX = 20;                   // độ dời phễu sang phải       // đầu súng hơi
+const BIN_SKEW = (CHUTE.x1 - CHUTE.x0) / (CHUTE.y1 - CHUTE.y0);   // thùng nghiêng cùng hướng máng
+const FRAME = '#4C74B8', FRAME_D = '#46689F', SHELL = '#F4F6F9', SHELL_D = '#95A1B2';
+const LABEL = 'rgba(232,238,246,.86)';
+
+function grainPos(g, t) {
+  const tTrayEnd = g.tSpawn + 0.45, tChEnd = g.tCam - 0.12;
+  const dj = (g.depth - 0.5) * 8;
+  if (t < tTrayEnd) {
+    const u = Math.max(0, (t - g.tSpawn) / 0.45);
+    const vib = running && !sim.fx.noFeed ? Math.sin(t * 90 + g.wob) * SIM.LOAD(P.feed) * 0.18 : 0;
+    const x = 356 + HOP_DX - (40 + HOP_DX) * u + dj * 0.3;
+    return { x, y: 101 + (396 - x) * 11 / 82 - 2 - g.depth * 2 + vib, a: Math.PI + 0.13 + Math.sin(g.wob + t * 40) * 0.4 };
+  }
+  const chA = Math.atan2(CHUTE.y1 - CHUTE.y0, CHUTE.x1 - CHUTE.x0);
+  if (t < tChEnd) {
+    let u = (t - tTrayEnd) / (tChEnd - tTrayEnd); u = u * u;
+    return { x: CHUTE.x0 + (CHUTE.x1 - CHUTE.x0) * u + dj * 0.2, y: CHUTE.y0 + (CHUTE.y1 - CHUTE.y0) * u - 2, a: chA };
+  }
+  if (g.stage < 2 || t < g.tArr) {
+    const u = (t - tChEnd) / (g.tArr - tChEnd), f = fallAt(u);
+    return { x: f.x + dj, y: f.y, a: Math.atan2(88 + 120 * u, -46) };
+  }
+  const u = Math.min(1, (t - g.tArr) / 0.55);
+  if (g.rejected) return { x: 184 + dj - 114 * Math.pow(u, 0.6), y: 410 + 105 * u, a: 1.8 + u * 2.2 };
+  return { x: 184 + dj - 22 * u, y: 410 + 105 * u, a: 1.78 };
+}
+
+function label(txt, x, y, align) {
+  ctx.textAlign = align || 'left'; ctx.fillStyle = LABEL; ctx.fillText(txt, x, y); ctx.textAlign = 'left';
+}
+function rrect(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
+
+function drawCamera(x, y, ang, lit, dirt) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
+  ctx.fillStyle = '#4B5566'; rrect(-15, -9, 24, 18, 3); ctx.fill(); ctx.strokeStyle = '#8795A8'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = '#2E3542'; ctx.fillRect(9, -6, 7, 12);
+  ctx.fillStyle = lit ? '#F08D3A' : '#7FD8E8'; ctx.beginPath(); ctx.arc(16, 0, 3, 0, 7); ctx.fill();
+  if (dirt) {   // kính bám bụi: lớp mờ nâu phủ lên ống kính
+    ctx.fillStyle = `rgba(132,104,64,${0.35 + dirt * 0.6})`; ctx.beginPath(); ctx.arc(16, 0, 4.6, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(70,52,30,.8)'; [[15, -2], [17.5, 1.5], [14.5, 2]].forEach(([a, b]) => ctx.fillRect(a, b, 1.2, 1.2));
+  }
+  ctx.restore();
+}
+// Đèn có chóa phản quang, chiếu một vùng sáng hình quạt về phía dòng hạt
+function drawLight(x, y) {
+  const ang = Math.atan2(TARGET.y - y, TARGET.x - x);
+  const len = Math.hypot(TARGET.x - x, TARGET.y - y) + 34, half = 0.3;
+  const gr = ctx.createRadialGradient(x, y, 4, x, y, len);
+  gr.addColorStop(0, 'rgba(255,236,170,.62)'); gr.addColorStop(0.65, 'rgba(255,214,120,.22)'); gr.addColorStop(1, 'rgba(255,214,120,0)');
+  ctx.save(); ctx.globalCompositeOperation = 'screen';
+  ctx.fillStyle = gr;
+  ctx.beginPath(); ctx.moveTo(x + Math.cos(ang + 1.2) * 7, y + Math.sin(ang + 1.2) * 7);
+  ctx.lineTo(x + Math.cos(ang + half) * len, y + Math.sin(ang + half) * len);
+  ctx.arc(x, y, len, ang + half, ang - half, true);
+  ctx.lineTo(x + Math.cos(ang - 1.2) * 7, y + Math.sin(ang - 1.2) * 7);
+  ctx.closePath(); ctx.fill(); ctx.restore();
+}
+function drawLamp(x, y) {
+  const ang = Math.atan2(TARGET.y - y, TARGET.x - x);
+  ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
+  ctx.fillStyle = '#4B5566'; ctx.fillRect(-15, -4, 7, 8);           // đế đèn
+  ctx.fillStyle = '#C9D2DD';                                          // chóa phản quang
+  ctx.beginPath(); ctx.moveTo(4, -10); ctx.quadraticCurveTo(-14, 0, 4, 10); ctx.lineTo(1, 10); ctx.quadraticCurveTo(-10, 0, 1, -10); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#7F8B9C'; ctx.lineWidth = 0.8; ctx.stroke();
+  ctx.fillStyle = 'rgba(214,244,250,.55)'; ctx.beginPath(); ctx.moveTo(1, -10); ctx.quadraticCurveTo(-10, 0, 1, 10); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#FFF4D6'; ctx.beginPath(); ctx.arc(-2, 0, 3, 0, 7); ctx.fill(); ctx.strokeStyle = '#C9A24A'; ctx.lineWidth = 0.6; ctx.stroke();   // bóng đèn
+  ctx.restore();
+}
+function drawBin(x, w, name, n, badN, tint, fillColor, lv, scale) {
+  const top = 478, bot = 552, inset = w * 0.3, sh = BIN_SKEW * (bot - top);
+  const xl = x + inset + sh, xr = x + w - inset + sh, vert = 20;   // đáy; đoạn thành phải dựng đứng
+  const poly = () => { ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x + w, top); ctx.lineTo(xr, bot - vert); ctx.lineTo(xr, bot); ctx.lineTo(xl, bot); ctx.closePath(); };
+  poly(); ctx.fillStyle = tint; ctx.fill();
+  const h = Math.min(70, n / lv.batch * 70 * scale);
+  if (h > 0) {
+    ctx.save(); poly(); ctx.clip();
+    ctx.fillStyle = fillColor; ctx.fillRect(xl - 10, bot - h, x + w - xl + 20, h);
+    ctx.fillStyle = '#6B4A1E';
+    for (let i = 0; i < badN; i++) { const yy = bot - h + 2 + (i * 29 % Math.max(2, h - 4)); const k = (yy - top) / (bot - top); ctx.fillRect(x + (xl - x) * k + 2 + (i * 41 % Math.max(4, (xr - xl) + (w - (xr - xl)) * (1 - k) - 6)), yy, 2.5, 1.5); }
+    ctx.restore();
+  }
+  poly(); ctx.strokeStyle = SHELL_D; ctx.lineWidth = 2; ctx.stroke();
+  ctx.fillStyle = SHELL_D; ctx.fillRect(xl, bot, xr - xl, 4);
+  label(name + '  ' + n, x + 2, top - 7);
+}
+
+const powered = () => prep.power && prep.booted && !(sim && sim.fx.noPower);
+function drawMachine(t) {
+  ctx.setTransform(msc.sx, 0, 0, msc.sy, 0, 0);
+  const lv = SIM.LEVELS[levelIdx];
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#3E4A5A'); bg.addColorStop(1, '#2A3441');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  ctx.font = '500 11px Barlow, system-ui, sans-serif';
+
+  // khung thép xanh (kiểu Anysort)
+  ctx.fillStyle = FRAME_D; ctx.fillRect(404, 170, 9, 386);
+  ctx.fillStyle = FRAME_D; ctx.fillRect(300, 548, 116, 8);
+
+  // ===== Phễu cấp liệu (hộp có đáy côn), đặt lệch phải sát vách sau máng rung =====
+  ctx.save(); ctx.translate(HOP_DX, 0);
+  const fill = sim ? 1 - sim.spawned / lv.batch : 1;
+  const hopper = () => { ctx.beginPath(); ctx.moveTo(318, 14); ctx.lineTo(394, 14); ctx.lineTo(394, 58); ctx.lineTo(368, 84); ctx.lineTo(344, 84); ctx.lineTo(318, 58); ctx.closePath(); };
+  hopper(); ctx.fillStyle = '#D3D9E1'; ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.moveTo(322, 18); ctx.lineTo(390, 18); ctx.lineTo(390, 56); ctx.lineTo(366, 80); ctx.lineTo(346, 80); ctx.lineTo(322, 56); ctx.closePath(); ctx.clip();
+  ctx.fillStyle = '#C9D1DC'; ctx.fillRect(318, 14, 76, 70);
+  if (fill > 0) {
+    const top = 80 - 62 * fill;
+    ctx.fillStyle = '#B9C1CB'; ctx.fillRect(318, top, 76, 70);   // gạo trong phễu: màu xám
+    ctx.fillStyle = 'rgba(70,80,95,.28)';
+    for (let i = 0; i < 50; i++) ctx.fillRect(324 + (i * 37 % 64), top + 3 + (i * 53 % 60), 3, 1.5);
+  }
+  ctx.restore();
+  hopper(); ctx.strokeStyle = '#9AA5B4'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.fillStyle = '#B7C0CC'; ctx.fillRect(348, 84, 16, 8);                 // cổ xả
+  label('Phễu cấp liệu', 308, 40, 'right');
+  ctx.restore();
+
+  // ===== Bộ rung: máng inox có thành bên và vách sau cao, đặt trên thân rung điện từ vỏ trắng =====
+  const vib = running && !(sim && sim.fx.noFeed) ? Math.sin(t * 90) * SIM.LOAD(P.feed) * 0.18 : 0;
+  // tấm đế
+  ctx.fillStyle = '#C9CFD6'; ctx.fillRect(330, 150, 76, 3);
+  ctx.fillStyle = '#8D96A3'; ctx.fillRect(330, 153, 76, 1.5);
+  // cáp điện
+  ctx.strokeStyle = '#9AA3AF'; ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.moveTo(398, 142); ctx.quadraticCurveTo(408, 150, 404, 160); ctx.stroke();
+  // thân rung điện từ: khối vỏ trắng nghiêng, bo tròn
+  ctx.save(); ctx.translate(0, vib * 0.4);
+  ctx.fillStyle = '#EEF1F4';
+  ctx.beginPath();
+  ctx.moveTo(342, 150); ctx.lineTo(386, 150);
+  ctx.quadraticCurveTo(392, 150, 394, 145); ctx.lineTo(401, 128);
+  ctx.quadraticCurveTo(403, 122, 397, 120); ctx.lineTo(372, 112);
+  ctx.lineTo(356, 112); ctx.lineTo(344, 128);
+  ctx.quadraticCurveTo(340, 133, 340, 138); ctx.lineTo(340, 148); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#B7C0CB'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = 'rgba(0,0,0,.10)';                      // mặt bên tối hơn
+  ctx.beginPath(); ctx.moveTo(386, 150); ctx.quadraticCurveTo(392, 150, 394, 145); ctx.lineTo(401, 128); ctx.quadraticCurveTo(403, 122, 397, 120); ctx.lineTo(388, 124); ctx.lineTo(384, 150); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#2A2F38'; ctx.lineWidth = 1.6;        // gioăng nắp
+  ctx.beginPath(); ctx.moveTo(387, 147); ctx.lineTo(396, 126); ctx.stroke();
+  ctx.fillStyle = '#E3B53C'; ctx.fillRect(389, 133, 5, 5);  // nhãn cảnh báo
+  ctx.fillStyle = '#9AA3AF';                                  // bu lông
+  [[392, 141], [398, 129]].forEach(([x, y]) => { ctx.beginPath(); ctx.arc(x, y, 1.6, 0, 7); ctx.fill(); });
+  ctx.fillStyle = '#5C6572'; ctx.fillRect(360, 132, 14, 4);   // khe lò xo lá
+  ctx.restore();
+  // giá bắt máng
+  ctx.fillStyle = '#AEB6C0'; ctx.fillRect(358, 106 + vib, 16, 7);
+  // máng rung inox
+  const steel = ctx.createLinearGradient(0, 86, 0, 116);
+  steel.addColorStop(0, '#DDE2E7'); steel.addColorStop(0.5, '#B3BCC6'); steel.addColorStop(1, '#8E98A4');
+  ctx.save(); ctx.translate(0, vib);
+  ctx.globalAlpha = 0.75; ctx.fillStyle = steel;              // thành bên (hình thang, cao ở sau thấp ở trước)
+  ctx.beginPath(); ctx.moveTo(396, 101); ctx.lineTo(396, 90); ctx.lineTo(318, 105); ctx.lineTo(314, 112); ctx.closePath(); ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = '#E6EAEE'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(396, 90); ctx.lineTo(318, 105); ctx.stroke();
+  ctx.fillStyle = '#C4CCD5';                                   // đáy máng
+  ctx.beginPath(); ctx.moveTo(396, 101); ctx.lineTo(314, 112); ctx.lineTo(314, 115); ctx.lineTo(396, 104); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#2A2F38';                                   // viền cao su mép xả
+  ctx.fillRect(312, 111, 3, 5);
+  ctx.fillStyle = steel; ctx.fillRect(394, 78, 4, 27);        // vách sau cao
+  ctx.fillStyle = '#8E98A4'; ctx.fillRect(398, 82, 5, 3);     // tai bắt vít
+  ctx.restore();
+  label('Bộ rung', 302, 108, 'right');
+
+  // máng trượt
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = '#B4BECB'; ctx.lineWidth = 7;
+  ctx.beginPath(); ctx.moveTo(CHUTE.x0 + 2, CHUTE.y0); ctx.lineTo(CHUTE.x1 + 2, CHUTE.y1 + 2); ctx.stroke();
+  ctx.strokeStyle = '#8B97A8'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(CHUTE.x0 + 6, CHUTE.y0 + 3); ctx.lineTo(CHUTE.x1 + 6, CHUTE.y1 + 5); ctx.stroke();
+  label('Máng trượt', 258, 186, 'right');
+
+  // vùng quét: đèn chiếu sáng + 2 camera
+  const flash = sim && sim.grains.some(g => g.stage === 1 && g.flagged && sim.t - g.tCam < 0.05);
+  // Cụm quét đối xứng qua đường tâm máng (phần kéo dài của máng trượt):
+  // 2 camera cùng một trục vuông góc với máng; LED chiếu sáng và LED nền đặt xa đường tâm hơn
+  const sAng = Math.atan2(CHUTE.y1 - CHUTE.y0, CHUTE.x1 - CHUTE.x0), nAng = sAng - Math.PI / 2;
+  const nx = Math.cos(nAng), ny = Math.sin(nAng), sx = Math.cos(sAng), sy = Math.sin(sAng);
+  const at = (n, s) => ({ x: TARGET.x + nx * n + sx * s, y: TARGET.y + ny * n + sy * s });
+  const D_CAM = 90, D_LAMP = 80, S_LAMP = 50, D_BG = 44, S_BG = 16, BG_HALF = 13;
+  // 2 camera thẳng hàng, nhìn thẳng vào nhau qua dòng hạt; LED nền nằm hai bên trục nhìn
+  const cam1 = at(-D_CAM, 0), cam2 = at(D_CAM, 0);               // camera trước / camera sau
+  const lamps = [at(-D_LAMP, -S_LAMP), at(-D_LAMP, S_LAMP), at(D_LAMP, -S_LAMP), at(D_LAMP, S_LAMP)].map(q => [q.x, q.y]);
+  const bgFront = at(D_BG, S_BG);     // LED nền phía sau dòng hạt → nền cho camera trước
+  const bgRear = at(-D_BG, -S_BG);    // LED nền phía trước dòng hạt → nền cho camera sau
+  if (powered() && !(sim && sim.fx.lightOff)) lamps.forEach(([x, y]) => drawLight(x, y));
+  // trục nhìn chung của 2 camera (mũi tên hai đầu)
+  {
+    const x0 = cam1.x + nx * 17, y0 = cam1.y + ny * 17, x1 = cam2.x - nx * 17, y1 = cam2.y - ny * 17;
+    ctx.strokeStyle = 'rgba(140,222,242,.8)'; ctx.fillStyle = 'rgba(140,222,242,.95)'; ctx.lineWidth = 1;
+    ctx.save(); ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); ctx.restore();
+    const head = (x, y, a) => { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - Math.cos(a - 0.4) * 7, y - Math.sin(a - 0.4) * 7); ctx.lineTo(x - Math.cos(a + 0.4) * 7, y - Math.sin(a + 0.4) * 7); ctx.closePath(); ctx.fill(); };
+    head(x1, y1, nAng); head(x0, y0, nAng + Math.PI);
+  }
+  lamps.forEach(([x, y]) => drawLamp(x, y));
+  // LED nền: mặt phát sáng (trắng) quay vào dòng hạt
+  const drawBg = (b, face) => {           // face = +1: mặt sáng hướng theo +n, -1: theo -n
+    ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(sAng);
+    ctx.fillStyle = '#4B5566'; rrect(-BG_HALF - 2, -5, BG_HALF * 2 + 4, 10, 2); ctx.fill();
+    ctx.fillStyle = '#F2F7FB';   // mặt trắng = đang sáng; không vẽ quầng sáng tỏa ra
+    ctx.fillRect(-BG_HALF, face > 0 ? -5 : 2, BG_HALF * 2, 3);   // trong hệ quay: +n tương ứng với -y
+    ctx.restore();
+  };
+  drawBg(bgFront, -1);   // nằm phía +n, quay mặt sáng về -n (vào dòng hạt)
+  drawBg(bgRear, 1);     // nằm phía -n, quay mặt sáng về +n
+  const fx = sim ? sim.fx : { camDirt: 0, dust: 0, stuck: null };
+  drawCamera(cam1.x, cam1.y, nAng, flash, fx.camDirt);
+  drawCamera(cam2.x, cam2.y, nAng + Math.PI, flash, fx.camDirt);
+  if (fx.dust) {   // bụi mù trong buồng quét
+    const gd = ctx.createRadialGradient(TARGET.x, TARGET.y, 6, TARGET.x, TARGET.y, 78);
+    gd.addColorStop(0, `rgba(196,186,164,${0.2 + fx.dust * 0.35})`); gd.addColorStop(1, 'rgba(196,186,164,0)');
+    ctx.fillStyle = gd; ctx.beginPath(); ctx.arc(TARGET.x, TARGET.y, 78, 0, 7); ctx.fill();
+    ctx.fillStyle = `rgba(222,214,196,${0.4 + fx.dust * 0.4})`;
+    for (let i = 0; i < 26; i++) { const a = i * 2.39 + t * (0.4 + (i % 5) * 0.15), rr = 12 + (i * 23 % 60); ctx.fillRect(TARGET.x + Math.cos(a) * rr, TARGET.y + Math.sin(a * 1.3) * rr * 0.8, 1.6, 1.6); }
+  }
+  ctx.strokeStyle = 'rgba(232,238,246,.5)'; ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.moveTo(bgFront.x + 6, bgFront.y + 8); ctx.lineTo(284, 386); ctx.stroke();
+  label('LED nền', 287, 390);
+  label('LED chiếu sáng', lamps[0][0] - 16, lamps[0][1] - 8, 'right');
+  label('Camera', cam1.x - 20, cam1.y + 4, 'right');
+
+  // bộ xử lý tín hiệu + đường tín hiệu đỏ đứt nét
+  let active = null;
+  if (sim) for (const w of sim.windows) if (sim.t >= w.a && sim.t <= w.b) { if (!active || w.spread > active.spread) active = w; }
+  ctx.save(); ctx.setLineDash([4, 4]); ctx.lineWidth = 1.4;
+  ctx.strokeStyle = flash ? '#FF6A4D' : 'rgba(224,90,70,.55)';
+  ctx.beginPath(); ctx.moveTo(cam1.x - 14, cam1.y - 6); ctx.lineTo(112, cam1.y - 6); ctx.lineTo(112, 168); ctx.lineTo(300, 168); ctx.lineTo(300, 236); ctx.lineTo(372, 236); ctx.lineTo(372, 322); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cam2.x + 14, cam2.y + 6); ctx.lineTo(314, cam2.y + 6); ctx.lineTo(314, 340); ctx.lineTo(322, 340); ctx.stroke();
+  ctx.strokeStyle = active ? '#FF6A4D' : 'rgba(224,90,70,.55)';
+  ctx.beginPath(); ctx.moveTo(360, 358); ctx.lineTo(360, 392); ctx.lineTo(GUN.x + 26, 392); ctx.lineTo(GUN.x + 26, 403); ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle = '#3C4556'; rrect(322, 322, 80, 36, 4); ctx.fill(); ctx.strokeStyle = '#7C8A9E'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = '#12161E'; ctx.fillRect(328, 328, 44, 14);
+  ctx.fillStyle = powered() ? '#FF4A3A' : '#12161E'; ctx.font = '600 12px "Barlow Condensed", "Arial Narrow", monospace'; ctx.textAlign = 'right';
+  ctx.fillText(String(sim ? sim.stats.rejectBad + sim.stats.rejectGood : 0).padStart(4, '0'), 370, 340);
+  ctx.textAlign = 'left'; ctx.font = '500 11px Barlow, system-ui, sans-serif';
+  for (let i = 0; i < 4; i++) { ctx.fillStyle = i === 0 && powered() ? (running ? '#43E36B' : '#2F9E55') : '#1F2530'; ctx.beginPath(); ctx.arc(330 + i * 10, 350, 2.4, 0, 7); ctx.fill(); }
+  ctx.fillStyle = '#1F2530'; ctx.fillRect(378, 328, 18, 22);
+  label('Bộ xử lý', 362, 314, 'center');
+
+  // súng hơi + ống khí nén
+  ctx.strokeStyle = '#5E6A7D'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(GUN.x + 26, 416); ctx.lineTo(GUN.x + 26, 446); ctx.lineTo(GUN.x + 70, 446); ctx.stroke();
+  label(prep.pm > 0.02 ? 'Khí nén ' + fmtMPa(prep.pm) + ' MPa' : 'Khí nén: không có', GUN.x + 76, 450);
+  if (active) {
+    const len = 22 + SIM.blowForce(P, sim) * 6, spread = active.spread ? 18 : 8;
+    const gr = ctx.createLinearGradient(GUN.x, 0, GUN.x - len, 0);
+    gr.addColorStop(0, 'rgba(240,141,58,.9)'); gr.addColorStop(1, 'rgba(240,141,58,0)');
+    ctx.fillStyle = gr;
+    ctx.beginPath(); ctx.moveTo(GUN.x, GUN.y - 2.5); ctx.lineTo(GUN.x - len, GUN.y - spread); ctx.lineTo(GUN.x - len, GUN.y + spread); ctx.lineTo(GUN.x, GUN.y + 2.5); ctx.closePath(); ctx.fill();
+  }
+  ctx.fillStyle = '#4B5566'; rrect(GUN.x + 12, 403, 30, 14, 3); ctx.fill(); ctx.strokeStyle = '#8795A8'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = '#6C7789'; ctx.fillRect(GUN.x, 406, 13, 8);
+  const blink = Math.floor(performance.now() / 350) % 2 === 0;
+  if (fx.open && running) {   // đầu phun thổi liên tục
+    const k = 0.8 + 0.2 * Math.sin(performance.now() / 40);
+    const g2 = ctx.createLinearGradient(GUN.x, 0, GUN.x - 44, 0);
+    g2.addColorStop(0, `rgba(255,120,90,${0.85 * k})`); g2.addColorStop(1, 'rgba(255,120,90,0)');
+    ctx.fillStyle = g2; ctx.beginPath(); ctx.moveTo(GUN.x, GUN.y - 2); ctx.lineTo(GUN.x - 44, GUN.y - 6); ctx.lineTo(GUN.x - 44, GUN.y + 6); ctx.lineTo(GUN.x, GUN.y + 2); ctx.closePath(); ctx.fill();
+  }
+  const gunFault = fx.stuck || fx.open || fx.weak;
+  ctx.fillStyle = gunFault ? (blink ? '#FF4A3A' : '#5A1E18') : active ? '#F08D3A' : '#2A313D'; ctx.beginPath(); ctx.arc(GUN.x + 34, 410, 2.8, 0, 7); ctx.fill();
+  label('Súng hơi', GUN.x + 48, 426);
+  if (leakDrop > 0 && prep.comp) {   // hơi xì ra ở đầu phun
+    for (let i = 0; i < 3; i++) { const k = ((performance.now() / 500) + i / 3) % 1; ctx.strokeStyle = `rgba(230,240,250,${0.7 * (1 - k)})`; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(GUN.x + 6, 402 - k * 14, 2 + k * 7, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); }
+  }
+  if (sim && sim.fx.lightOff && powered()) { ctx.fillStyle = 'rgba(8,10,14,.45)'; ctx.beginPath(); ctx.arc(TARGET.x, TARGET.y, 95, 0, 7); ctx.fill(); }
+
+  // thùng hứng
+  const st = sim ? sim.stats : null;
+  drawBin(139, 90, 'Thành phẩm', st ? st.acceptGood + st.acceptBad : 0, st ? Math.round(st.acceptBad / 4) : 0, 'rgba(120,200,140,.16)', '#DCD3B6', lv, 1);
+  drawBin(45, 90, 'Phế phẩm', st ? st.rejectGood + st.rejectBad : 0, 0, 'rgba(230,130,120,.16)', '#A6824E', lv, 40);
+
+  // hạt gạo
+  if (sim) for (const g of sim.grains) {
+    if (sim.t < g.tSpawn) continue;
+    const p = grainPos(g, sim.t);
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a);
+    ctx.fillStyle = GC[g.type];
+    ctx.beginPath(); ctx.ellipse(0, 0, 3.6, 1.7, 0, 0, 7); ctx.fill();
+    ctx.strokeStyle = 'rgba(90,76,50,.55)'; ctx.lineWidth = 0.6; ctx.stroke();
+    if (g.type === 'chalky') { ctx.fillStyle = '#B9B3A2'; ctx.beginPath(); ctx.ellipse(0, 0, 1.4, 0.8, 0, 0, 7); ctx.fill(); }
+    if (g.type === 'cham_kim') { ctx.fillStyle = '#1E1A18'; ctx.beginPath(); ctx.arc(2.2, 0, 1.1, 0, 7); ctx.fill(); }
+    if (g.stage === 1 && g.flagged) { ctx.strokeStyle = '#F08D3A'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.ellipse(0, 0, 5.8, 3.6, 0, 0, 7); ctx.stroke(); }
+    ctx.restore();
+  }
+
+  // chú thích loại hạt
+  ctx.font = '500 10px Barlow, system-ui, sans-serif';
+  const key = [['good', 'Hạt tốt'], ['vang_hu', 'Vàng, đen hư'], ['chalky', 'Bạc bụng'], ['vang_mo', 'Vàng mơ'], ['cham_kim', 'Chấm kim']];
+  key.forEach(([k, n], i) => {
+    const y = 30 + i * 16;
+    ctx.fillStyle = GC[k]; ctx.beginPath(); ctx.ellipse(22, y - 3, 4, 2, 0, 0, 7); ctx.fill();
+    ctx.strokeStyle = 'rgba(90,76,50,.55)'; ctx.lineWidth = 0.6; ctx.stroke();
+    if (k === 'chalky') { ctx.fillStyle = '#B9B3A2'; ctx.beginPath(); ctx.ellipse(22, y - 3, 1.5, 0.9, 0, 0, 7); ctx.fill(); }
+    if (k === 'cham_kim') { ctx.fillStyle = '#1E1A18'; ctx.beginPath(); ctx.arc(24.4, y - 3, 1.2, 0, 7); ctx.fill(); }
+    label(n, 32, y);
+  });
+  ctx.strokeStyle = '#F08D3A'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.ellipse(22, 107, 5.5, 3.4, 0, 0, 7); ctx.stroke();
+  label('Bị đánh dấu lỗi', 32, 110);
+}
+
+// ---- Timing chart
+const tc = $('timing'), tctx = tc.getContext('2d');
+let tsc = { sx: 1, sy: 1 };
+const TW = 360, TH = 110, XMAX = 6;
+function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function drawTiming() {
+  tctx.setTransform(tsc.sx, 0, 0, tsc.sy, 0, 0);
+  tctx.clearRect(0, 0, TW, TH);
+  const x = ms => 8 + ms / XMAX * (TW - 16);
+  const top = 6, bot = 84;
+  const cfg = SIM.effective(P, sim);
+  tctx.fillStyle = css('--signal'); tctx.globalAlpha = 0.3;
+  tctx.fillRect(x(cfg.delay), top, x(cfg.delay + cfg.dur) - x(cfg.delay), bot - top);
+  tctx.globalAlpha = 1;
+  tctx.strokeStyle = css('--line'); tctx.lineWidth = 1;
+  tctx.beginPath(); tctx.moveTo(8, bot + .5); tctx.lineTo(TW - 8, bot + .5); tctx.stroke();
+  tctx.fillStyle = css('--muted'); tctx.font = '500 11px "Barlow Condensed", "Arial Narrow", sans-serif'; tctx.textAlign = 'center';
+  for (let i = 0; i <= XMAX; i++) {
+    tctx.fillRect(x(i), bot, 1, 4);
+    tctx.fillText(i + ' ms', Math.min(TW - 20, Math.max(14, x(i))), bot + 16);
+  }
+  if (!sim) return;
+  const rec = sim.recent, n = rec.length;
+  rec.forEach((r, i) => {
+    const y = top + 4 + (i / 40) * (bot - top - 8);
+    tctx.globalAlpha = 0.35 + 0.65 * (i + 1) / n;
+    tctx.fillStyle = r.hit ? css('--ok') : css('--bad');
+    tctx.fillRect(x(r.rel - SIM.L * 10), y, x(r.rel + SIM.L * 10) - x(r.rel - SIM.L * 10), 2);
+  });
+  tctx.globalAlpha = 1;
+}
+
+function resize() { msc = fitCanvas(cv, W, H); tsc = fitCanvas(tc, TW, TH); }
+new ResizeObserver(resize).observe(cv); new ResizeObserver(resize).observe(tc);
+
+  return {
+    draw(t) {
+      sim = G.sim; running = G.running; P = G.P; levelIdx = G.levelIdx;
+      if (!sim || !cv.width) return;
+      drawMachine(sim.t || t); drawTiming();
+    },
+    resize,
+  };
+})();
+
 // ================== MAIN: điều khiển, tương tác, vòng lặp ==================
 const canvas = $('view');
 const player = { x: -9, z: 0, level: 'ground', y: 0, yaw: -Math.PI / 2, pitch: -0.05 };
 const EYE = 1.65, R = 0.25;
 const keys = {};
-let aimId = null, kConfirm = 0, showList = true;
+let aimId = null, kConfirm = 0, showList = true, showDiag = true;
 
 // ---------- Đi lại: mặt đất, cầu thang, sàn thao tác ----------
 const hitAny = (list, x, z, r = R) => list.some(o => x > o.x0 - r && x < o.x1 + r && z > o.z0 - r && z < o.z1 + r);
@@ -5405,6 +5785,7 @@ document.addEventListener('mousemove', e => {
 document.addEventListener('keydown', e => {
   keys[e.code] = true;
   if (e.code === 'Tab') { e.preventDefault(); showList = !showList; $('checklist').hidden = !showList; }
+  if (e.code === 'KeyM' && !overlay) { showDiag = !showDiag; }
   if (overlay === 'hmi' || overlay === 'reg') { if (e.code === 'Escape') closeOverlay(); return; }
   if (overlay) return;
   if (e.code === 'KeyE') interact();
@@ -5443,6 +5824,10 @@ function tick(dt, now) {
   camera.position.set(player.x, player.y + EYE, player.z);
   camera.rotation.set(player.pitch, player.yaw, 0, 'YXZ');
   if (G.sim) { aim(); visuals(dt, now / 1000); }
+  // sơ đồ phân loại: hiện khi máy đã khởi động, ẩn/hiện bằng phím M
+  const dv = $('diag'), want = showDiag && !!G.sim && prep.booted && overlay !== 'start';
+  if (dv.hidden === want) { dv.hidden = !want; if (want) DIAG.resize(); }
+  if (want) DIAG.draw(now / 1000);
 }
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
