@@ -4279,7 +4279,7 @@ const MODES = [
 ];
 const RIGHT_MODE = 'VANG-BAC-BUNG';
 const SOP_OPEN = [
-  { id: 'dryer', n: 1, sec: 'A', t: 'Bật máy sấy khí (trước máy nén 3–5 phút)' },
+  { id: 'dryer', n: 1, sec: 'A', t: 'Bật máy sấy khí' },
   { id: 'comp', n: 2, sec: 'A', t: 'Bật máy nén khí' },
   { id: 'drainF', n: 3, sec: 'A', t: 'Kiểm tra và xả nước trong các bộ lọc' },
   { id: 'srcP', n: 4, sec: 'A', t: 'Kiểm tra áp suất nguồn khí nén ≥ 0,65 MPa' },
@@ -4289,18 +4289,17 @@ const SOP_OPEN = [
   { id: 'volt', n: 8, sec: 'A', t: 'Kiểm tra nguồn điện ổn áp 220V ± 5%' },
   { id: 'stab', n: 9, sec: 'A', t: 'Mở ổn áp' },
   { id: 'glass', n: 10, sec: 'A', t: 'Kiểm tra và vệ sinh kính camera' },
-  { id: 'power', n: 11, sec: 'B', t: 'Bật nguồn điện cho máy (đèn đỏ sáng)' },
-  { id: 'start', n: 12, sec: 'B', t: 'Ấn nút khởi động màu xanh' },
-  { id: 'mode', n: 13, sec: 'B', t: 'Kiểm tra máy đang ở đúng chế độ phân loại' },
-  { id: 'run', n: 14, sec: 'B', t: 'Chạy máy' },
+  { id: 'start', n: 11, sec: 'B', t: 'Ấn nút khởi động màu xanh' },
+  { id: 'mode', n: 12, sec: 'B', t: 'Kiểm tra máy đang ở đúng chế độ phân loại' },
+  { id: 'run', n: 13, sec: 'B', t: 'Chạy máy' },
 ];
 const SOP_CLOSE = [
-  { id: 'stop', n: 19, t: 'Nhấn nút Dừng' },
-  { id: 'off', n: 20, t: 'Nhấn nút nguồn trên màn hình' },
-  { id: 'clean', n: 21, t: 'Vệ sinh máy' },
-  { id: 'cut', n: 22, t: 'Tắt nguồn điện và máy nén khí' },
-  { id: 'drainT', n: 23, t: 'Cắt điện máy nén rồi mới xả van máy nén và bình chứa' },
-  { id: 'drainF2', n: 24, t: 'Xả nước các bộ lọc' },
+  { id: 'stop', n: 18, t: 'Nhấn nút Dừng' },
+  { id: 'off', n: 19, t: 'Nhấn nút nguồn trên màn hình' },
+  { id: 'clean', n: 20, t: 'Vệ sinh máy' },
+  { id: 'cut', n: 21, t: 'Tắt nguồn điện và máy nén khí' },
+  { id: 'drainT', n: 22, t: 'Cắt điện máy nén rồi mới xả van máy nén và bình chứa' },
+  { id: 'drainF2', n: 23, t: 'Xả nước các bộ lọc' },
 ];
 const prep = {};
 function resetSession() {
@@ -4359,7 +4358,6 @@ const ACT = {
   dryer() { prep.dryer = !prep.dryer; prep.dryerAt = performance.now(); if (prep.dryer) doneOpen('dryer'); },
   comp() {
     if (!prep.comp) {
-      if (prep.phase === 'open' && prep.dryer && dryerMin() < 3) penal(PEN.dryerShort, `Bật máy nén khi máy sấy mới chạy ${fmtMin(dryerMin())} phút (cần chạy trước 3–5 phút).`);
       prep.comp = true; doneOpen('comp');
     } else { prep.comp = false; checkCut(); }
   },
@@ -4383,15 +4381,15 @@ const ACT = {
     doneOpen('reg');
   },
   volt() { prep.voltSeen = true; doneOpen('volt'); return 'Đồng hồ ổn áp: ' + prep.volt + ' V.'; },
-  stab() { prep.stab = !prep.stab; if (prep.stab) doneOpen('stab'); else { prep.power = false; prep.booted = false; G.running = false; } },
+  stab() { prep.stab = !prep.stab; if (prep.stab) { doneOpen('stab'); prep.power = true; } else { prep.power = false; prep.booted = false; prep.bootLeft = 0; G.running = false; checkCut(); } },
   glass() { if (prep.phase !== 'open') return 'Kính camera đã được vệ sinh đầu ca.'; busy('glass', 2, () => doneOpen('glass')); },
   power() {
     if (!prep.power && !prep.stab) return 'Không có điện vào máy. Mở ổn áp trước.';
-    prep.power = !prep.power;
-    if (prep.power) doneOpen('power'); else { prep.booted = false; prep.bootLeft = 0; G.running = false; checkCut(); }
+    prep.power = !prep.power;   // công tắc nguồn trên thân máy: không còn là bước trong quy trình
+    if (!prep.power) { prep.booted = false; prep.bootLeft = 0; G.running = false; checkCut(); }
   },
   start() {
-    if (!prep.power) return 'Máy chưa có nguồn, đèn đỏ chưa sáng. Bật công tắc nguồn máy trước.';
+    if (!prep.power) return prep.stab ? 'Công tắc nguồn trên thân máy đang tắt, đèn đỏ chưa sáng.' : 'Máy chưa có nguồn, đèn đỏ chưa sáng. Mở ổn áp trước.';
     if (prep.booted || prep.bootLeft > 0) return prep.booted ? 'Máy đã khởi động.' : 'Máy đang khởi động…';
     prep.bootLeft = 3; doneOpen('start');
   },
@@ -4432,7 +4430,7 @@ function beginClose() {
   if (prep.phase !== 'run') return;
   prep.phase = 'close';
   if (!G.running) prep.cdone.stop = true;       // máy đã dừng sẵn
-  ui.toast('Bắt đầu kết thúc ca: làm các bước tắt máy D (19–24).', 'info');
+  ui.toast('Bắt đầu kết thúc ca: làm các bước tắt máy D (18–23).', 'info');
 }
 function finishShift() {
   if (prep.phase !== 'close') return;
@@ -5069,7 +5067,7 @@ function drawBoard() {
     }
     g.font = '700 34px Barlow, sans-serif'; g.fillStyle = '#2F4E8C'; g.fillText('C. TRONG KHI VẬN HÀNH', 40, y + 10); y += 58; g.fillStyle = '#1E2A27';
     g.font = '500 30px Barlow, sans-serif';
-    ['15. Chỉnh độ rung (20–60) và độ nhạy (0–255)', '16. Xả nước bộ lọc 2 giờ/lần; máy nén, bình chứa 1–3 giờ/lần', '17. Quan sát thiết bị và kết quả phân loại', '18. Có lỗi: tra bảng lỗi thường gặp'].forEach(t => { g.fillText(t, 60, y); y += 42; });
+    ['14. Chỉnh độ rung (20–60) và độ nhạy (0–255)', '15. Xả nước bộ lọc 2 giờ/lần; máy nén, bình chứa 1–3 giờ/lần', '16. Quan sát thiết bị và kết quả phân loại', '17. Có lỗi: tra bảng lỗi thường gặp'].forEach(t => { g.fillText(t, 60, y); y += 42; });
     g.font = '700 34px Barlow, sans-serif'; g.fillStyle = '#2F4E8C'; g.fillText('D. TẮT MÁY', 40, y + 10); y += 58; g.fillStyle = '#1E2A27';
     g.font = '500 30px Barlow, sans-serif';
     for (const s of SOP_CLOSE) { g.fillText(s.n + '. ' + s.t, 60, y); y += 42; }
@@ -5724,7 +5722,7 @@ function step(dx, dz) {
 // ---------- Nhắm và thao tác ----------
 const HOT = {
   compSw: { t: () => prep.comp ? 'Tắt máy nén khí' : 'Bật máy nén khí', a: () => ACT.comp() },
-  dryerSw: { t: () => prep.dryer ? `Tắt máy sấy khí (đã chạy ${fmtMin(dryerMin())} phút)` : 'Bật máy sấy khí', a: () => ACT.dryer() },
+  dryerSw: { t: () => prep.dryer ? 'Tắt máy sấy khí' : 'Bật máy sấy khí', a: () => ACT.dryer() },
   tank: { t: () => prep.phase === 'close' ? 'Xả van máy nén và bình chứa' : 'Van xả máy nén và bình chứa', a: () => ACT.tank() },
   filters: { t: () => 'Xả nước trong các bộ lọc', a: () => ACT.drainF() },
   srcGauge: { t: () => 'Đọc đồng hồ áp suất nguồn khí nén', a: () => ACT.srcP() || `Áp suất nguồn ${fmtMPa(prep.src)} MPa, đạt ≥ 0,65 MPa.` },
@@ -5805,7 +5803,7 @@ function visuals(dt, t) {
     const fault = !!activeInc(), blink = Math.floor(t * 3) % 2 === 0;
     ledMat.emissive.set(!powered() ? '#000' : fault ? (blink ? '#FF3B2F' : '#300') : G.running ? '#27E05B' : '#0E5E27');
     drawHMI3D();
-    drawText(dryerDisp, prep.dryer ? 'SẤY ' + fmtMin(dryerMin()) : '', '#0B1016', '#7FE0A0', '600 46px Barlow, sans-serif');
+    drawText(dryerDisp, prep.dryer ? 'RUN' : '', '#0B1016', '#7FE0A0', '600 46px Barlow, sans-serif');
     drawDial(srcGauge, prep.src, 1.0, 0.65, 1.0, 'MPa');
     drawDial(regGauge, prep.pm, 0.5, 0.25, 0.3, 'MPa');
     drawLioa(prep.volt, 220, prep.stab ? (prep.power ? (G.running ? 9.6 : 3.2) : 0.4) : 0, prep.stab);
