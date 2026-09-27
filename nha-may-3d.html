@@ -38,16 +38,17 @@ button{font:inherit}
 .bar div{height:100%;width:0;background:linear-gradient(90deg,#12803F,#8DC63F)}
 #busy{position:fixed;left:50%;top:calc(50% + 58px);transform:translateX(-50%);width:200px;pointer-events:none}
 #busy .bar div{background:var(--warn)}
-#alarm{position:fixed;right:14px;bottom:14px;width:400px;background:rgba(58,27,23,.95);border:1px solid #8A3326;border-radius:12px;padding:10px 12px;color:#FBE3DC}
+#alarm{position:fixed;right:14px;bottom:14px;width:420px;background:rgba(92,26,18,.97);border:2px solid #E0553B;border-radius:12px;padding:11px 13px;color:#FFFFFF}
 #alarm .head{display:flex;align-items:center;gap:8px}#alarm .head i{width:11px;height:11px;border-radius:50%;background:#FF5A3C;box-shadow:0 0 10px #FF5A3C;animation:bl .6s infinite alternate}
 #alarm .head span{margin-left:auto;opacity:.8;font-size:.85rem}
 @keyframes bl{to{opacity:.3}}
 #alarm p{margin:5px 0;font-size:.9rem}
 #alarm .opts{display:grid;gap:5px;margin-top:6px}
-#alarm button{text-align:left;padding:7px 9px;border-radius:7px;border:1px solid #9B4A3C;background:#522820;color:#FFF3EF;cursor:pointer}
+#alarm button{text-align:left;padding:8px 10px;border-radius:7px;border:1px solid #D0705C;background:#7A2E22;color:#FFFFFF;cursor:pointer;font-weight:600}
+#alarm button:hover{background:#94392A}
 #alarm button small{opacity:.85;margin-left:4px}
 #alarm button.st-ok{background:#1F3A2A;border-color:#3E7A55}#alarm button.st-bad{opacity:.5}
-#alarm .note{opacity:.7;font-size:.8rem}
+#alarm .note{opacity:.9;font-size:.85rem}
 #alarm .bar div{background:linear-gradient(90deg,#C98A1F,#F2B04A)}
 #diag{position:fixed;left:14px;top:108px;width:270px;background:var(--pan);border-radius:10px;padding:8px 8px 6px;pointer-events:none}
 #diag b{display:block;font-size:.86rem;margin:0 2px 5px}
@@ -57,6 +58,16 @@ button{font:inherit}
 #diag .lg{display:flex;gap:10px;font-size:.72rem;color:var(--mut);margin:3px 2px 0}
 @media (max-height:820px){#diag{width:215px;top:100px}}
 #diag .lg i{display:inline-block;width:10px;height:8px;margin-right:4px;border-radius:2px;vertical-align:middle}
+/* Khi đang dùng màn hình điều khiển / van điều áp: sơ đồ và khung lỗi nổi lên trên, sáng rõ, phóng to tối đa */
+body.ov-ingame #diag,body.ov-ingame #alarm{z-index:20}
+body.ov-ingame #diag{top:14px;left:14px;padding:10px;background:rgba(16,22,30,.97);box-shadow:0 8px 30px rgba(0,0,0,.5);
+  width:min(560px,calc((100vw - min(720px,44vw,(100vh - 140px) * 1.333)) / 2 - 34px),calc((100vh - 120px) / 1.62))}
+body.ov-ingame #diag b{font-size:1.05rem}
+body.ov-ingame #diag .lg{font-size:.85rem}
+body.ov-ingame #alarm{top:14px;bottom:auto;right:14px;font-size:1.06rem;box-shadow:0 8px 30px rgba(0,0,0,.55);
+  width:min(540px,calc((100vw - min(720px,44vw,(100vh - 140px) * 1.333)) / 2 - 34px))}
+body.ov-ingame #alarm button{padding:10px 12px;font-size:1rem}
+#ov-hmi{background:rgba(8,12,18,.5)}
 /* Overlays */
 .ov{position:fixed;inset:0;background:rgba(8,12,18,.78);display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}
 .card{background:#F4F6F2;color:#1E2A27;border-radius:14px;max-width:760px;width:100%;max-height:calc(100vh - 40px);overflow:auto;padding:22px 26px}
@@ -87,7 +98,7 @@ button{font:inherit}
 .card ul{padding-left:18px}.card ul.pen li b{color:#B8412C}
 /* Màn hình ANYSORT */
 .hmiwrap{display:flex;flex-direction:column;align-items:center;gap:10px}
-.hmi{position:relative;width:min(760px,92vw);aspect-ratio:4/3;border-radius:10px;border:10px solid #16191F;overflow:hidden;color:#E8ECF2;font-family:"Segoe UI",system-ui,sans-serif;user-select:none}
+.hmi{position:relative;width:min(720px,44vw,calc((100vh - 140px) * 1.333));aspect-ratio:4/3;border-radius:10px;border:10px solid #16191F;overflow:hidden;color:#E8ECF2;font-family:"Segoe UI",system-ui,sans-serif;user-select:none}
 .hmi.off{background:#050608}.hmi.boot{background:#5B3A8E}.hmi.on{background:linear-gradient(#39414D,#262C35)}
 .hmi .center{position:absolute;left:0;right:0;top:45%;text-align:center}.hmi .big{font-size:3rem;font-weight:600}.hmi .dim{color:#9AA4B2;font-size:.9rem}
 .hmi .topbar{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(0,0,0,.25)}
@@ -4905,58 +4916,62 @@ ob(obsGround, -0.45, 1.62, -2.0, 2.55);
 // Gồm: máy nén khí, bình khí nén, bộ lọc, máy sấy khí, van khóa DN50, van xả tự động, ống Ø60, tủ điện.
 // Cụm được xoay −90° để mặt trước quay về lối đi (phía −x); mặt trước thẳng hàng với mép trước sàn thao tác.
 const PX = 3.1;                 // dời cả cụm lùi vào trong 3,1 m
-const MNK = { x: -3.2 + PX, z: -5.9 };
+const PZ = -0.66;               // dời cả cụm sang trái: mép trái máy nén trùng đường gạch nền cách tường trái 2 m
+const MNK = { x: -3.2 + PX, z: -5.9 + PZ };
 let mnk = null;
 function loadMNK(done) {
   const b64 = $('glb-mnk').textContent.trim();
   const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0)).buffer;
   new THREE.GLTFLoader().parse(bin, '', g => {
     mnk = g.scene; mnk.rotation.y = -Math.PI / 2; mnk.position.set(MNK.x, 0, MNK.z);
-    mnk.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; rayTargets.push(o); } });
+    mnk.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; rayTargets.push(o);
+      const nm = o.name || (o.parent && o.parent.name) || '';
+      if (nm === 'dryer') o.material = new THREE.MeshStandardMaterial({ color: '#141619', roughness: 0.55, metalness: 0.15, flatShading: true });   // máy sấy xám tối
+    } });
     scene.add(mnk); done && done();
   }, e => { console.error(e); done && done(e); });
 }
 const EQ_X = -3.4;
 // Máy nén khí: bảng điều khiển ở mặt đầu phía bình chứa
-switchBox('compSw', -3.45 + PX, 1.3, -7.6, 0, 1);
-{ const p = canvasPlane(256, 128, 0.3, 0.15); p.position.set(-3.1 + PX, 1.42, -7.61); const g = p.userData.cv.getContext('2d'); g.fillStyle = '#10161D'; g.fillRect(0, 0, 256, 128); g.fillStyle = '#7FE0A0'; g.font = '600 44px Barlow, sans-serif'; g.fillText('75 kW', 40, 80); p.userData.tex.needsUpdate = true; }
-ob(obsGround, -3.78 + PX, -2.42 + PX, -9.42, -7.55);
-label('Máy nén khí 75 kW', -3.1 + PX, 2.25, -8.5);
+switchBox('compSw', -3.45 + PX, 1.3, -7.6 + PZ, 0, 1);
+{ const p = canvasPlane(256, 128, 0.3, 0.15); p.position.set(-3.1 + PX, 1.42, -7.61 + PZ); const g = p.userData.cv.getContext('2d'); g.fillStyle = '#10161D'; g.fillRect(0, 0, 256, 128); g.fillStyle = '#7FE0A0'; g.font = '600 44px Barlow, sans-serif'; g.fillText('75 kW', 40, 80); p.userData.tex.needsUpdate = true; }
+ob(obsGround, -3.78 + PX, -2.42 + PX, -9.42 + PZ, -7.55 + PZ);
+label('Máy nén khí 75 kW', -3.1 + PX, 2.25, -8.5 + PZ);
 // Tem logo ACOMP ở góc trên bên trái mặt trước máy nén (mặt quay về lối đi)
 { const img = new Image(); img.src = 'data:image/png;base64,' + $('logo-acomp').textContent.trim();
   const tex = new THREE.Texture(img); img.onload = () => { tex.needsUpdate = true; }; tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 8;
   const w = 0.62, h = w * 235 / 900;
   const logo = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6 }));
-  logo.rotation.y = -Math.PI / 2; logo.position.set(-3.71 + PX - 0.004, 1.6 - 0.06 - h / 2, -9.34 + 0.06 + w / 2); scene.add(logo); }
+  logo.rotation.y = -Math.PI / 2; logo.position.set(-3.71 + PX - 0.004, 1.6 - 0.06 - h / 2, -9.34 + PZ + 0.06 + w / 2); scene.add(logo); }
 // Bình khí nén: van xả ở đáy
-dyn.tankValve = box(0.05, 0.05, 0.16, '#C0392B', -3.8 + PX, 0.24, -5.9);
-hotspot('tank', 0.5, 0.5, 0.7, -3.88 + PX, 0.3, -5.9);
-ob(obsGround, -3.8 + PX, -2.75 + PX, -6.45, -5.35);
-label('Bình khí nén', -3.3 + PX, 2.75, -5.9, 'đồng hồ áp suất nguồn, van xả ở đáy');
+dyn.tankValve = box(0.05, 0.05, 0.16, '#C0392B', -3.8 + PX, 0.24, -5.9 + PZ);
+hotspot('tank', 0.5, 0.5, 0.7, -3.88 + PX, 0.3, -5.9 + PZ);
+ob(obsGround, -3.8 + PX, -2.75 + PX, -6.45 + PZ, -5.35 + PZ);
+label('Bình khí nén', -3.3 + PX, 2.75, -5.9 + PZ, 'đồng hồ áp suất nguồn, van xả ở đáy');
 // Đồng hồ áp suất nguồn gắn trên thân bình khí nén
-{ const n = new THREE.Vector3(-0.95, 0, -0.31).normalize(), c = new THREE.Vector3(-3.28 + PX, 1.6, -5.91);
+{ const n = new THREE.Vector3(-0.95, 0, -0.31).normalize(), c = new THREE.Vector3(-3.28 + PX, 1.6, -5.91 + PZ);
   const stem = cyl(0.015, 0.06, '#8C96A3', 0, 0, 0, 8); stem.position.copy(c.clone().addScaledVector(n, 0.47)); stem.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), n);
   const bez = cyl(0.085, 0.035, '#2A313B', 0, 0, 0, 28); bez.position.copy(c.clone().addScaledVector(n, 0.5)); bez.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), n);
   var srcGauge = canvasPlane(256, 256, 0.15, 0.15); srcGauge.position.copy(c.clone().addScaledVector(n, 0.519)); srcGauge.lookAt(srcGauge.position.clone().add(n));
   const h = c.clone().addScaledVector(n, 0.62); hotspot('srcGauge', 0.26, 0.26, 0.26, h.x, h.y, h.z); }
 // Máy sấy khí: mặt trước có quạt
-switchBox('dryerSw', -4.57 + PX, 0.78, -3.42, -1, 0);
-const dryerDisp = canvasPlane(256, 96, 0.26, 0.1); dryerDisp.rotation.y = -Math.PI / 2; dryerDisp.position.set(-4.565 + PX, 0.95, -3.2);
-ob(obsGround, -4.6 + PX, -3.7 + PX, -3.65, -2.95);
-label('Máy sấy khí', -4.15 + PX, 1.4, -3.3);
+switchBox('dryerSw', -4.57 + PX, 0.78, -3.42 + PZ, -1, 0);
+const dryerDisp = canvasPlane(256, 96, 0.26, 0.1); dryerDisp.rotation.y = -Math.PI / 2; dryerDisp.position.set(-4.565 + PX, 0.95, -3.2 + PZ);
+ob(obsGround, -4.6 + PX, -3.7 + PX, -3.65 + PZ, -2.95 + PZ);
+label('Máy sấy khí', -4.15 + PX, 1.4, -3.3 + PZ);
 // Bộ lọc sau máy sấy (có van xả tự động ở đáy)
-hotspot('filters', 0.6, 0.45, 0.45, -4.38 + PX, 1.48, -3.17);
-label('Bộ lọc khí', -4.4 + PX, 2.85, -3.5, 'van xả ở đáy');
+hotspot('filters', 0.6, 0.45, 0.45, -4.38 + PX, 1.48, -3.17 + PZ);
+label('Bộ lọc khí', -4.4 + PX, 2.85, -3.5 + PZ, 'van xả ở đáy');
 // Đường ống và van khóa nằm giữa các thiết bị: chặn không cho đi xuyên
-ob(obsGround, -3.95 + PX, -2.4 + PX, -7.6, -3.6);
+ob(obsGround, -3.95 + PX, -2.4 + PX, -7.6 + PZ, -3.6 + PZ);
 // Vách phòng máy nén (treo tủ điện của cụm)
-box(0.16, 3.0, 6.4, '#C3CAD2', -1.6 + PX, 0, -6.45, { roughness: 0.95 });
-ob(obsGround, -1.7 + PX, -1.5 + PX, -9.7, -3.2);
+box(0.16, 3.0, 6.4, '#C3CAD2', -1.6 + PX, 0, -6.45 + PZ, { roughness: 0.95 });
+ob(obsGround, -1.7 + PX, -1.5 + PX, -9.7 + PZ, -3.2 + PZ);
 // Đường ống từ cụm máy nén lên sàn thao tác, tới cụm lọc và van điều áp của máy tách màu
 const AY = 2.35;
 // Ống khí nén đi vuông góc, thẳng hàng với khung sàn (có cút ở mỗi góc):
 // đỉnh bộ lọc → lên sát dưới sàn → dọc mép sàn tới cột → rẽ sang cột → chạy dưới sàn dọc máy → rẽ vào đầu máy → lên van điều áp
-const FX = -4.55 + PX, FZ = -3.17, UY = 2.95;
+const FX = -4.55 + PX, FZ = -3.17 + PZ, UY = 2.95;
 { const R = 0.04, pts = [[FX, 2.32, FZ], [FX, UY, FZ], [FX, UY, -2.3], [-0.8, UY, -2.3], [-0.8, UY, 3.0], [0.25, UY, 3.0], [0.25, 3.62, 3.0], [0.25, 3.62, 2.72]];
   for (let i = 0; i < pts.length - 1; i++) pipe(pts[i], pts[i + 1], R);
   const elbowMat = mat('#8C96A3', { metalness: 0.5, roughness: 0.4 });
@@ -5106,11 +5121,6 @@ const avatar = (() => {
   const shL = mkPivot('shL', -0.195, 1.39), shR = mkPivot('shR', 0.195, 1.39);
   const PARENT = { legU_L: hipL, legL_L: hipL, foot_L: hipL, legU_R: hipR, legL_R: hipR, foot_R: hipR,
     armU_L: shL, armL_L: shL, hand_L: shL, fingers_L: shL, armU_R: shR, armL_R: shR, hand_R: shR, fingers_R: shR };
-  // vạt áo đứng yên phủ ngang hông: gấu áo luôn nằm ngang dù chân đang bước
-  { const hem = new THREE.Mesh(new THREE.CylinderGeometry(1, 0.97, 0.15, 32), M.shirt);
-    hem.scale.set(0.192, 1, 0.104); hem.position.set(0, 0.855, 0); hem.castShadow = true; G0.add(hem);
-    const edge = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 0.012, 32), M.shirt);
-    edge.scale.set(0.19, 1, 0.103); edge.position.set(0, 0.779, 0); G0.add(edge); }
   // logo DTCGroup ở lưng trên (dưới bả vai), chữ lớn, uốn nhẹ theo lưng (chữ xám nhạt như áo đồng phục)
   { const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 340; const g = cv.getContext('2d');
     let fs = 260; do { g.font = `900 ${fs}px Barlow, "Arial Black", Arial, sans-serif`; fs -= 4; } while (g.measureText('DTCGroup').width > 1000 && fs > 60);
@@ -5133,14 +5143,29 @@ const avatar = (() => {
         const name = o.name || (o.parent && o.parent.name) || '';
         const key = Object.keys(MAT_OF).find(k => name.startsWith(k)) || 'torso';
         o.updateWorldMatrix(true, false);
-        const geo = o.geometry.clone().applyMatrix4(o.matrixWorld); geo.computeVertexNormals();
-        const m = new THREE.Mesh(geo, M[MAT_OF[key]]); m.castShadow = true; m.receiveShadow = true;
+        let geo = o.geometry.clone().applyMatrix4(o.matrixWorld); geo = geo.index ? geo.toNonIndexed() : geo;
         const par = PARENT[name] || G0;
-        if (par !== G0) m.position.sub(par.position);
-        par.add(m);
+        const addMesh = (g, material) => { g.computeVertexNormals(); const m = new THREE.Mesh(g, material); m.castShadow = true; m.receiveShadow = true;
+          if (par !== G0) m.position.sub(par.position); par.add(m); };
+        if (key === 'torso') {
+          // thân mô hình gồm cả vùng hông: trên đường gấu áo là áo xanh, dưới là quần → gấu áo luôn nằm ngang
+          addMesh(splitByY(geo, HEM, true), M.shirt); addMesh(splitByY(geo, HEM, false), M.pants);
+        } else if (key === 'legU') {
+          addMesh(splitByY(geo, HEM + 0.02, false), M.pants);   // bỏ phần đùi khuất trong thân áo để khi bước không xuyên lên áo
+        } else addMesh(geo, M[MAT_OF[key]]);
       });
       done && done();
     }, e => { console.error(e); done && done(e); });
+  }
+  const HEM = 0.9;   // độ cao gấu áo (m)
+  // lấy các tam giác có tâm ở trên (above = true) hoặc dưới độ cao y0
+  function splitByY(geo, y0, above) {
+    const p = geo.attributes.position, out = [];
+    for (let i = 0; i < p.count; i += 3) {
+      const cy = (p.getY(i) + p.getY(i + 1) + p.getY(i + 2)) / 3;
+      if ((cy >= y0) === above) for (let k = 0; k < 3; k++) out.push(p.getX(i + k), p.getY(i + k), p.getZ(i + k));
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(out, 3)); return g;
   }
   let phase = 0, amp = 0;
   return {
@@ -5162,6 +5187,7 @@ let overlay = null;          // 'start' | 'pause' | 'hmi' | 'reg' | 'result' | '
 function showOverlay(name) {
   overlay = name;
   ['start', 'pause', 'hmi', 'reg', 'result', 'shift'].forEach(k => { $('ov-' + k).hidden = k !== name; });
+  document.body.classList.toggle('ov-ingame', name === 'hmi' || name === 'reg');
   if (name && document.pointerLockElement) document.exitPointerLock();
 }
 function closeOverlay() { showOverlay(null); lockPointer(); }
@@ -6001,7 +6027,7 @@ setTimeout(() => loadPlant(err => loadMNK(err2 => loadCYC(err3 => avatar.load(()
 requestAnimationFrame(frame);
 
 // Móc kiểm thử tự động (không ảnh hưởng người chơi)
-window.__game = { valid, hot, tick, keys, G, prep, player, HOT, interact, relevel, act: id => interact(id), chooseCheck, toggleSort, engineStep, aimId: () => aimId, visuals, aim, drawHMI3D, rend: () => renderer.render(scene, camera), setOv: showOverlay, renderer, scene, camera };
+window.__game = { ui, openHMI, valid, hot, tick, keys, G, prep, player, HOT, interact, relevel, act: id => interact(id), chooseCheck, toggleSort, engineStep, aimId: () => aimId, visuals, aim, drawHMI3D, rend: () => renderer.render(scene, camera), setOv: showOverlay, renderer, scene, camera };
 
 })();
 </script>
