@@ -4677,7 +4677,7 @@ function label(text, x, y, z, sub) {
   const tex = new THREE.CanvasTexture(cv); tex.encoding = THREE.sRGBEncoding;
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthWrite: false, transparent: true }));
   s.scale.set(1.6, 1.6 * cv.height / 512, 1); s.position.set(x, y, z); s.renderOrder = 5;
-  scene.add(s); labels.push(s); return s;
+  s.visible = false; scene.add(s); labels.push(s); return s;   // nhãn tên thiết bị: tắt hiển thị
 }
 function roundRect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
 // Công tắc: đế + cần gạt/nút đổi màu theo trạng thái
@@ -5857,7 +5857,7 @@ function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.asp
 $('stGo').onclick = () => {
   G.levelIdx = +$('stLevel').value; G.mode = document.querySelector('[name=stMode]:checked').value; G.incPref = $('stInc').checked;
   G.lots = []; Object.assign(player, { x: -9, z: 0, level: 'ground', yaw: -Math.PI / 2, pitch: -0.05 }); relevel();
-  resetSession(); newBatch(); drawBoard(); labels.forEach(l => { l.visible = G.mode !== 'contest'; });
+  resetSession(); newBatch(); drawBoard(); labels.forEach(l => { l.visible = false; });   // không hiện nhãn tên thiết bị
   $('checklist').hidden = !showList;
   ui.toast(G.mode === 'contest' ? 'Thi đấu: làm đúng quy trình, không có gợi ý.' : 'Bảng quy trình treo trên tường bên trái. Nhấn Tab để ẩn/hiện danh sách bước.', 'info');
   closeOverlay();
