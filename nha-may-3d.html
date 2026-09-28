@@ -12,6 +12,12 @@ html,body{margin:0;height:100%;overflow:hidden;background:#0E1319;color:var(--in
 [hidden]{display:none!important}
 kbd{display:inline-block;min-width:1.6em;padding:1px 6px;border-radius:5px;background:#E8EEF3;color:#11161C;font:700 12px/1.4 "Segoe UI",sans-serif;text-align:center;margin-right:6px}
 button{font:inherit}
+.card button.tour{background:#EEF5F0;border-color:#2F7D4F;color:#24663F}
+.card button.tour:hover{background:#DDEEE2}
+#tourHud{position:fixed;left:14px;top:12px;z-index:8;background:rgba(12,18,25,.90);border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:10px 14px;box-shadow:0 4px 18px rgba(0,0,0,.22);pointer-events:none}
+#tourHud b{display:block;color:#8DC63F;font-size:1.05rem;letter-spacing:.02em}
+#tourHud span{display:block;color:#D7E0E7;font-size:.82rem;margin-top:2px}
+body.tour-mode #hudTop,body.tour-mode #checklist,body.tour-mode #prog,body.tour-mode #diag,body.tour-mode #alarm,body.tour-mode #busy,body.tour-mode #cross,body.tour-mode #tip{display:none!important}
 /* HUD */
 #cross{position:fixed;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;pointer-events:none}
 #cross::before,#cross::after{content:"";position:absolute;background:rgba(255,255,255,.75)}
@@ -174,7 +180,7 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 <div id="cross"></div>
 <div id="tip" hidden></div>
 <div id="busy" hidden><div class="bar"><div id="busyBar"></div></div></div>
-<div id="hudTop"><b id="hudLevel"></b><div class="ph" id="hudPhase"></div><div class="sc" id="hudScore"></div><div class="tm" id="hudTimer">Thời gian: 05:00</div></div>
+<div id="hudTop"><b id="hudLevel"></b><div class="ph" id="hudPhase"></div><div class="sc" id="hudScore"></div><div class="tm" id="hudTimer">Thời gian: 03:30</div></div>
 <div id="checklist"></div>
 <div id="toasts"></div>
 <div id="prog" hidden><div class="bar"><div id="progBar"></div></div><div id="progTxt"></div></div>
@@ -187,10 +193,12 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
   <canvas id="timing" aria-label="Biểu đồ thời điểm hạt tới van"></canvas>
   <div class="lg"><span><i style="background:rgba(240,141,58,.45)"></i>Van mở</span><span><i style="background:var(--ok)"></i>Thổi trúng</span><span><i style="background:var(--bad)"></i>Thổi trượt</span></div></div>
 <div id="hudKeys"><span><kbd>WASD</kbd>đi lại</span><span><kbd>Shift</kbd>chạy</span><span><kbd>E</kbd>/click thao tác</span><span><kbd>Tab</kbd>danh sách bước</span><span><kbd>M</kbd>sơ đồ máy</span><span><kbd>V</kbd>góc nhìn</span><span><kbd>1–5</kbd>kiểm tra lỗi</span><span id="hudKeyK" hidden></span><span><kbd>Esc</kbd>tạm dừng</span></div>
+<div id="tourHud" hidden><b>THAM QUAN SHOWROOM</b><span>Không giới hạn thời gian · Không chấm điểm · Nhấn <kbd>Esc</kbd> để trở về menu</span></div>
 
 <div class="ov" id="ov-start" hidden><div class="card">
   <h1 style="margin-bottom:12px">Vận hành máy tách màu SC16 Pro</h1>
-  <div class="rules"><b>Luật chơi</b><p>Tự chọn Lô 1–4. Mỗi lượt có tối đa <b>05:00 phút</b>. Tổng tối đa <b>1.000 điểm</b>: 500 điểm quy trình (mỗi bước đều có điểm, làm nhanh được nhiều hơn) + 500 điểm kết quả máy (kết quả càng tốt điểm càng cao). Thi đấu chỉ xét tổng điểm; bằng điểm thì người hoàn thành nhanh hơn xếp trên.</p></div>
+  <div class="rules"><b>Luật chơi</b><p>Tự chọn Lô 1–4. Mỗi lượt có tối đa <b>03:30 phút</b>. Tổng tối đa <b>1.000 điểm</b>: 500 điểm quy trình (mỗi bước đều có điểm, làm nhanh được nhiều hơn) + 500 điểm kết quả máy (kết quả càng tốt điểm càng cao). Thi đấu chỉ xét tổng điểm; bằng điểm thì người hoàn thành nhanh hơn xếp trên.</p></div>
+  <div class="rules" style="background:#EEF5F0;border-left-color:#4C8BD8"><b style="color:#2F4E8C">Tham quan Showroom</b><p>Đi lại tự do trong nhà máy 3D, xem máy móc và bố trí thiết bị. Không tính giờ, không chấm điểm và không cần thực hiện quy trình.</p></div>
   <label for="stName">Tên người chơi</label><input type="text" id="stName" maxlength="28" placeholder="Nhập tên của bạn" autocomplete="off">
   <p class="err" id="stNameErr" hidden>Hãy nhập tên người chơi trước khi bắt đầu.</p>
   <label for="stLevel">Chọn lô thử thách (tự do)</label><select id="stLevel"></select>
@@ -198,7 +206,7 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
   <div class="modes"><label><input type="radio" name="stMode" value="practice">Luyện tập (có bảng quy trình, danh sách bước)</label><label><input type="radio" name="stMode" value="contest">Thi đấu</label></div>
   <label style="font-weight:500;display:flex;gap:8px;align-items:center"><input type="checkbox" id="stInc">Có lỗi thường gặp xảy ra khi vận hành</label>
   <div class="keys"><kbd>W A S D</kbd><span>Đi lại, <kbd>Shift</kbd> để đi nhanh. Chuột để nhìn.</span><kbd>E</kbd><span>Thao tác thiết bị đang nhắm (hoặc click chuột trái)</span><kbd>Tab</kbd><span>Ẩn hoặc hiện danh sách bước</span><kbd>M</kbd><span>Ẩn hoặc hiện sơ đồ phân loại khi máy chạy</span><kbd>V</kbd><span>Đổi góc nhìn: thứ ba (thấy kỹ sư) hoặc thứ nhất</span><kbd>1–5</kbd><span>Chọn thiết bị cần kiểm tra khi có lỗi</span><kbd>K</kbd><span>Bắt đầu kết thúc ca, nhấn lại để chấm điểm ca</span><kbd>Esc</kbd><span>Tạm dừng, trả con trỏ chuột</span></div>
-  <div class="row"><button id="stGo" class="pri">Bắt đầu thử thách 5 phút</button></div>
+  <div class="row"><button id="stGo" class="pri">Bắt đầu thử thách 03:30</button><button id="stTour" type="button" class="tour">Tham quan Showroom</button></div>
 </div></div>
 
 <div class="ov" id="ov-pause" hidden><div class="card">
@@ -4306,7 +4314,7 @@ const lc = t => t.charAt(0).toLowerCase() + t.slice(1);
 
 // Bộ rung 0–100 (bình thường 20–60) quy đổi ra năng suất. Giả định: 1 đơn vị ≈ 0,4 t/h.
 const RUNG_TO_TH = 0.4;
-const GAME_LIMIT_SEC = 5 * 60;
+const GAME_LIMIT_SEC = 3 * 60 + 30;
 
 // ----- Hệ điểm thi đấu v27: TỔNG TỐI ĐA 1000 -----
 // A. Quy trình mở máy: 500 điểm
@@ -4326,7 +4334,7 @@ const STEP_SLOW_BONUS = 5;
 const ALL_STEPS_BONUS = 10;
 const MISTAKE_PENALTY = 10;
 const G = {
-  mode: 'practice', levelIdx: 0, incPref: true,
+  mode: 'practice', levelIdx: 0, incPref: true, tourMode: false,
   running: false, sim: null, resultShown: false, lots: [],
   rung: 30, sens: 128, delay: 50, dur: 50, P: { feed: 12, sens: 128, delay: 50, dur: 50 },
   challenge: { elapsed: 0, active: false, pending: false, expired: false },
@@ -4361,7 +4369,7 @@ function challengeTick(dt) {
     G.challenge.expired = true;
     G.challenge.active = false;
     G.running = false;
-    ui.toast('Hết thời gian 5 phút. Lô hàng chưa hoàn thành.', 'bad');
+    ui.toast('Hết thời gian 03:30. Lô hàng chưa hoàn thành.', 'bad');
     finishBatch(true);
   }
 }
@@ -4454,7 +4462,7 @@ function doneOpen(id) {
   if (prep.skippedOver[id]) penal(PEN.late, `Sai thứ tự: bước ${st.n} “${lc(st.t)}” phải làm trước bước ${prep.skippedOver[id]}.`);
 
   // Tốc độ của bước được tính từ thời điểm hoàn thành bước trước.
-  // Riêng bước đầu tiên tính từ lúc đồng hồ 05:00 bắt đầu.
+  // Riêng bước đầu tiên tính từ lúc đồng hồ 03:30 bắt đầu.
   const nowElapsed = Math.max(0, G.challenge.elapsed || 0);
   const delta = Math.max(0, nowElapsed - (prep.lastStepElapsed || 0));
   const sp = stepSpeedPoints(delta);
@@ -6136,7 +6144,7 @@ const Intro = (() => {
     Object.assign(player, { x: px, z: pz, level: 'ground', yaw, pitch }); relevel();
     camDist = 0;  // ép camera gameplay khởi tạo lại ngay, tránh khung hình tối/đứng sau chuyển cảnh
     setFade(0);
-    ui.toast(`Kỹ sư ${G.playerName || 'vận hành'} đã vào ca. Đồng hồ 05:00 bắt đầu tính.`, 'info');
+    ui.toast(`Kỹ sư ${G.playerName || 'vận hành'} đã vào ca. Đồng hồ 03:30 bắt đầu tính.`, 'info');
     if (G.challenge.pending) startChallengeTimer();
   }
   function update(dt) {
@@ -6186,6 +6194,38 @@ function showOverlay(name) {
 }
 function closeOverlay() { showOverlay(null); lockPointer(); }
 
+const GAME_HUD_KEYS_HTML = $('hudKeys').innerHTML;
+function setTourUI(on) {
+  document.body.classList.toggle('tour-mode', !!on);
+  $('tourHud').hidden = !on;
+  if (on) {
+    $('hudKeys').innerHTML = '<span><kbd>WASD</kbd>đi lại</span><span><kbd>Shift</kbd>chạy</span><span><kbd>V</kbd>góc nhìn</span><span><kbd>Esc</kbd>về menu</span>';
+    $('checklist').hidden = true; $('prog').hidden = true; $('diag').hidden = true; $('alarm').hidden = true; $('busy').hidden = true;
+    $('tip').hidden = true; $('cross').classList.remove('on');
+  } else {
+    $('hudKeys').innerHTML = GAME_HUD_KEYS_HTML;
+  }
+}
+function exitTourToMenu() {
+  if (!G.tourMode) return;
+  G.tourMode = false; G.running = false; G.sim = null; stopChallengeTimer();
+  setTourUI(false);
+  labels.forEach(l => { l.visible = false; });
+  showOverlay('start'); renderStart();
+}
+function enterTourMode() {
+  G.tourMode = true; G.running = false; G.sim = null; G.resultShown = false; stopChallengeTimer();
+  window.setWelcome && window.setWelcome('');
+  const px = -5.7, pz = -6.9, tx = (HALL.x0 + HALL.x1) / 2, tz = HALL.z0 + 0.02;
+  const dx = tx - px, dz = tz - pz;
+  Object.assign(player, { x: px, z: pz, level: 'ground', yaw: Math.atan2(-dx, -dz), pitch: -0.05 });
+  relevel(); camDist = 0;
+  labels.forEach(l => { l.visible = true; });
+  setTourUI(true);
+  closeOverlay();
+  ui.toast('Đang tham quan Showroom: tự do di chuyển, không tính giờ và không chấm điểm.', 'info');
+}
+
 // ---------- Thông báo ----------
 ui.toast = (text, kind) => {
   const box = $('toasts'), el = document.createElement('div');
@@ -6211,7 +6251,7 @@ ui.refresh = () => {
   const tm = $('hudTimer');
   if (tm) {
     const rem = challengeRemaining();
-    tm.textContent = `Thời gian còn lại: ${fmtClock(rem)} / 05:00`;
+    tm.textContent = `Thời gian còn lại: ${fmtClock(rem)} / 03:30`;
     tm.classList.toggle('danger', G.challenge.active && rem <= 60);
   }
   $('hudKeyK').hidden = true; // v26 chấm điểm ngay khi lô chạy xong, không bắt buộc kết thúc ca
@@ -6234,7 +6274,7 @@ function hudTick() {
   const tm = $('hudTimer');
   if (tm) {
     const rem = challengeRemaining();
-    tm.textContent = `Thời gian còn lại: ${fmtClock(rem)} / 05:00`;
+    tm.textContent = `Thời gian còn lại: ${fmtClock(rem)} / 03:30`;
     tm.classList.toggle('danger', G.challenge.active && rem <= 60);
   }
   const b = SIM.LEVELS[G.levelIdx].batch;
@@ -6409,10 +6449,10 @@ ui.result = lot => {
   ).join('');
 
   const technical = lot.pass ? 'Đạt chuẩn kỹ thuật' : lot.timedOut ? 'Hết thời gian' : 'Chưa đạt chuẩn kỹ thuật';
-  const title = lot.timedOut ? 'Kết thúc lượt – hết 5 phút' : 'Hoàn thành lô';
+  const title = lot.timedOut ? 'Kết thúc lượt – hết 03:30' : 'Hoàn thành lô';
   const timeLine = lot.timedOut
-    ? `<p class="sub"><b>Thời gian:</b> 05:00 / 05:00 · Giữ toàn bộ điểm các bước đã hoàn thành.</p>`
-    : `<p class="sub"><b>Thời gian hoàn thành:</b> ${fmtClock(lot.elapsed)} / 05:00 · Còn ${fmtClock(lot.remaining)}</p>`;
+    ? `<p class="sub"><b>Thời gian:</b> 03:30 / 03:30 · Giữ toàn bộ điểm các bước đã hoàn thành.</p>`
+    : `<p class="sub"><b>Thời gian hoàn thành:</b> ${fmtClock(lot.elapsed)} / 03:30 · Còn ${fmtClock(lot.remaining)}</p>`;
 
   const scoreBox = `<div class="score">${lot.score.toLocaleString('vi-VN')} / ${TOTAL_MAX.toLocaleString('vi-VN')} điểm
       <small>
@@ -6452,7 +6492,7 @@ ui.result = lot => {
       <tr><td><b>Đánh giá kỹ thuật</b></td><td colspan="4" class="${lot.pass ? 'y' : 'n'}"><b>${technical}</b></td></tr>
     </table>
     ${inc ? `<ul class="inc">${inc}</ul>` : ''}
-    <div class="rules"><b>Chọn lô tiếp theo tùy ý</b><p>Lô 1–4 độc lập. Mỗi lượt mới được cấp lại 05:00 phút và chấm trên thang 1.000 điểm.</p></div>
+    <div class="rules"><b>Chọn lô tiếp theo tùy ý</b><p>Lô 1–4 độc lập. Mỗi lượt mới được cấp lại 03:30 phút và chấm trên thang 1.000 điểm.</p></div>
     <div class="row"><label>Chọn lô <select id="resLevel">${SIM.LEVELS.map((l, i) => `<option value="${i}" ${i === lot.level ? 'selected' : ''}>${l.name}</option>`).join('')}</select></label>
       <button id="resNext" class="pri">Bắt đầu lượt mới</button><button id="resHome">Về màn hình đầu</button></div>`;
 
@@ -6467,10 +6507,10 @@ ui.result = lot => {
     relevel();
     closeOverlay();
     startChallengeTimer();
-    ui.toast(`Lượt mới: ${SIM.LEVELS[G.levelIdx].name}. 05:00 phút · tối đa 1.000 điểm.`, 'info');
+    ui.toast(`Lượt mới: ${SIM.LEVELS[G.levelIdx].name}. 03:30 phút · tối đa 1.000 điểm.`, 'info');
   };
   $('resHome').onclick = () => {
-    stopChallengeTimer();
+    stopChallengeTimer(); G.tourMode = false; setTourUI(false);
     showOverlay('start');
     renderStart();
   };
@@ -7051,6 +7091,7 @@ function visuals(dt, t) {
 function lockPointer() { if (!overlay) { try { const p = canvas.requestPointerLock(); if (p && p.catch) p.catch(() => {}); } catch (e) {} } }
 canvas.addEventListener('click', () => { if (!document.pointerLockElement) lockPointer(); else interact(); });
 document.addEventListener('pointerlockchange', () => {
+  if (!document.pointerLockElement && !overlay && G.tourMode && !window.__test) { exitTourToMenu(); return; }
   if (!document.pointerLockElement && !overlay && G.sim && !window.__test) { showOverlay('pause'); renderPause(); }
 });
 document.addEventListener('mousemove', e => {
@@ -7060,6 +7101,11 @@ document.addEventListener('mousemove', e => {
 document.addEventListener('keydown', e => {
   if (e.target && e.target.tagName === 'INPUT') { if (e.key === 'Enter' && e.target.id === 'stName') $('stGo').click(); return; }   // đang gõ tên
   keys[e.code] = true;
+  if (G.tourMode && !overlay) {
+    if (e.code === 'Escape') { e.preventDefault(); exitTourToMenu(); return; }
+    if (e.code === 'KeyV') { view3rd = !view3rd; ui.toast(view3rd ? 'Góc nhìn thứ ba.' : 'Góc nhìn thứ nhất.', 'info'); }
+    return;
+  }
   if (e.code === 'Tab') { e.preventDefault(); showList = !showList; $('checklist').hidden = !showList; }
   if (e.code === 'KeyM' && !overlay) { showDiag = !showDiag; }
   if (e.code === 'KeyV' && !overlay) { view3rd = !view3rd; ui.toast(view3rd ? 'Góc nhìn thứ ba: thấy kỹ sư vận hành.' : 'Góc nhìn thứ nhất.', 'info'); }
@@ -7082,7 +7128,9 @@ function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.asp
 
 // ---------- Màn hình bắt đầu, tạm dừng ----------
 $('stName').addEventListener('input', () => { $('stNameErr').hidden = true; });
+$('stTour').onclick = () => enterTourMode();
 $('stGo').onclick = () => {
+  G.tourMode = false; setTourUI(false);
   const nm = $('stName').value.trim().replace(/\s+/g, ' ');
   if (!nm) { $('stNameErr').hidden = false; $('stName').focus(); return; }
   $('stNameErr').hidden = true; G.playerName = nm;
@@ -7092,14 +7140,14 @@ $('stGo').onclick = () => {
   G.lots = []; Object.assign(player, { x: -11.3, z: 2.2, level: 'ground', yaw: -Math.PI / 2, pitch: -0.05 }); relevel();
   resetSession(); newBatch(); armChallengeTimer(); drawBoard(); labels.forEach(l => { l.visible = false; });   // không hiện nhãn tên thiết bị
   $('checklist').hidden = !showList;
-  ui.toast(G.mode === 'contest' ? 'Thi đấu: 5 phút, làm đúng quy trình và hoàn thành càng sớm càng nhiều điểm.' : 'Bạn có 5 phút. Làm đúng quy trình và hoàn thành sớm để nhận thưởng tốc độ.', 'info');
+  ui.toast(G.mode === 'contest' ? 'Thi đấu: 3 phút 30 giây, làm đúng quy trình và hoàn thành càng sớm càng nhiều điểm.' : 'Bạn có 3 phút 30 giây. Làm đúng quy trình và hoàn thành sớm để nhận thưởng tốc độ.', 'info');
   closeOverlay();
   if (window.__test) Intro.finish(); else Intro.start();   // đoạn mở đầu: lái xe vào xưởng
 };
 $('introSkip').onclick = () => Intro.skip();
 $('pauseGo').onclick = closeOverlay;
 $('pauseEnd').onclick = () => { beginClose(); closeOverlay(); ui.refresh(); };
-$('pauseQuit').onclick = () => { stopChallengeTimer(); showOverlay('start'); renderStart(); };
+$('pauseQuit').onclick = () => { stopChallengeTimer(); G.tourMode = false; setTourUI(false); showOverlay('start'); renderStart(); };
 $('hmiBack').onclick = closeOverlay;
 
 // ---------- Vòng lặp ----------
@@ -7130,8 +7178,10 @@ function regLive() { const el = document.querySelector('#regBody text'); if (el)
 resize(); relevel(); scene.updateMatrixWorld(true);
 showOverlay('start'); renderStart();
 $('stGo').disabled = true; $('stGo').textContent = 'Đang tải mô hình nhà máy…';
+$('stTour').disabled = true; $('stTour').textContent = 'Đang tải Showroom…';
 setTimeout(() => loadPlant(err => loadMNK(err2 => loadCYC(err3 => avatar.load(() => Intro.load(() => {
-  $('stGo').disabled = false; $('stGo').textContent = err || err2 || err3 ? 'Bắt đầu (thiếu một phần mô hình)' : 'Bắt đầu ca làm việc';
+  $('stGo').disabled = false; $('stGo').textContent = err || err2 || err3 ? 'Bắt đầu (thiếu một phần mô hình)' : 'Bắt đầu thử thách 03:30';
+  $('stTour').disabled = false; $('stTour').textContent = 'Tham quan Showroom';
   drawBoard(); scene.updateMatrixWorld(true);
 }))))), 30);
 requestAnimationFrame(frame);
