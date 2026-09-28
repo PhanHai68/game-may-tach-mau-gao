@@ -4675,7 +4675,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
-console.info('[DTC] nha-may-3d build v9 - continuous skinned engineer rig (no mesh tearing) + correct direction + CSKH');
+console.info('[DTC] nha-may-3d build v11 - restored green DTC engineer + skinned walk rig + palm trees');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -5383,9 +5383,9 @@ function drawBoard() {
   board.userData.tex.needsUpdate = true;
 }
 
-// ================== NHÂN VẬT KỸ SƯ (model Enginneer.glb do người dùng cung cấp) ==================
-// Model mới được đặt cạnh file HTML để tránh nhúng thêm ~35 MB vào HTML.
-// Nếu không tải được Enginneer.glb, game tự dùng model người nhúng cũ làm phương án dự phòng.
+// ================== NHÂN VẬT KỸ SƯ DTC (model áo xanh do người dùng cung cấp) ==================
+// v11 dùng file riêng DTC_Engineer_v11.glb để tránh cache/tên file cũ.
+// Nếu file này thiếu, KHÔNG dùng mannequin trắng nữa; báo lỗi rõ để tránh nhầm là model đúng.
 const avatar = (() => {
   const G0 = new THREE.Group(); scene.add(G0);
   let model = null, phase = 0, amp = 0;
@@ -5430,7 +5430,7 @@ const avatar = (() => {
     // Kết quả: nhấn W -> kỹ sư quay lưng về camera và mặt nhìn đúng hướng di chuyển.
     root.rotation.y = Math.PI;
     const rigOK = buildWalkRig(root);
-    console.info('[DTC v9] Engineer skinned walk rig:', rigOK ? 'READY' : 'NOT FOUND');
+    console.info('[DTC v11] Green DTC engineer skinned walk rig:', rigOK ? 'READY' : 'NOT FOUND');
     G0.add(root); model = root;
   }
 
@@ -5445,11 +5445,13 @@ const avatar = (() => {
 
   function load(done) {
     const loader = new THREE.GLTFLoader();
-    loader.load('Enginneer_v9.glb?v=9', gl => {
+    loader.load('DTC_Engineer_v11.glb?v=11', gl => {
       prepare(gl.scene); done && done();
     }, undefined, e => {
-      console.warn('Không tải được Enginneer.glb, dùng model kỹ sư dự phòng.', e);
-      fallback(done);
+      console.error('Không tải được DTC_Engineer_v11.glb. Hãy kiểm tra file nằm cùng thư mục nha-may-3d.html.', e);
+      G0.visible = false;
+      if (typeof toast === 'function') toast('Thiếu file DTC_Engineer_v11.glb – kỹ sư DTC không thể hiển thị.', 'bad');
+      done && done(e);
     });
   }
 
