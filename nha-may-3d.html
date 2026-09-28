@@ -5302,11 +5302,13 @@ const TV = (() => {
     if (logoOk) { const lw = Wc * 0.7, lh = lw * logo.height / logo.width; g.drawImage(logo, (Wc - lw) / 2, Hc * 0.36 - lh / 2, lw, lh); }
     // lời chào hiện dần
     if (name) {
-      const a = Math.min(1, (t - nameAt) / 1.2), txt = 'Welcome, ' + name + '!';
+      const a = Math.min(1, (t - nameAt) / 1.2), txt = 'KỸ SƯ ' + String(name).toUpperCase();
       g.save(); g.globalAlpha = a;
-      g.fillStyle = '#12803F'; g.fillRect(Wc * 0.3, Hc * 0.6, Wc * 0.4, 4);
-      let fs = 96; do { g.font = `800 ${fs}px Barlow, "Segoe UI", Arial, sans-serif`; fs -= 3; } while (g.measureText(txt).width > Wc * 0.88 && fs > 30);
-      g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#12803F'; g.fillText(txt, Wc / 2, Hc * 0.72 + (1 - a) * 18);
+      g.fillStyle = '#12803F'; g.fillRect(Wc * 0.3, Hc * 0.59, Wc * 0.4, 4);
+      let fs = 86; do { g.font = `800 ${fs}px Barlow, "Segoe UI", Arial, sans-serif`; fs -= 3; } while (g.measureText(txt).width > Wc * 0.88 && fs > 30);
+      g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#12803F'; g.fillText(txt, Wc / 2, Hc * 0.70 + (1 - a) * 18);
+      g.font = '600 34px "Segoe UI", Arial, sans-serif'; g.fillStyle = '#5B6964';
+      g.fillText('Chào mừng đến DTCGroup', Wc / 2, Hc * 0.82 + (1 - a) * 10);
       g.restore();
     }
     // dòng dưới cùng: tên chương trình, đồng hồ
@@ -5361,85 +5363,67 @@ function drawBoard() {
   board.userData.tex.needsUpdate = true;
 }
 
-// ================== NHÂN VẬT KỸ SƯ (mô hình người từ file HUMAN.stp) ==================
-// Áo thun xanh lá đồng phục, lưng in DTCGroup. Tay xoay quanh vai, chân xoay quanh hông để bước đi.
-// Mặt trước nhân vật quay về −z của nhóm (trùng hướng nhìn của người chơi), chân chạm y = 0.
+// ================== NHÂN VẬT KỸ SƯ (model Enginneer.glb do người dùng cung cấp) ==================
+// Model mới được đặt cạnh file HTML để tránh nhúng thêm ~35 MB vào HTML.
+// Nếu không tải được Enginneer.glb, game tự dùng model người nhúng cũ làm phương án dự phòng.
 const avatar = (() => {
   const G0 = new THREE.Group(); scene.add(G0);
-  // three r147 hiểu mã màu là tuyến tính: đổi màu sRGB mong muốn sang tuyến tính để hiển thị đúng tông
-  const lin = hex => '#' + [1, 3, 5].map(i => Math.round(Math.pow(parseInt(hex.slice(i, i + 2), 16) / 255, 2.2) * 255).toString(16).padStart(2, '0')).join('');
-  const M = {
-    shirt: new THREE.MeshStandardMaterial({ color: lin('#2E7D46'), roughness: 0.85 }),
-    skin: new THREE.MeshStandardMaterial({ color: lin('#D6A583'), roughness: 0.7 }),
-    pants: new THREE.MeshStandardMaterial({ color: lin('#2B3444'), roughness: 0.9 }),
-    shoe: new THREE.MeshStandardMaterial({ color: lin('#1A1A1C'), roughness: 0.55 }),
-    hat: new THREE.MeshStandardMaterial({ color: lin('#23272C'), roughness: 0.8 }),
-    shades: new THREE.MeshStandardMaterial({ color: '#050608', roughness: 0.15, metalness: 0.6 }),
-  };
-  const MAT_OF = { torso: 'shirt', armU: 'shirt', armL: 'skin', hand: 'skin', fingers: 'skin', head: 'skin', legU: 'pants', legL: 'pants', foot: 'shoe', hat: 'hat', shades: 'shades' };
-  const pivots = {};
-  const mkPivot = (name, x, y) => { const p = new THREE.Group(); p.position.set(x, y, 0); G0.add(p); pivots[name] = p; return p; };
-  const hipL = mkPivot('hipL', -0.09, 0.95), hipR = mkPivot('hipR', 0.09, 0.95);
-  const shL = mkPivot('shL', -0.195, 1.39), shR = mkPivot('shR', 0.195, 1.39);
-  const PARENT = { legU_L: hipL, legL_L: hipL, foot_L: hipL, legU_R: hipR, legL_R: hipR, foot_R: hipR,
-    armU_L: shL, armL_L: shL, hand_L: shL, fingers_L: shL, armU_R: shR, armL_R: shR, hand_R: shR, fingers_R: shR };
-  // logo DTCGroup ở lưng trên (dưới bả vai), chữ lớn, uốn nhẹ theo lưng (chữ xám nhạt như áo đồng phục)
-  { const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 340; const g = cv.getContext('2d');
-    let fs = 260; do { g.font = `900 ${fs}px Barlow, "Arial Black", Arial, sans-serif`; fs -= 4; } while (g.measureText('DTCGroup').width > 1000 && fs > 60);
-    g.fillStyle = '#DADDE0'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.save(); g.translate(512, 176); g.scale(1, 1.55); g.fillText('DTCGroup', 0, 0); g.restore();   // nét chữ cao, đậm như in trên áo
-    const tex = new THREE.CanvasTexture(cv); tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 8;
-    const W = 0.34, H = W * 340 / 1024, geo = new THREE.PlaneGeometry(W, H, 24, 1), pos = geo.attributes.position;
-    const A = 0.6, B = 0.107;                     // lưng xấp xỉ cung elip: rộng ±A, dày B (đã cộng khe hở chống lẹm)
-    for (let i = 0; i < pos.count; i++) { const x = pos.getX(i), th = x / A; pos.setX(i, A * Math.sin(th)); pos.setZ(i, B * Math.cos(th)); }
-    geo.computeVertexNormals();
-    const logo = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: tex, transparent: true, roughness: 0.85, polygonOffset: true, polygonOffsetFactor: -2 }));
-    logo.position.set(0, 1.385, 0.0); G0.add(logo); }   // lưng trên, dưới bả vai
-  // nạp mô hình người từ dữ liệu nhúng
-  function load(done) {
-    const el = $('glb-human'); if (!el) { done && done(); return; }
-    const bin = Uint8Array.from(atob(el.textContent.trim()), c => c.charCodeAt(0)).buffer;
-    new THREE.GLTFLoader().parse(bin, '', gl => {
-      const meshes = []; gl.scene.traverse(o => { if (o.isMesh) meshes.push(o); });
-      meshes.forEach(o => {
-        const name = o.name || (o.parent && o.parent.name) || '';
-        const key = Object.keys(MAT_OF).find(k => name.startsWith(k)) || 'torso';
-        o.updateWorldMatrix(true, false);
-        let geo = o.geometry.clone().applyMatrix4(o.matrixWorld); geo = geo.index ? geo.toNonIndexed() : geo;
-        const par = PARENT[name] || G0;
-        const addMesh = (g, material) => { g.computeVertexNormals(); const m = new THREE.Mesh(g, material); m.castShadow = true; m.receiveShadow = true;
-          if (par !== G0) m.position.sub(par.position); par.add(m); };
-        if (key === 'torso') {
-          // thân mô hình gồm cả vùng hông: trên đường gấu áo là áo xanh, dưới là quần → gấu áo luôn nằm ngang
-          addMesh(splitByY(geo, HEM, true), M.shirt); addMesh(splitByY(geo, HEM, false), M.pants);
-        } else if (key === 'legU') {
-          addMesh(splitByY(geo, HEM + 0.02, false), M.pants);   // bỏ phần đùi khuất trong thân áo để khi bước không xuyên lên áo
-        } else addMesh(geo, M[MAT_OF[key]]);
+  let model = null, phase = 0, amp = 0;
+
+  function prepare(root) {
+    root.traverse(o => {
+      if (!o.isMesh) return;
+      o.castShadow = true; o.receiveShadow = true;
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      mats.forEach(m => {
+        if (!m) return;
+        if (m.map) { m.map.encoding = THREE.sRGBEncoding; m.map.needsUpdate = true; }
+        // Model nguồn có thông số PBR thiên kim loại; giảm metalness để da/áo hiển thị tự nhiên hơn trong nhà máy.
+        if ('metalness' in m) m.metalness = Math.min(m.metalness ?? 0, 0.12);
+        if ('roughness' in m) m.roughness = Math.max(m.roughness ?? 0.6, 0.55);
+        m.needsUpdate = true;
       });
-      done && done();
-    }, e => { console.error(e); done && done(e); });
+    });
+    root.updateMatrixWorld(true);
+    let b = new THREE.Box3().setFromObject(root), sz = b.getSize(new THREE.Vector3());
+    const sc = sz.y > 0 ? 1.76 / sz.y : 1;
+    root.scale.setScalar(sc); root.updateMatrixWorld(true);
+    b = new THREE.Box3().setFromObject(root);
+    const c = b.getCenter(new THREE.Vector3());
+    // Căn giữa X/Z và đặt bàn chân đúng mặt sàn y=0.
+    root.position.x -= c.x; root.position.z -= c.z; root.position.y -= b.min.y;
+    root.rotation.y = 0;  // mặt trước model giữ theo hướng gốc; toàn nhóm quay theo hướng người chơi
+    G0.add(root); model = root;
   }
-  const HEM = 0.9;   // độ cao gấu áo (m)
-  // lấy các tam giác có tâm ở trên (above = true) hoặc dưới độ cao y0
-  function splitByY(geo, y0, above) {
-    const p = geo.attributes.position, out = [];
-    for (let i = 0; i < p.count; i += 3) {
-      const cy = (p.getY(i) + p.getY(i + 1) + p.getY(i + 2)) / 3;
-      if ((cy >= y0) === above) for (let k = 0; k < 3; k++) out.push(p.getX(i + k), p.getY(i + k), p.getZ(i + k));
-    }
-    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(out, 3)); return g;
+
+  function fallback(done) {
+    const el = $('glb-human');
+    if (!el) { done && done(); return; }
+    try {
+      const bin = Uint8Array.from(atob(el.textContent.trim()), c => c.charCodeAt(0)).buffer;
+      new THREE.GLTFLoader().parse(bin, '', gl => { prepare(gl.scene); done && done(); }, e => { console.error(e); done && done(e); });
+    } catch (e) { console.error(e); done && done(e); }
   }
-  let phase = 0, amp = 0;
+
+  function load(done) {
+    const loader = new THREE.GLTFLoader();
+    loader.load('Enginneer.glb', gl => {
+      prepare(gl.scene); done && done();
+    }, undefined, e => {
+      console.warn('Không tải được Enginneer.glb, dùng model kỹ sư dự phòng.', e);
+      fallback(done);
+    });
+  }
+
   return {
     group: G0, load,
     update(x, y, z, yaw, moving, fast, dt) {
       G0.position.set(x, y, z); G0.rotation.y = yaw;
-      amp += ((moving ? (fast ? 0.55 : 0.36) : 0) - amp) * Math.min(1, dt * 10);
-      phase += dt * (fast ? 11 : 8) * (moving ? 1 : 0);
-      const s = Math.sin(phase) * amp;
-      hipL.rotation.x = s; hipR.rotation.x = -s;
-      shL.rotation.x = -s * 0.8; shR.rotation.x = s * 0.8;
-      G0.position.y = y + Math.abs(Math.cos(phase)) * 0.02 * amp;   // nhún nhẹ khi bước
+      amp += ((moving ? (fast ? 0.055 : 0.035) : 0) - amp) * Math.min(1, dt * 9);
+      phase += dt * (fast ? 10 : 7) * (moving ? 1 : 0);
+      // Model mới không có rig xương, vì vậy dùng nhún rất nhẹ để tránh cảm giác trượt cứng khi di chuyển.
+      G0.position.y = y + Math.abs(Math.sin(phase)) * amp;
+      if (model) model.rotation.z = moving ? Math.sin(phase * 0.5) * 0.008 : 0;
     },
   };
 })();
@@ -5524,13 +5508,13 @@ const Intro = (() => {
   ob(obsGround, -9.35, -7.65, END_Z - 1.75, END_Z + 1.75);
 
   // ---- điều khiển đoạn phim
-  let active = false, t = 0, shot = -1;
+  let active = false, t = 0, shot = -1, welcomeShown = false;
   const camPos = new THREE.Vector3(), camLook = new THREE.Vector3();
   const fade = $('fade'), skipBtn = $('introSkip'), cap = $('introCap');
   function setFade(v) { fade.style.opacity = v; }
   function start() {
     if (!loaded) { finish(); return; }
-    active = true; t = 0; shot = -1; place(0); DOOR.set(0);
+    active = true; t = 0; shot = -1; welcomeShown = false; place(0); DOOR.set(0);
     if (driver) driver.visible = true;
     document.body.classList.add('intro'); skipBtn.hidden = false;
     cap.innerHTML = `<b>${G.playerName ? 'Kỹ sư ' + escHtml(G.playerName) : 'Kỹ sư vận hành'}</b><span>vào ca làm việc</span>`; cap.hidden = false;
@@ -5540,10 +5524,15 @@ const Intro = (() => {
     active = false; place(L); DOOR.set(0);
     if (driver) driver.visible = false;
     document.body.classList.remove('intro'); skipBtn.hidden = true; cap.hidden = true;
-    // kỹ sư đứng trước bảng quy trình vận hành, nhìn vào bảng
-    Object.assign(player, { x: -8.5, z: -10.15, level: 'ground', yaw: 0, pitch: 0.12 }); relevel();
+    // Sau đoạn giới thiệu, đặt kỹ sư gần xe và vẫn hướng về màn hình DTCGroup trên tường.
+    const px = -5.7, pz = -6.9, tx = (HALL.x0 + HALL.x1) / 2, tz = HALL.z0 + 0.02;
+    const dx = tx - px, dz = tz - pz;
+    const yaw = Math.atan2(-dx, -dz);
+    const pitch = Math.atan2(6.0 - 1.65, Math.hypot(dx, dz));
+    Object.assign(player, { x: px, z: pz, level: 'ground', yaw, pitch }); relevel();
+    camDist = 0;  // ép camera gameplay khởi tạo lại ngay, tránh khung hình tối/đứng sau chuyển cảnh
     setFade(0);
-    ui.toast('Đọc kỹ bảng quy trình vận hành trên tường trước khi bắt đầu ca.', 'info');
+    ui.toast(`Kỹ sư ${G.playerName || 'vận hành'} đã vào ca. Quan sát màn hình DTCGroup rồi bắt đầu quy trình.`, 'info');
   }
   function update(dt) {
     t += dt;
@@ -5552,19 +5541,31 @@ const Intro = (() => {
     const op = t < 3.6 ? 0 : t < 5.8 ? (t - 3.6) / 2.2 : t < 11.4 ? 1 : Math.max(0, 1 - (t - 11.4) / 2);
     DOOR.set(op * op * (3 - 2 * op));
     const p = pose(s), fw = new THREE.Vector3(Math.sin(p.yaw), 0, Math.cos(p.yaw)), cpos = new THREE.Vector3(p.x, 0.9, p.z);
-    const newShot = t < 6.1 ? 3 : t < 7.8 ? 0 : t < 9.5 ? 1 : 2;
+    // Sau khi xe đỗ, giữ thêm một shot riêng nhìn thẳng vào màn hình/logo DTCGroup để giới thiệu nhân vật.
+    const newShot = t < 6.1 ? 3 : t < 7.8 ? 0 : t < 9.5 ? 1 : t < 10.7 ? 2 : 4;
     let want, look;
-    if (newShot === 3) { want = new THREE.Vector3(-34 + t * 0.55, 2.1 + t * 0.08, 7.5 - t * 0.25); look = new THREE.Vector3(-13.5, 4.0, 2.2).lerp(cpos, 0.35); }   // bên kia đường nhìn vào cửa lối vào, xe chạy ngang rồi quẹo vào   // ngoài đường nhìn vào cửa lối vào
-    else if (newShot === 0) { want = new THREE.Vector3(-9.0, 1.7, 3.2); look = cpos; }                                     // trong xưởng nhìn ra cửa
-    else if (newShot === 1) { want = cpos.clone().addScaledVector(fw, -5.2).add(new THREE.Vector3(0, 1.6, 0)); look = cpos.clone().addScaledVector(fw, 3); }   // bám sau xe
-    else { want = new THREE.Vector3(-6.7, 1.8, -10.7); look = cpos; }                                                // đón xe từ phía bảng quy trình
+    if (newShot === 3) { want = new THREE.Vector3(-34 + t * 0.55, 2.1 + t * 0.08, 7.5 - t * 0.25); look = new THREE.Vector3(-13.5, 4.0, 2.2).lerp(cpos, 0.35); }
+    else if (newShot === 0) { want = new THREE.Vector3(-9.0, 1.7, 3.2); look = cpos; }
+    else if (newShot === 1) { want = cpos.clone().addScaledVector(fw, -5.2).add(new THREE.Vector3(0, 1.6, 0)); look = cpos.clone().addScaledVector(fw, 3); }
+    else if (newShot === 2) { want = new THREE.Vector3(-6.7, 1.8, -10.7); look = cpos; }
+    else {
+      // Camera đặt trong xưởng, nhìn trực diện màn hình DTCGroup ở tường z0.
+      want = new THREE.Vector3((HALL.x0 + HALL.x1) / 2, 3.2, -5.0);
+      look = new THREE.Vector3((HALL.x0 + HALL.x1) / 2, 6.0, HALL.z0 + 0.1);
+      if (!welcomeShown) {
+        welcomeShown = true;
+        TV.setName(G.playerName || 'Kỹ sư vận hành');
+        cap.innerHTML = `<b>Kỹ sư ${escHtml(G.playerName || 'vận hành')}</b><span>DTCGroup · Kỹ sư vận hành máy tách màu</span>`;
+        cap.hidden = false;
+      }
+    }
     if (newShot !== shot) { shot = newShot; camPos.copy(want); camLook.copy(look); }
-    const k = 1 - Math.exp(-dt * 4); camPos.lerp(want, k); camLook.lerp(look, 1 - Math.exp(-dt * 6));
+    const k = 1 - Math.exp(-dt * (newShot === 4 ? 2.2 : 4)); camPos.lerp(want, k); camLook.lerp(look, 1 - Math.exp(-dt * 6));
     camera.position.copy(camPos); camera.lookAt(camLook);
-    // màn đen mở đầu, chuyển cảnh cuối
-    if (t < 0.8) setFade(1 - t / 0.8); else if (t > 11.0 && t < 11.5) setFade((t - 11.0) / 0.5); else if (t >= 11.5) setFade(1);
-    if (t > 3.6) cap.hidden = true;
-    if (t >= 11.6) finish();
+    // Chỉ fade ở đầu phim; bỏ fade đen ở cuối để không còn màn hình tối khi xe vừa tới.
+    setFade(t < 0.8 ? 1 - t / 0.8 : 0);
+    if (t > 3.6 && t < 10.7) cap.hidden = true;
+    if (t >= 14.4) finish();
   }
   return { load, start, finish, update, skip() { if (active) finish(); }, get active() { return active; } };
 })();
@@ -6404,7 +6405,7 @@ $('stGo').onclick = () => {
   if (!nm) { $('stNameErr').hidden = false; $('stName').focus(); return; }
   $('stNameErr').hidden = true; G.playerName = nm;
   try { localStorage.setItem('sc16-player', nm); } catch (e) {}
-  window.setWelcome && window.setWelcome(nm);
+  window.setWelcome && window.setWelcome('');
   G.levelIdx = +$('stLevel').value; G.mode = document.querySelector('[name=stMode]:checked').value; G.incPref = $('stInc').checked;
   G.lots = []; Object.assign(player, { x: -11.3, z: 2.2, level: 'ground', yaw: -Math.PI / 2, pitch: -0.05 }); relevel();
   resetSession(); newBatch(); drawBoard(); labels.forEach(l => { l.visible = false; });   // không hiện nhãn tên thiết bị
