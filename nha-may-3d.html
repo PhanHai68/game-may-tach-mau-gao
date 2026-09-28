@@ -4675,7 +4675,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
-console.info('[DTC] nha-may-3d build v11 - restored green DTC engineer + skinned walk rig + palm trees');
+console.info('[DTC] nha-may-3d build v12 - brighter Jimny + moved palm + wider entrance');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -5141,7 +5141,7 @@ label('Sàn thao tác máy tách màu SC16 Pro', -1.6, 6.9, 0.3);
 label('Cầu thang lên sàn', -2.6, 1.3, 0.0);
 
 // ---------- Cửa ra vào (vách cuối nhà xưởng): lỗ cửa thật, 2 cánh cửa lùa, bên ngoài có sân và bầu trời ----------
-const DOOR = { x: HALL.x0, z: 2.2, w: 4.4, h: 4.6, open: 0 };
+const DOOR = { x: HALL.x0, z: 2.2, w: 6.2, h: 4.6, open: 0 };
 { const X = DOOR.x, Z = DOOR.z, W = DOOR.w, Hh = DOOR.h, z0 = HALL.z0, z1 = HALL.z1, wallM = mat('#B9C2CC', { roughness: 0.95 });
   // vách x0 chia 3 mảng quanh lỗ cửa + chân tường xanh
   const za = Z - W / 2, zb = Z + W / 2;
@@ -5192,7 +5192,8 @@ const DOOR = { x: HALL.x0, z: 2.2, w: 4.4, h: 4.6, open: 0 };
   // Model GLB đã được tối ưu từ file STEP, cao khoảng 5.4 m và dùng chung geometry/material giữa các bản sao.
   const PALM_SPOTS = [
     { x: X - 4.5,  z: Z - 12.5, s: 0.96, r: 0.12 },
-    { x: X - 9.0,  z: Z - 13.0, s: 1.00, r: 1.05 },
+    // cây phía trái mặt tiền đưa vào đúng dải lề đường, gần mép bó vỉa hơn để giống thực tế
+    { x: X - 9.8,  z: Z - 12.2, s: 1.00, r: 0.96 },
     { x: X - 5.0,  z: Z + 11.5, s: 0.97, r: 2.10 },
     { x: X - 11.0, z: Z + 11.0, s: 1.03, r: 2.85 },
     // cây cọ trước khối trắng mặt tiền (vị trí cây cũ bên ngoài showroom)
@@ -5537,11 +5538,11 @@ const Intro = (() => {
             if (!m || !m.color) return;
             const hsl = { h: 0, s: 0, l: 0 };
             m.color.getHSL(hsl);
-            // Làm sáng màu thân xe: chỉ đổi các vật liệu xám/ít bão hòa, giữ nguyên lốp và kính tối.
-            if (hsl.s < 0.35 && hsl.l > 0.18 && hsl.l < 0.72) {
-              m.color.setRGB(0.84, 0.83, 0.80);
-              if ('metalness' in m) m.metalness = Math.max(m.metalness ?? 0, 0.12);
-              if ('roughness' in m) m.roughness = Math.min(m.roughness ?? 1, 0.72);
+            // Làm sáng màu thân xe rõ hơn theo yêu cầu mới: chuyển sang tông bạc-kem sáng, giữ lốp và kính tối.
+            if (hsl.s < 0.35 && hsl.l > 0.18 && hsl.l < 0.82) {
+              m.color.setRGB(0.92, 0.91, 0.87);
+              if ('metalness' in m) m.metalness = Math.max(m.metalness ?? 0, 0.18);
+              if ('roughness' in m) m.roughness = Math.min(m.roughness ?? 1, 0.58);
               m.needsUpdate = true;
             }
           });
