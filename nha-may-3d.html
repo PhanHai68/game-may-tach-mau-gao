@@ -4677,7 +4677,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
-console.info('[DTC] nha-may-3d build v22 - roadside palm moved off road');
+console.info('[DTC] nha-may-3d build v23 - blue air filters + straight under-platform air line');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -5175,6 +5175,11 @@ function loadMNK(done) {
       if (nm.includes('tank') || nm.includes('receiver') || nm.includes('binh')) {
         o.material = new THREE.MeshStandardMaterial({ color: '#0B4F8A', roughness: 0.40, metalness: 0.22, flatShading: true });
       }
+      // V23: chỉ đổi màu 3 bộ lọc hiện hữu sang cùng xanh dương với bình tích khí.
+      // Không thay hình dạng, số lượng, kích thước hay vị trí bộ lọc.
+      if (nm === 'filter') {
+        o.material = new THREE.MeshStandardMaterial({ color: '#0B4F8A', roughness: 0.40, metalness: 0.22, flatShading: true });
+      }
     } });
     scene.add(mnk); done && done();
   }, e => { console.error(e); done && done(e); });
@@ -5267,7 +5272,16 @@ const AY = 2.35;
 // Ống khí nén đi vuông góc, thẳng hàng với khung sàn (có cút ở mỗi góc):
 // đỉnh bộ lọc → lên sát dưới sàn → dọc mép sàn tới cột → rẽ sang cột → chạy dưới sàn dọc máy → rẽ vào đầu máy → lên van điều áp
 const FX = -4.55 + PX, FZ = -3.17 + PZ, UY = 2.95;
-{ const R = 0.04, pts = [[FX, 2.32, FZ], [FX, UY, FZ], [FX, UY, -2.3], [-0.8, UY, -2.3], [-0.8, UY, 3.0], [0.25, UY, 3.0], [0.25, 3.62, 3.0], [0.25, 3.62, 2.72]];
+{ const R = 0.04, pts = [
+    [FX, 2.32, FZ],
+    [FX, UY, FZ],
+    // V23: đoạn chạy dưới sàn đặt máy đi THẲNG một mạch, không ziczac.
+    [FX, UY, 3.0],
+    // Cuối đoạn thẳng mới co 90° sang vị trí ống cấp vào máy.
+    [0.25, UY, 3.0],
+    [0.25, 3.62, 3.0],
+    [0.25, 3.62, 2.72]
+  ];
   for (let i = 0; i < pts.length - 1; i++) pipe(pts[i], pts[i + 1], R);
   const elbowMat = mat('#8C96A3', { metalness: 0.5, roughness: 0.4 });
   for (let i = 1; i < pts.length - 1; i++) { const e = new THREE.Mesh(new THREE.SphereGeometry(R * 1.35, 12, 8), elbowMat); e.position.set(...pts[i]); scene.add(e); } }
