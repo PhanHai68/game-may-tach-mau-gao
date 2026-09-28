@@ -4675,6 +4675,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
+console.info('[DTC] nha-may-3d build v7 - engineer forward + walk rig + CSKH opposite wall');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -4790,37 +4791,33 @@ function floorTexture() {
   const fill = new THREE.PointLight('#FFF3E0', 0.35, 14); fill.position.set(-1.2, 6, 0.3); scene.add(fill);   // đèn chiếu sàn thao tác
 }
 
-// ---------- Thông tin CSKH trên bức tường đối diện mặt tiền/logo DTCGroup ----------
+// ---------- Thông tin CSKH trên bức tường ĐỐI DIỆN màn hình/logo DTCGroup ----------
 {
-  const cv = document.createElement('canvas'); cv.width = 2048; cv.height = 560;
+  const cv = document.createElement('canvas'); cv.width = 2048; cv.height = 620;
   const g = cv.getContext('2d');
   g.clearRect(0, 0, cv.width, cv.height);
 
-  // nền bảng sáng, bo góc nhẹ để nổi rõ trên tường xám
-  g.fillStyle = 'rgba(248,250,247,0.96)';
+  // Bảng sáng, chữ và số điện thoại đều dùng cùng màu xanh DTC.
+  g.fillStyle = 'rgba(250,252,250,0.97)';
   roundRect(g, 20, 20, cv.width - 40, cv.height - 40, 54); g.fill();
   g.strokeStyle = '#12803F'; g.lineWidth = 12;
   roundRect(g, 28, 28, cv.width - 56, cv.height - 56, 48); g.stroke();
 
-  g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.fillStyle = '#12803F';
-  g.font = '800 105px Barlow, "Segoe UI", Arial, sans-serif';
-  g.fillText('CHĂM SÓC KHÁCH HÀNG', cv.width / 2, 175);
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#12803F';
+  g.font = '800 108px Barlow, "Segoe UI", Arial, sans-serif';
+  g.fillText('CHĂM SÓC KHÁCH HÀNG', cv.width / 2, 190);
+  g.font = '900 168px Barlow, "Segoe UI", Arial, sans-serif';
+  g.fillText('0832 66 67 68', cv.width / 2, 410);
 
-  g.fillStyle = '#1F2A27';
-  g.font = '900 155px Barlow, "Segoe UI", Arial, sans-serif';
-  g.fillText('0832 66 67 68', cv.width / 2, 365);
-
-  const tex = new THREE.CanvasTexture(cv);
-  tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 8;
+  const tex = new THREE.CanvasTexture(cv); tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 8;
   const sign = new THREE.Mesh(
-    new THREE.PlaneGeometry(8.2, 2.24),
+    new THREE.PlaneGeometry(6.9, 2.08),
     new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false, side: THREE.FrontSide })
   );
-  // Tường đối diện mặt tiền nằm ở x = HALL.x1; mặt bảng quay vào trong xưởng.
-  // Đặt cùng vùng z với logo DTCGroup ngoài mặt tiền để nhìn cân đối theo trục đối diện.
-  sign.rotation.y = -Math.PI / 2;
-  sign.position.set(HALL.x1 - 0.012, 7.15, 6.0);
+  // Logo DTCGroup/TV nằm ở tường z0, vì vậy bảng CSKH được đặt đúng tường đối diện z1.
+  // Vị trí x=4.0 là tâm của vùng trống người dùng đánh dấu đỏ; bảng quay vào trong xưởng.
+  sign.rotation.y = Math.PI;
+  sign.position.set(4.0, 7.15, HALL.z1 - 0.018);
   sign.renderOrder = 3;
   scene.add(sign);
 }
@@ -5369,6 +5366,45 @@ function drawBoard() {
 const avatar = (() => {
   const G0 = new THREE.Group(); scene.add(G0);
   let model = null, phase = 0, amp = 0;
+  const J = {}; // các khớp giả tạo từ model đã tách thành từng chi
+
+  function addPivot(base, part, name, pivot, parentPivot = null, parentOrigin = null) {
+    if (!part) return null;
+    const g = new THREE.Group(); g.name = name;
+    if (parentPivot) {
+      const po = parentOrigin || new THREE.Vector3();
+      g.position.set(pivot.x - po.x, pivot.y - po.y, pivot.z - po.z);
+      parentPivot.add(g);
+    } else {
+      g.position.copy(pivot); base.add(g);
+    }
+    g.add(part);
+    // Geometry của từng chi vẫn dùng hệ tọa độ gốc của model; bù pivot để tư thế đứng không đổi.
+    part.position.set(-pivot.x, -pivot.y, -pivot.z);
+    return g;
+  }
+
+  function buildWalkRig(root) {
+    const LU = root.getObjectByName('LeftUpperArm'), LF = root.getObjectByName('LeftForearm');
+    const RU = root.getObjectByName('RightUpperArm'), RF = root.getObjectByName('RightForearm');
+    const LT = root.getObjectByName('LeftThigh'), LS = root.getObjectByName('LeftShin');
+    const RT = root.getObjectByName('RightThigh'), RS = root.getObjectByName('RightShin');
+    if (!(LU && LF && RU && RF && LT && LS && RT && RS)) return false;
+    const base = LU.parent; // tất cả part cùng nằm trong node world của GLB
+    const pLS = new THREE.Vector3(-0.205,  0.515, 0.00), pLE = new THREE.Vector3(-0.305,  0.185, 0.00);
+    const pRS = new THREE.Vector3( 0.205,  0.515, 0.00), pRE = new THREE.Vector3( 0.305,  0.185, 0.00);
+    const pLH = new THREE.Vector3(-0.105, -0.175, 0.00), pLK = new THREE.Vector3(-0.105, -0.585, 0.00);
+    const pRH = new THREE.Vector3( 0.105, -0.175, 0.00), pRK = new THREE.Vector3( 0.105, -0.585, 0.00);
+    J.lShoulder = addPivot(base, LU, 'LeftShoulderPivot', pLS);
+    J.lElbow    = addPivot(base, LF, 'LeftElbowPivot', pLE, J.lShoulder, pLS);
+    J.rShoulder = addPivot(base, RU, 'RightShoulderPivot', pRS);
+    J.rElbow    = addPivot(base, RF, 'RightElbowPivot', pRE, J.rShoulder, pRS);
+    J.lHip      = addPivot(base, LT, 'LeftHipPivot', pLH);
+    J.lKnee     = addPivot(base, LS, 'LeftKneePivot', pLK, J.lHip, pLH);
+    J.rHip      = addPivot(base, RT, 'RightHipPivot', pRH);
+    J.rKnee     = addPivot(base, RS, 'RightKneePivot', pRK, J.rHip, pRH);
+    return true;
+  }
 
   function prepare(root) {
     root.traverse(o => {
@@ -5378,7 +5414,6 @@ const avatar = (() => {
       mats.forEach(m => {
         if (!m) return;
         if (m.map) { m.map.encoding = THREE.sRGBEncoding; m.map.needsUpdate = true; }
-        // Model nguồn có thông số PBR thiên kim loại; giảm metalness để da/áo hiển thị tự nhiên hơn trong nhà máy.
         if ('metalness' in m) m.metalness = Math.min(m.metalness ?? 0, 0.12);
         if ('roughness' in m) m.roughness = Math.max(m.roughness ?? 0.6, 0.55);
         m.needsUpdate = true;
@@ -5390,9 +5425,12 @@ const avatar = (() => {
     root.scale.setScalar(sc); root.updateMatrixWorld(true);
     b = new THREE.Box3().setFromObject(root);
     const c = b.getCenter(new THREE.Vector3());
-    // Căn giữa X/Z và đặt bàn chân đúng mặt sàn y=0.
     root.position.x -= c.x; root.position.z -= c.z; root.position.y -= b.min.y;
-    root.rotation.y = 0;  // mặt trước model giữ theo hướng gốc; toàn nhóm quay theo hướng người chơi
+    // Model Enginneer_v7 đã được chuẩn hóa đúng hướng: mặt nhân vật trùng hướng tiến của camera/W.
+    // Không xoay 180° nữa, tránh hiện tượng nhân vật quay mặt về camera và đi giật lùi.
+    root.rotation.y = 0;
+    const rigOK = buildWalkRig(root);
+    console.info('[DTC v7] Engineer walk rig:', rigOK ? 'READY' : 'NOT FOUND');
     G0.add(root); model = root;
   }
 
@@ -5407,7 +5445,7 @@ const avatar = (() => {
 
   function load(done) {
     const loader = new THREE.GLTFLoader();
-    loader.load('Enginneer.glb', gl => {
+    loader.load('Enginneer_v7.glb?v=7', gl => {
       prepare(gl.scene); done && done();
     }, undefined, e => {
       console.warn('Không tải được Enginneer.glb, dùng model kỹ sư dự phòng.', e);
@@ -5415,15 +5453,35 @@ const avatar = (() => {
     });
   }
 
+  function dampJoint(j, target, dt, k = 12) {
+    if (!j) return;
+    j.rotation.x += (target - j.rotation.x) * Math.min(1, dt * k);
+  }
+
   return {
     group: G0, load,
     update(x, y, z, yaw, moving, fast, dt) {
       G0.position.set(x, y, z); G0.rotation.y = yaw;
-      amp += ((moving ? (fast ? 0.055 : 0.035) : 0) - amp) * Math.min(1, dt * 9);
-      phase += dt * (fast ? 10 : 7) * (moving ? 1 : 0);
-      // Model mới không có rig xương, vì vậy dùng nhún rất nhẹ để tránh cảm giác trượt cứng khi di chuyển.
-      G0.position.y = y + Math.abs(Math.sin(phase)) * amp;
-      if (model) model.rotation.z = moving ? Math.sin(phase * 0.5) * 0.008 : 0;
+      const targetAmp = moving ? (fast ? 1.0 : 0.72) : 0;
+      amp += (targetAmp - amp) * Math.min(1, dt * 9);
+      if (moving) phase += dt * (fast ? 10.5 : 7.2);
+      const s = Math.sin(phase), c = Math.cos(phase);
+      // Biên độ đủ rõ ở góc nhìn thứ ba: tay và chân đánh ngược pha tự nhiên.
+      const arm = s * (fast ? 0.82 : 0.60) * amp;
+      const leg = s * (fast ? 0.72 : 0.52) * amp;
+      dampJoint(J.lShoulder,  arm, dt, 16); dampJoint(J.rShoulder, -arm, dt, 16);
+      dampJoint(J.lHip,      -leg, dt, 16); dampJoint(J.rHip,       leg, dt, 16);
+      // Gập khuỷu và đầu gối theo pha nhấc chân để không còn cảm giác mannequin cứng.
+      dampJoint(J.lElbow, -0.16 - Math.max(0, -s) * 0.28 * amp, dt, 16);
+      dampJoint(J.rElbow, -0.16 - Math.max(0,  s) * 0.28 * amp, dt, 16);
+      dampJoint(J.lKnee,   Math.max(0,  s) * 0.58 * amp, dt, 18);
+      dampJoint(J.rKnee,   Math.max(0, -s) * 0.58 * amp, dt, 18);
+      // Nhún thân và xoay vai rất nhẹ theo nhịp bước.
+      G0.position.y = y + Math.abs(Math.sin(phase * 2)) * 0.028 * amp;
+      if (model) {
+        model.rotation.z = moving ? c * 0.012 * amp : 0;
+        model.rotation.x = moving ? Math.abs(s) * 0.012 * amp : 0;
+      }
     },
   };
 })();
