@@ -4677,7 +4677,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
-console.info('[DTC] nha-may-3d build v21 - 2 training air coolers added');
+console.info('[DTC] nha-may-3d build v22 - roadside palm moved off road');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -5434,7 +5434,7 @@ const DOOR = { x: HALL.x0, z: 2.2, w: 8.0, h: 4.6, open: 0 };
     // cây phía trái mặt tiền đưa vào đúng dải lề đường, gần mép bó vỉa hơn để giống thực tế
     { x: X - 3.9,  z: Z - 12.2, s: 1.00, r: 0.96 },
     { x: X - 5.0,  z: Z + 11.5, s: 0.97, r: 2.10 },
-    { x: X - 11.0, z: Z + 11.0, s: 1.03, r: 2.85 },
+    { x: X - 6.25, z: Z + 11.0, s: 1.03, r: 2.85 }, // v22: dời khỏi lòng đường vào lề/vỉa hè
     // cây cọ trước khối trắng mặt tiền (vị trí cây cũ bên ngoài showroom)
     { x: DOOR.x - 1.71, z: -6.6, s: 0.80, r: 0.58 }
   ];
