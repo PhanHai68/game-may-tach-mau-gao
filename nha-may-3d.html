@@ -22,7 +22,7 @@ button{font:inherit}
 #hudTop b{display:block;font-size:1.05rem}
 #hudTop .ph{color:var(--mut);font-size:.9rem}
 #hudTop .sc{color:var(--acc);font-weight:700;margin-top:2px}
-#hudTop .tm{margin-top:5px;font:800 1.08rem/1.2 "Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums;color:#F3C969}
+#hudTop .tm{position:fixed;right:14px;bottom:14px;z-index:7;margin:0;background:rgba(12,18,25,.92);border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:9px 14px;font:800 1.12rem/1.2 "Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums;color:#F3C969;box-shadow:0 4px 18px rgba(0,0,0,.22)}
 #hudTop .tm.danger{color:#FF6B5F;animation:timerPulse .8s ease-in-out infinite alternate}
 @keyframes timerPulse{from{opacity:1}to{opacity:.62}}
 #hudKeys{position:fixed;left:14px;bottom:12px;color:var(--mut);font-size:.82rem;background:var(--pan);padding:6px 10px;border-radius:8px;pointer-events:none}
@@ -41,7 +41,7 @@ button{font:inherit}
 .bar div{height:100%;width:0;background:linear-gradient(90deg,#12803F,#8DC63F)}
 #busy{position:fixed;left:50%;top:calc(50% + 58px);transform:translateX(-50%);width:200px;pointer-events:none}
 #busy .bar div{background:var(--warn)}
-#alarm{position:fixed;right:14px;bottom:14px;width:420px;background:rgba(92,26,18,.97);border:2px solid #E0553B;border-radius:12px;padding:11px 13px;color:#FFFFFF}
+#alarm{position:fixed;right:14px;bottom:76px;width:420px;background:rgba(92,26,18,.97);border:2px solid #E0553B;border-radius:12px;padding:11px 13px;color:#FFFFFF}
 #alarm .head{display:flex;align-items:center;gap:8px}#alarm .head i{width:11px;height:11px;border-radius:50%;background:#FF5A3C;box-shadow:0 0 10px #FF5A3C;animation:bl .6s infinite alternate}
 #alarm .head span{margin-left:auto;opacity:.8;font-size:.85rem}
 @keyframes bl{to{opacity:.3}}
@@ -189,7 +189,7 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 
 <div class="ov" id="ov-start" hidden><div class="card">
   <h1 style="margin-bottom:12px">Vận hành máy tách màu SC16 Pro</h1>
-  <div class="rules"><b>Luật chơi mới</b><p>Bạn được <b>tự chọn Lô 1, Lô 2, Lô 3 hoặc Lô 4</b>, không bắt buộc chơi theo thứ tự. Mỗi lượt có tối đa <b>05:00 phút</b> để hoàn thành quy trình và chạy xong lô hàng. Hoàn thành càng sớm thì <b>thưởng tốc độ càng cao</b>. Hết 5 phút mà lô chưa hoàn thành thì lượt chơi kết thúc.</p></div>
+  <div class="rules"><b>Luật chơi</b><p>Tự chọn Lô 1–4. Mỗi lượt có tối đa <b>05:00 phút</b>. Tổng tối đa <b>1.000 điểm</b>: 500 điểm quy trình (mỗi bước đều có điểm, làm nhanh được nhiều hơn) + 500 điểm kết quả máy (kết quả càng tốt điểm càng cao). Thi đấu chỉ xét tổng điểm; bằng điểm thì người hoàn thành nhanh hơn xếp trên.</p></div>
   <label for="stName">Tên người chơi</label><input type="text" id="stName" maxlength="28" placeholder="Nhập tên của bạn" autocomplete="off">
   <p class="err" id="stNameErr" hidden>Hãy nhập tên người chơi trước khi bắt đầu.</p>
   <label for="stLevel">Chọn lô thử thách (tự do)</label><select id="stLevel"></select>
@@ -4306,7 +4306,24 @@ const lc = t => t.charAt(0).toLowerCase() + t.slice(1);
 // Bộ rung 0–100 (bình thường 20–60) quy đổi ra năng suất. Giả định: 1 đơn vị ≈ 0,4 t/h.
 const RUNG_TO_TH = 0.4;
 const GAME_LIMIT_SEC = 5 * 60;
-const SPEED_POINTS_PER_SEC = 3;   // mỗi giây còn lại = +3 điểm; tối đa 900 điểm tốc độ
+
+// ----- Hệ điểm thi đấu v27: TỔNG TỐI ĐA 1000 -----
+// A. Quy trình mở máy: 500 điểm
+//    14 bước × tối đa 35 = 490, hoàn thành đủ 14 bước +10.
+//    Mỗi bước luôn có 20 điểm cơ bản; làm nhanh được cộng thêm 15 / 10 / 5.
+//    Mỗi lỗi thao tác chỉ trừ nhẹ 10 điểm.
+// B. Kết quả chạy máy: 500 điểm
+//    Chất lượng thành phẩm 225 + phế lẫn 175 + năng suất 100.
+//    Không còn cơ chế "không đạt = 0 điểm".
+const PROCESS_MAX = 500;
+const MACHINE_MAX = 500;
+const TOTAL_MAX = 1000;
+const STEP_BASE = 20;
+const STEP_FAST_BONUS = 15;
+const STEP_MED_BONUS = 10;
+const STEP_SLOW_BONUS = 5;
+const ALL_STEPS_BONUS = 10;
+const MISTAKE_PENALTY = 10;
 const G = {
   mode: 'practice', levelIdx: 0, incPref: true,
   running: false, sim: null, resultShown: false, lots: [],
@@ -4319,7 +4336,6 @@ const fmtClock = secs => {
   return String(Math.floor(secs / 60)).padStart(2, '0') + ':' + String(secs % 60).padStart(2, '0');
 };
 const challengeRemaining = () => Math.max(0, GAME_LIMIT_SEC - G.challenge.elapsed);
-const currentSpeedBonus = () => Math.max(0, Math.round(challengeRemaining() * SPEED_POINTS_PER_SEC));
 function resetChallengeTimer() {
   Object.assign(G.challenge, { elapsed: 0, active: false, pending: false, expired: false });
 }
@@ -4353,7 +4369,7 @@ const incOn = () => G.mode === 'contest' || G.incPref;
 
 // ---------- Quy trình (SOP đã xác nhận) ----------
 const PEN = { skip: 50, late: 30, dryerShort: 40, wrongMode: 50, skipClose: 40, lateClose: 30, cleanOn: 60, drainComp: 100 };
-const OPEN_MAX = 300, CLOSE_MAX = 150;
+const OPEN_MAX = PROCESS_MAX, CLOSE_MAX = 150;
 const SIM_SCALE = 30;   // 1 giây thực = 30 giây nhà máy
 const MODES = [
   { id: 'VANG-HU', name: 'Bắn hạt khác màu (vàng hư)', k: { vd: 1, bb: 0.25 } },
@@ -4374,8 +4390,8 @@ const SOP_OPEN = [
   { id: 'stab', n: 8, sec: 'A', t: 'Mở ổn áp' },
   { id: 'hopper', n: 9, sec: 'A', t: 'Vệ sinh phễu và các kênh (máng)' },
   { id: 'reg', n: 10, sec: 'A', t: 'Xả lọc máy tách màu, kiểm tra van điều áp 0,25 MPa (0,25–0,3)' },
-  { id: 'glass', n: 11, sec: 'A', t: 'Kiểm tra và vệ sinh kính camera' },
-  { id: 'start', n: 12, sec: 'B', t: 'Ấn nút khởi động màu xanh' },
+  { id: 'start', n: 11, sec: 'B', t: 'Ấn nút khởi động màu xanh' },
+  { id: 'glass', n: 12, sec: 'A', t: 'Kiểm tra và vệ sinh kính camera' },
   { id: 'mode', n: 13, sec: 'B', t: 'Kiểm tra máy đang ở đúng chế độ phân loại' },
   { id: 'run', n: 14, sec: 'B', t: 'Chạy máy' },
 ];
@@ -4396,6 +4412,7 @@ function resetSession() {
     src: 0, pm: 0, reg: regs[Math.floor(r() * regs.length)], regPulled: false, volt: 214 + Math.floor(r() * 13),
     mode: MODES.filter(m => m.id !== RIGHT_MODE)[Math.floor(r() * 4)].id, busy: null, busyLeft: 0, busyThen: null,
     done: {}, skippedOver: {}, pen: [], phase: 'open', openScore: null, closeScore: null, waterHit: false,
+    stepScores: {}, stepTimes: {}, lastStepElapsed: 0,
     cdone: {}, cskipped: {}, voltSeen: false, srcSeen: false, login: false, mfDrained: false, regOk: false,
   });
   G.running = false;
@@ -4405,19 +4422,50 @@ const pressOK = () => prep.pm >= 0.2;
 const prepReady = () => prep.power && prep.booted;
 const dryerMin = () => prep.dryer ? (performance.now() - prep.dryerAt) / 1000 * SIM_SCALE / 60 : 0;
 const fmtMin = m => Math.floor(m) + ':' + String(Math.floor((m % 1) * 60)).padStart(2, '0');
-const openPts = () => Math.max(0, OPEN_MAX - prep.pen.filter(p => p.ph === 'open').reduce((a, p) => a + p.pts, 0));
+const completedStepPoints = () => Object.values(prep.stepScores || {}).reduce((a, b) => a + b, 0);
+const openMistakeCount = () => prep.pen.filter(p => p.ph === 'open').length;
+const allOpenStepsDone = () => SOP_OPEN.every(s => prep.done[s.id]);
+const openPts = () => Math.max(0, Math.min(
+  OPEN_MAX,
+  completedStepPoints() + (allOpenStepsDone() ? ALL_STEPS_BONUS : 0) - openMistakeCount() * MISTAKE_PENALTY
+));
 const closePts = () => Math.max(0, CLOSE_MAX - prep.pen.filter(p => p.ph === 'close').reduce((a, p) => a + p.pts, 0));
-function penal(pts, msg, ph) {
-  const p = { pts, msg, ph: ph || (prep.phase === 'close' ? 'close' : 'open') };
-  prep.pen.push(p); ui.toast('−' + pts + ' ' + msg, 'bad');
+
+function stepSpeedPoints(deltaSec) {
+  if (deltaSec <= 15) return { bonus: STEP_FAST_BONUS, label: 'rất nhanh' };
+  if (deltaSec <= 25) return { bonus: STEP_MED_BONUS, label: 'nhanh' };
+  if (deltaSec <= 40) return { bonus: STEP_SLOW_BONUS, label: 'đúng thời gian' };
+  return { bonus: 0, label: 'chậm' };
 }
+
+function penal(pts, msg, ph) {
+  const phase = ph || (prep.phase === 'close' ? 'close' : 'open');
+  const scorePts = phase === 'open' ? MISTAKE_PENALTY : pts;
+  const p = { pts, scorePts, msg, ph: phase };
+  prep.pen.push(p);
+  ui.toast('−' + scorePts + ' ' + msg, 'bad');
+}
+
 function doneOpen(id) {
   if (prep.done[id] || prep.phase !== 'open') return;
   const st = SOP_OPEN.find(s => s.id === id);
   SOP_OPEN.filter(s => s.n < st.n && !prep.done[s.id]).forEach(s => { prep.skippedOver[s.id] = st.n; });
   if (prep.skippedOver[id]) penal(PEN.late, `Sai thứ tự: bước ${st.n} “${lc(st.t)}” phải làm trước bước ${prep.skippedOver[id]}.`);
+
+  // Tốc độ của bước được tính từ thời điểm hoàn thành bước trước.
+  // Riêng bước đầu tiên tính từ lúc đồng hồ 05:00 bắt đầu.
+  const nowElapsed = Math.max(0, G.challenge.elapsed || 0);
+  const delta = Math.max(0, nowElapsed - (prep.lastStepElapsed || 0));
+  const sp = stepSpeedPoints(delta);
+  const earned = STEP_BASE + sp.bonus;
+
   prep.done[id] = true;
-  if (G.mode === 'practice') ui.toast('✓ Bước ' + st.n + ': ' + st.t, 'ok');
+  prep.stepScores[id] = earned;
+  prep.stepTimes[id] = delta;
+  prep.lastStepElapsed = nowElapsed;
+
+  ui.toast(`✓ Bước ${st.n}: +${earned} điểm (${sp.label}, ${delta.toFixed(1).replace('.', ',')} giây)`, 'ok');
+  ui.refresh();
 }
 function doneClose(id) {
   if (prep.cdone[id] || prep.phase !== 'close') return;
@@ -4677,6 +4725,37 @@ function engineStep(dt) {
     if (G.sim.finished && !G.resultShown) finishBatch();
   }
 }
+const clamp01 = v => Math.max(0, Math.min(1, v));
+
+function qualityPoints(purity, target, maxPts = 225) {
+  // Tại đúng chuẩn kỹ thuật nhận 80% điểm; càng sạch càng tiến dần tới 100%.
+  // Thấp hơn chuẩn vẫn nhận điểm tỷ lệ, về 0 khi thấp hơn chuẩn 5 điểm %.
+  if (purity >= target) {
+    const span = Math.max(0.1, 100 - target);
+    return Math.round(maxPts * (0.80 + 0.20 * clamp01((purity - target) / span)));
+  }
+  return Math.round(maxPts * 0.80 * clamp01((purity - (target - 5)) / 5));
+}
+
+function lossPoints(loss, target, maxPts = 175) {
+  // Phế lẫn càng thấp càng tốt. Đúng chuẩn = 80%; về 100% khi tiến về 0%.
+  if (loss <= target) {
+    return Math.round(maxPts * (0.80 + 0.20 * clamp01((target - loss) / Math.max(0.1, target))));
+  }
+  // Vượt chuẩn vẫn có điểm nhưng giảm dần; quá xấu sẽ về 0.
+  const bad = Math.max(target * 3, target + 10);
+  return Math.round(maxPts * 0.80 * clamp01((bad - loss) / Math.max(0.1, bad - target)));
+}
+
+function feedPoints(feed, target, maxPts = 100) {
+  // Đúng năng suất chuẩn = 80%; cao hơn 25% đạt tối đa.
+  if (feed >= target) {
+    return Math.round(maxPts * (0.80 + 0.20 * clamp01((feed - target) / Math.max(0.1, target * 0.25))));
+  }
+  // Dưới chuẩn vẫn có điểm; còn 50% năng suất mục tiêu thì về 0.
+  return Math.round(maxPts * 0.80 * clamp01((feed - target * 0.5) / Math.max(0.1, target * 0.5)));
+}
+
 function finishBatch(timedOut = false) {
   if (G.resultShown) return;
   G.resultShown = true; G.running = false; stopChallengeTimer();
@@ -4688,32 +4767,40 @@ function finishBatch(timedOut = false) {
   const pass = !timedOut && ok.p && ok.l && ok.f;
   const elapsed = timedOut ? GAME_LIMIT_SEC : Math.min(G.challenge.elapsed, GAME_LIMIT_SEC);
   const remaining = Math.max(0, GAME_LIMIT_SEC - elapsed);
-  const timeBonus = pass ? Math.round(remaining * SPEED_POINTS_PER_SEC) : 0;
-  const processPts = prep.openScore ?? openPts();
-  const bInc = incidentPoints();
 
-  let score = 0, parts = null;
-  if (pass) {
-    const bPur = Math.max(0, (m.purity - T.purity) * 400);
-    const bLoss = Math.max(0, (T.loss - m.loss) * 50);
-    const bFeed = Math.max(0, (Math.min(feed, 22) - 16) * 60);
-    const mult = [1, 1.1, 1.2, 1.3][G.levelIdx];
-    const performanceScore = Math.max(100, Math.round((1000 + bPur + bLoss + bFeed + bInc) * mult));
-    score = performanceScore + processPts + timeBonus;
-    parts = {
-      bPur: Math.round(bPur), bLoss: Math.round(bLoss), bFeed: Math.round(bFeed),
-      bInc, mult, performanceScore, processPts, timeBonus, elapsed, remaining
-    };
+  // Điểm quy trình: có bao nhiêu bước hoàn thành thì giữ bấy nhiêu điểm.
+  const processPts = prep.phase === 'open' ? openPts() : (prep.openScore ?? openPts());
+
+  // Điểm kết quả máy: chỉ có khi lô đã thực sự chạy xong.
+  // Không yêu cầu "Đạt" mới được điểm.
+  let qPts = 0, lPts = 0, fPts = 0;
+  const batchFinished = !timedOut && G.sim && G.sim.finished;
+  if (batchFinished) {
+    qPts = qualityPoints(m.purity, T.purity, 225);
+    lPts = lossPoints(m.loss, T.loss, 175);
+    fPts = feedPoints(feed, T.feed, 100);
   }
+  const machineScore = Math.min(MACHINE_MAX, qPts + lPts + fPts);
+  const score = Math.max(0, Math.min(TOTAL_MAX, processPts + machineScore));
+
+  const parts = {
+    processPts,
+    qPts, lPts, fPts,
+    machineScore,
+    elapsed, remaining,
+    completedSteps: Object.keys(prep.done || {}).length,
+    mistakeCount: openMistakeCount()
+  };
 
   const lot = {
     level: G.levelIdx, m, feed, pass, ok, score, parts,
-    timedOut, elapsed, remaining, timeBonus,
+    timedOut, elapsed, remaining,
     inc: (G.sim.inc || []).filter(e => e.on || e.fixed)
   };
   G.lots.push(lot);
   ui.result(lot);
 }
+
 function sampleFormData() {
   const st = G.sim.stats, GR = SIM.GROUP, sim = G.sim;
   const grp = (o, g) => Object.keys(o).reduce((a, k) => a + (GR[k] === g ? o[k] : 0), 0);
@@ -4737,7 +4824,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
-console.info('[DTC] nha-may-3d build v26 - free lot choice + 5 minute challenge + speed score');
+console.info('[DTC] nha-may-3d build v27 - 1000 point scoring + per-step speed + timer bottom-right');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -6112,11 +6199,10 @@ ui.refresh = () => {
   const lv = SIM.LEVELS[G.levelIdx];
   $('hudLevel').textContent = lv.name;
   $('hudPhase').textContent = PHASE_TXT[prep.phase];
-  const liveBonus = currentSpeedBonus();
   $('hudScore').textContent = prep.phase === 'open'
-    ? `Quy trình: ${openPts()}/${OPEN_MAX} · Thưởng tốc độ hiện tại: +${liveBonus}`
+    ? `Điểm quy trình: ${openPts()}/${OPEN_MAX}`
     : prep.phase === 'run'
-      ? `Quy trình: ${prep.openScore}/${OPEN_MAX} · Thưởng tốc độ hiện tại: +${liveBonus}`
+      ? `Điểm quy trình: ${prep.openScore}/${OPEN_MAX}`
       : `Quy trình tắt máy: ${closePts()}/${CLOSE_MAX}`;
   const tm = $('hudTimer');
   if (tm) {
@@ -6308,36 +6394,61 @@ function arcPt(v) { const a = Math.PI * v / 0.5; return `${(100 - 80 * Math.cos(
 ui.result = lot => {
   const d = sampleFormData(), lv = SIM.LEVELS[lot.level], T = lv.targets, m = lot.m;
   const pv = (n, t) => t ? fmtP1(n / t * 100) : '–';
-  const rows = [['Tạp chất thành phẩm', fmtPct(100 - m.purity), '≤ ' + fmtPct(100 - T.purity), lot.ok.p], ['Phế phẩm lẫn', fmtPct(m.loss), '≤ ' + fmtPct(T.loss), lot.ok.l], ['Năng suất đầu vào thấp nhất', fmtT(lot.feed) + ' t/h', '≥ ' + fmtT(T.feed), lot.ok.f]];
-  const inc = lot.inc.map(e => e.fixed ? `<li class="y">✓ ${FAULTS[e.type].name}, nguyên nhân: ${causeName(e)}. Xử lý sau ${e.resp.toFixed(1).replace('.', ',')} giây${e.wrong ? ', kiểm tra sai ' + e.wrong + ' lần' : ''}</li>` : `<li class="n">✗ ${FAULTS[e.type].name}: chưa tìm ra nguyên nhân (${causeName(e)})</li>`).join('');
+  const rows = [
+    ['Tạp chất thành phẩm', fmtPct(100 - m.purity), '≤ ' + fmtPct(100 - T.purity), lot.ok.p],
+    ['Phế phẩm lẫn', fmtPct(m.loss), '≤ ' + fmtPct(T.loss), lot.ok.l],
+    ['Năng suất đầu vào thấp nhất', fmtT(lot.feed) + ' t/h', '≥ ' + fmtT(T.feed), lot.ok.f]
+  ];
+  const inc = lot.inc.map(e => e.fixed
+    ? `<li class="y">✓ ${FAULTS[e.type].name}, nguyên nhân: ${causeName(e)}. Xử lý sau ${e.resp.toFixed(1).replace('.', ',')} giây${e.wrong ? ', kiểm tra sai ' + e.wrong + ' lần' : ''}</li>`
+    : `<li class="n">✗ ${FAULTS[e.type].name}: chưa tìm ra nguyên nhân (${causeName(e)})</li>`
+  ).join('');
 
-  const title = lot.timedOut ? 'Hết thời gian 5 phút' : lot.pass ? 'Lô đạt chuẩn' : 'Lô chưa đạt';
+  const technical = lot.pass ? 'Đạt chuẩn kỹ thuật' : lot.timedOut ? 'Hết thời gian' : 'Chưa đạt chuẩn kỹ thuật';
+  const title = lot.timedOut ? 'Kết thúc lượt – hết 5 phút' : 'Hoàn thành lô';
   const timeLine = lot.timedOut
-    ? `<p class="sub"><b>Thời gian:</b> 05:00 / 05:00 · Lô chưa hoàn thành trong giới hạn.</p>`
+    ? `<p class="sub"><b>Thời gian:</b> 05:00 / 05:00 · Giữ toàn bộ điểm các bước đã hoàn thành.</p>`
     : `<p class="sub"><b>Thời gian hoàn thành:</b> ${fmtClock(lot.elapsed)} / 05:00 · Còn ${fmtClock(lot.remaining)}</p>`;
 
-  const scoreBox = lot.pass
-    ? `<div class="score">${lot.score.toLocaleString('vi-VN')} điểm
-        <small>Hiệu suất ${lot.parts.performanceScore.toLocaleString('vi-VN')}
-        + quy trình ${lot.parts.processPts}
-        + thưởng tốc độ ${lot.parts.timeBonus}
-        (${Math.round(lot.remaining)} giây còn lại × ${SPEED_POINTS_PER_SEC} điểm)</small>
-      </div>`
-    : `<div class="score" style="color:#D9534F">0 điểm <small>${lot.timedOut ? 'Hết thời gian trước khi hoàn thành lô.' : 'Lô không đạt yêu cầu kỹ thuật nên không nhận thưởng tốc độ.'}</small></div>`;
+  const scoreBox = `<div class="score">${lot.score.toLocaleString('vi-VN')} / ${TOTAL_MAX.toLocaleString('vi-VN')} điểm
+      <small>
+        Quy trình ${lot.parts.processPts}/${PROCESS_MAX}
+        + kết quả máy ${lot.parts.machineScore}/${MACHINE_MAX}
+        ${lot.parts.mistakeCount ? ` · ${lot.parts.mistakeCount} lỗi thao tác` : ''}
+      </small>
+    </div>`;
 
-  $('resBody').innerHTML = `<h2 class="${lot.pass ? 'ok' : 'no'}">${title}</h2><p class="sub">${lv.name}</p>
+  const machineBreakdown = `<table class="kv">
+    <tr><td>Chất lượng thành phẩm</td><td><b>${lot.parts.qPts} / 225</b></td><td class="dim">càng sạch càng cao</td></tr>
+    <tr><td>Hạt tốt lẫn trong phế</td><td><b>${lot.parts.lPts} / 175</b></td><td class="dim">càng thấp càng cao</td></tr>
+    <tr><td>Năng suất</td><td><b>${lot.parts.fPts} / 100</b></td><td class="dim">càng tốt càng cao</td></tr>
+  </table>`;
+
+  $('resBody').innerHTML = `<h2 class="${lot.timedOut ? 'no' : 'ok'}">${title}</h2>
+    <p class="sub">${lv.name} · <b>${technical}</b></p>
     ${timeLine}
     ${scoreBox}
-    <table class="kv">${rows.map(r => `<tr><td>${r[0]}</td><td class="${r[3] ? 'y' : 'n'}">${r[1]}</td><td class="dim">cần ${r[2]}</td></tr>`).join('')}</table>
+
+    <div class="rules"><b>Cách tính điểm thi đấu</b>
+      <p><b>500 điểm quy trình</b>: mỗi bước hoàn thành đều có điểm, bước càng nhanh càng cao.
+      <b>500 điểm kết quả máy</b>: chất lượng 225 + phế lẫn 175 + năng suất 100.
+      Người có <b>tổng điểm cao hơn</b> xếp trên; nếu bằng điểm thì thời gian hoàn thành thấp hơn xếp trên.</p>
+    </div>
+
+    <h3>Kết quả chạy máy</h3>
+    ${machineBreakdown}
+    <table class="kv">${rows.map(r => `<tr><td>${r[0]}</td><td class="${r[3] ? 'y' : 'n'}">${r[1]}</td><td class="dim">mục tiêu ${r[2]}</td></tr>`).join('')}</table>
+
     <table class="form"><caption>Phiếu lưu mẫu</caption><tr><th></th><th>Tạp</th><th>Hạt tốt</th><th>Vàng, đen hư</th><th>Bạc bụng</th></tr>
       <tr><td>Nguyên liệu</td><td>${pv(d.inVd + d.inBb, d.allN)}</td><td>${pv(d.allN - d.inVd - d.inBb, d.allN)}</td><td>${pv(d.inVd, d.allN)}</td><td>${pv(d.inBb, d.allN)}</td></tr>
       <tr><td>Thành phẩm</td><td>${pv(d.st.acceptBad, d.accN)}</td><td>${pv(d.st.acceptGood, d.accN)}</td><td>${pv(d.accVd, d.accN)}</td><td>${pv(d.accBb, d.accN)}</td></tr>
       <tr><td>Phế phẩm</td><td colspan="2">Hạt tốt (phế lẫn): ${pv(d.st.rejectGood, d.rejN)}</td><td colspan="2">Hạt phế: ${pv(d.st.rejectBad, d.rejN)}</td></tr>
       <tr><th>Năng suất (t/h)</th><th>Đầu vào</th><th>Thành phẩm</th><th colspan="2">Phế phẩm</th></tr>
       <tr><td>Đo được</td><td>${fmtT(d.nsIn)}</td><td>${fmtT(d.nsAcc)}</td><td colspan="2">${d.nsRej.toFixed(2).replace('.', ',')}</td></tr>
-      <tr><td><b>Kết luận</b></td><td colspan="4" class="${lot.pass ? 'y' : 'n'}"><b>${lot.pass ? 'Đạt' : lot.timedOut ? 'Không hoàn thành' : 'Không đạt'}</b></td></tr></table>
+      <tr><td><b>Đánh giá kỹ thuật</b></td><td colspan="4" class="${lot.pass ? 'y' : 'n'}"><b>${technical}</b></td></tr>
+    </table>
     ${inc ? `<ul class="inc">${inc}</ul>` : ''}
-    <div class="rules"><b>Chọn lô tiếp theo tùy ý</b><p>Lô 1–4 độc lập, không bắt buộc theo thứ tự. Mỗi lượt mới được cấp lại 05:00 phút.</p></div>
+    <div class="rules"><b>Chọn lô tiếp theo tùy ý</b><p>Lô 1–4 độc lập. Mỗi lượt mới được cấp lại 05:00 phút và chấm trên thang 1.000 điểm.</p></div>
     <div class="row"><label>Chọn lô <select id="resLevel">${SIM.LEVELS.map((l, i) => `<option value="${i}" ${i === lot.level ? 'selected' : ''}>${l.name}</option>`).join('')}</select></label>
       <button id="resNext" class="pri">Bắt đầu lượt mới</button><button id="resHome">Về màn hình đầu</button></div>`;
 
@@ -6346,14 +6457,13 @@ ui.result = lot => {
     resetSession();
     newBatch();
     resetChallengeTimer();
-    // Đặt người chơi tại vị trí bắt đầu gameplay, không bắt buộc xem lại intro.
     const px = -5.7, pz = -6.9, tx = (HALL.x0 + HALL.x1) / 2, tz = HALL.z0 + 0.02;
     const dx = tx - px, dz = tz - pz;
     Object.assign(player, { x: px, z: pz, level: 'ground', yaw: Math.atan2(-dx, -dz), pitch: -0.05 });
     relevel();
     closeOverlay();
     startChallengeTimer();
-    ui.toast(`Lượt mới: ${SIM.LEVELS[G.levelIdx].name}. Bạn có 05:00 phút.`, 'info');
+    ui.toast(`Lượt mới: ${SIM.LEVELS[G.levelIdx].name}. 05:00 phút · tối đa 1.000 điểm.`, 'info');
   };
   $('resHome').onclick = () => {
     stopChallengeTimer();
@@ -6372,7 +6482,7 @@ ui.shift = r => {
   $('shiftBody').innerHTML = `<h2>Tổng kết ca làm việc</h2>
     <table class="kv"><tr><td>Quy trình mở máy</td><td>${r.open ?? 0} / ${OPEN_MAX}</td></tr><tr><td>Quy trình tắt máy</td><td>${r.close} / ${CLOSE_MAX}</td></tr>
       <tr><td>Vận hành (điểm cao nhất mỗi lô đạt)</td><td>${lotsPts.toLocaleString('vi-VN')}</td></tr><tr class="tot"><td>Tổng điểm ca</td><td>${total.toLocaleString('vi-VN')}</td></tr></table>
-    <h3>Các lô đã chạy</h3><ul class="inc">${r.lots.map(l => `<li class="${l.pass ? 'y' : 'n'}">${SIM.LEVELS[l.level].name}: tạp ${fmtPct(100 - l.m.purity)}, phế lẫn ${fmtPct(l.m.loss)}, ${fmtT(l.feed)} t/h. ${l.pass ? 'Đạt, ' + l.score.toLocaleString('vi-VN') + ' điểm' : 'Không đạt'}</li>`).join('') || '<li>Chưa chạy xong lô nào.</li>'}</ul>
+    <h3>Các lô đã chạy</h3><ul class="inc">${r.lots.map(l => `<li class="${l.pass ? 'y' : 'n'}">${SIM.LEVELS[l.level].name}: tạp ${fmtPct(100 - l.m.purity)}, phế lẫn ${fmtPct(l.m.loss)}, ${fmtT(l.feed)} t/h. ${l.score.toLocaleString('vi-VN')} / 1.000 điểm · ${l.pass ? 'Đạt chuẩn kỹ thuật' : 'Chưa đạt chuẩn kỹ thuật'}</li>`).join('') || '<li>Chưa chạy xong lô nào.</li>'}</ul>
     <h3>Lỗi quy trình</h3><ul class="pen">${r.pen.map(p => `<li><b>−${p.pts}</b> ${p.msg}</li>`).join('') || '<li>Không có lỗi. Làm đúng toàn bộ quy trình.</li>'}</ul>
     <div class="row"><button id="shiftNew" class="pri">Bắt đầu ca mới</button></div>`;
   $('shiftNew').onclick = () => { G.lots = []; resetSession(); newBatch(); showOverlay('start'); renderStart(); };
