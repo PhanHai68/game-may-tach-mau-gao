@@ -4675,7 +4675,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
-console.info('[DTC] nha-may-3d build v15 - approved gray Jimny + dark-blue air tank');
+console.info('[DTC] nha-may-3d build v16 - corrected Jimny shell gray + dark-blue air tank');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -5533,27 +5533,33 @@ const Intro = (() => {
       inner.rotation.y = 0;
       car.add(inner);
 
+      // Giữ nguyên toàn bộ vật liệu gốc trước, chỉ đổi đúng mesh thân vỏ chính.
+      // Qua kiểm tra GLB: body_21_Suzuki-Jimny_102 dùng material mat_1 và là vỏ xe chính
+      // (diện tích lớn nhất). Các body_* khác là kính, đèn, cản, nội thất và chi tiết trang trí.
       inner.traverse(o => {
         if (!o.isMesh) return;
         o.castShadow = true;
         o.receiveShadow = true;
-
-        // V15: màu xe đã được người dùng xác nhận qua ảnh preview: xám trung tính hơi ấm.
-        // Chỉ áp lên thân vỏ (body_*), giữ kính và lốp tối như model gốc.
-        if (o.name && o.name.startsWith('body_')) {
-          const source = Array.isArray(o.material) ? o.material : [o.material];
-          const changed = source.map(m => {
-            if (!m) return m;
-            const c = m.clone();
-            c.color.set('#6E6B65');
-            if ('metalness' in c) c.metalness = 0.24;
-            if ('roughness' in c) c.roughness = 0.48;
-            c.needsUpdate = true;
-            return c;
-          });
-          o.material = Array.isArray(o.material) ? changed : changed[0];
-        }
       });
+
+      const shell = inner.getObjectByName('body_21_Suzuki-Jimny_102');
+      if (shell && shell.isMesh && shell.material) {
+        const source = Array.isArray(shell.material) ? shell.material : [shell.material];
+        const changed = source.map(m => {
+          if (!m) return m;
+          const c = m.clone();
+          // Xám trung tính hơi ấm, gần đúng màu xe trong ảnh đã xác nhận.
+          // Dùng tông tối hơn vì hệ thống đèn trong scene làm màu thực tế sáng lên khá nhiều.
+          c.color.set('#56534F');
+          if ('metalness' in c) c.metalness = 0.22;
+          if ('roughness' in c) c.roughness = 0.50;
+          c.needsUpdate = true;
+          return c;
+        });
+        shell.material = Array.isArray(shell.material) ? changed : changed[0];
+      } else {
+        console.warn('Không tìm thấy mesh thân xe body_21_Suzuki-Jimny_102');
+      }
 
       // Dùng đúng 4 pivot bánh đã chuẩn hóa trong GLB, không tự gom mesh theo tọa độ nữa.
       wheels.length = 0;
