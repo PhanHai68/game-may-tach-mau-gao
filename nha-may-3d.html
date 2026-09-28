@@ -5445,13 +5445,29 @@ const Intro = (() => {
     new THREE.GLTFLoader().parse(bin, '', gl => {
       const inner = gl.scene;
       // Model GameReady đã đặt chân bánh tại y=0 và tâm xe tại gốc.
-      // File gốc hướng đầu xe về -Z; quay 180° để khớp quy ước intro: đầu xe hướng +Z khi yaw=0.
+      // Để xe chạy đúng chiều tiến lên theo quỹ đạo intro, giữ hướng gốc của model (không quay thêm 180°).
       inner.position.set(0, 0, 0);
-      inner.rotation.y = Math.PI;
+      inner.rotation.y = 0;
       car.add(inner);
 
       inner.traverse(o => {
-        if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; }
+        if (o.isMesh) {
+          o.castShadow = true;
+          o.receiveShadow = true;
+          const mats = Array.isArray(o.material) ? o.material : [o.material];
+          mats.forEach(m => {
+            if (!m || !m.color) return;
+            const hsl = { h: 0, s: 0, l: 0 };
+            m.color.getHSL(hsl);
+            // Làm sáng màu thân xe: chỉ đổi các vật liệu xám/ít bão hòa, giữ nguyên lốp và kính tối.
+            if (hsl.s < 0.35 && hsl.l > 0.18 && hsl.l < 0.72) {
+              m.color.setRGB(0.84, 0.83, 0.80);
+              if ('metalness' in m) m.metalness = Math.max(m.metalness ?? 0, 0.12);
+              if ('roughness' in m) m.roughness = Math.min(m.roughness ?? 1, 0.72);
+              m.needsUpdate = true;
+            }
+          });
+        }
       });
 
       // Dùng đúng 4 pivot bánh đã chuẩn hóa trong GLB, không tự gom mesh theo tọa độ nữa.
