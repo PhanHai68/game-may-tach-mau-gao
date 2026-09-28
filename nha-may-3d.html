@@ -4818,6 +4818,9 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = !window.__test; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 if (window.__test) renderer.setPixelRatio(0.5);
 renderer.outputEncoding = THREE.sRGBEncoding;
+// Giảm cháy sáng: dùng tone mapping điện ảnh và hạ exposure nhẹ.
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.82;
 const scene = new THREE.Scene();
 { const c = document.createElement('canvas'); c.width = 4; c.height = 256; const g = c.getContext('2d');   // nền trời
   const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#5E97CF'); gr.addColorStop(0.55, '#BCD6EA'); gr.addColorStop(1, '#E8EFF3');
@@ -4933,12 +4936,12 @@ function floorTexture() {
     const l = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.08, 0.3), new THREE.MeshBasicMaterial({ color: '#F4F7FA' }));
     l.position.set(x, HALL.h - 0.1, z); scene.add(l);
   }
-  scene.add(new THREE.HemisphereLight('#DCE7F2', '#3A3F46', 0.8));
-  const sun = new THREE.DirectionalLight('#FFFFFF', 0.8);
+  scene.add(new THREE.HemisphereLight('#DCE7F2', '#3A3F46', 0.58));
+  const sun = new THREE.DirectionalLight('#FFFFFF', 0.62);
   sun.position.set(-10, 16, 6); sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16, near: 1, far: 50 });
   sun.shadow.bias = -0.0005; scene.add(sun);
-  const fill = new THREE.PointLight('#FFF3E0', 0.35, 14); fill.position.set(-1.2, 6, 0.3); scene.add(fill);   // đèn chiếu sàn thao tác
+  const fill = new THREE.PointLight('#FFF3E0', 0.20, 14); fill.position.set(-1.2, 6, 0.3); scene.add(fill);   // đèn chiếu sàn thao tác
 }
 
 // ---------- TV THÔNG TIN CSKH ở tường đối diện TV Welcome ----------
@@ -5284,7 +5287,7 @@ function loadPlant(done) {
     plant = g.scene;
     plant.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; rayTargets.push(o);
       // thân máy SC16: trắng như nền chữ SC16, hai bên hông xanh dương (màu theo đỉnh)
-      if (o.name === 'sc16' || (o.parent && o.parent.name === 'sc16')) o.material = new THREE.MeshStandardMaterial({ color: '#E9EDF0', vertexColors: true, flatShading: true, roughness: 0.64, metalness: 0.01 }); } });
+      if (o.name === 'sc16' || (o.parent && o.parent.name === 'sc16')) o.material = new THREE.MeshStandardMaterial({ color: '#D3D9DE', vertexColors: true, flatShading: true, roughness: 0.82, metalness: 0.0 }); } });
     scene.add(plant); done && done();
   }, e => { console.error(e); done && done(e); });
 }
