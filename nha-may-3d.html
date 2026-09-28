@@ -4675,7 +4675,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
-console.info('[DTC] nha-may-3d build v12 - brighter Jimny + moved palm + wider entrance');
+console.info('[DTC] nha-may-3d build v13 - silver Jimny + palm inside sidewalk + 8m entrance');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -5141,7 +5141,7 @@ label('Sàn thao tác máy tách màu SC16 Pro', -1.6, 6.9, 0.3);
 label('Cầu thang lên sàn', -2.6, 1.3, 0.0);
 
 // ---------- Cửa ra vào (vách cuối nhà xưởng): lỗ cửa thật, 2 cánh cửa lùa, bên ngoài có sân và bầu trời ----------
-const DOOR = { x: HALL.x0, z: 2.2, w: 6.2, h: 4.6, open: 0 };
+const DOOR = { x: HALL.x0, z: 2.2, w: 8.0, h: 4.6, open: 0 };
 { const X = DOOR.x, Z = DOOR.z, W = DOOR.w, Hh = DOOR.h, z0 = HALL.z0, z1 = HALL.z1, wallM = mat('#B9C2CC', { roughness: 0.95 });
   // vách x0 chia 3 mảng quanh lỗ cửa + chân tường xanh
   const za = Z - W / 2, zb = Z + W / 2;
@@ -5193,7 +5193,7 @@ const DOOR = { x: HALL.x0, z: 2.2, w: 6.2, h: 4.6, open: 0 };
   const PALM_SPOTS = [
     { x: X - 4.5,  z: Z - 12.5, s: 0.96, r: 0.12 },
     // cây phía trái mặt tiền đưa vào đúng dải lề đường, gần mép bó vỉa hơn để giống thực tế
-    { x: X - 9.8,  z: Z - 12.2, s: 1.00, r: 0.96 },
+    { x: X - 5.6,  z: Z - 12.2, s: 1.00, r: 0.96 },
     { x: X - 5.0,  z: Z + 11.5, s: 0.97, r: 2.10 },
     { x: X - 11.0, z: Z + 11.0, s: 1.03, r: 2.85 },
     // cây cọ trước khối trắng mặt tiền (vị trí cây cũ bên ngoài showroom)
@@ -5289,13 +5289,14 @@ const DOOR = { x: HALL.x0, z: 2.2, w: 6.2, h: 4.6, open: 0 };
   for (let i = 0; i < 6; i++) { const d = new THREE.Mesh(new THREE.CircleGeometry(0.16, 16), new THREE.MeshBasicMaterial({ color: '#FFFFFF' }));
     d.rotation.x = Math.PI / 2; d.position.set(X - 1.6, 5.39, cz0 + 1.8 + i * 2.3); scene.add(d); }
   const cl = new THREE.PointLight('#FFF6E6', 0.6, 10); cl.position.set(X - 1.6, 5.0, Z); scene.add(cl);
-  // hàng rào thấp dọc sân, cổng có cọc vàng đen
+  // hàng rào thấp dọc sân; độ rộng cổng bám theo cửa chính 8 m để nhìn thay đổi rõ ràng
   const FX = X - 6.5, FEN = mat('#3A3F46', { roughness: 0.5, metalness: 0.4 });
-  [[z0, Z - 3.2], [Z + 3.2, z1]].forEach(([a, b]) => {
+  const GATE_HALF = W / 2 + 0.45;
+  [[z0, Z - GATE_HALF], [Z + GATE_HALF, z1]].forEach(([a, b]) => {
     box(0.06, 0.06, b - a, FEN, FX, 1.15, (a + b) / 2); box(0.06, 0.06, b - a, FEN, FX, 0.25, (a + b) / 2);
     for (let z = a; z <= b; z += 0.18) box(0.03, 0.95, 0.03, FEN, FX, 0.22, z);
   });
-  [Z - 3.2, Z + 3.2].forEach(z => { box(0.3, 1.2, 0.3, mat(lin('#E2B53A')), FX, 0, z); for (let i = 0; i < 3; i++) box(0.31, 0.12, 0.31, mat('#151515'), FX, 0.2 + i * 0.35, z); });
+  [Z - GATE_HALF, Z + GATE_HALF].forEach(z => { box(0.3, 1.2, 0.3, mat(lin('#E2B53A')), FX, 0, z); for (let i = 0; i < 3; i++) box(0.31, 0.12, 0.31, mat('#151515'), FX, 0.2 + i * 0.35, z); });
 }
 
 // ---------- Màn hình TV lớn trên tường: chiếu logo DTCGroup và lời chào người chơi (căn giữa bức tường) ----------
@@ -5530,22 +5531,27 @@ const Intro = (() => {
       car.add(inner);
 
       inner.traverse(o => {
-        if (o.isMesh) {
-          o.castShadow = true;
-          o.receiveShadow = true;
-          const mats = Array.isArray(o.material) ? o.material : [o.material];
-          mats.forEach(m => {
-            if (!m || !m.color) return;
-            const hsl = { h: 0, s: 0, l: 0 };
-            m.color.getHSL(hsl);
-            // Làm sáng màu thân xe rõ hơn theo yêu cầu mới: chuyển sang tông bạc-kem sáng, giữ lốp và kính tối.
-            if (hsl.s < 0.35 && hsl.l > 0.18 && hsl.l < 0.82) {
-              m.color.setRGB(0.92, 0.91, 0.87);
-              if ('metalness' in m) m.metalness = Math.max(m.metalness ?? 0, 0.18);
-              if ('roughness' in m) m.roughness = Math.min(m.roughness ?? 1, 0.58);
-              m.needsUpdate = true;
+        if (!o.isMesh) return;
+        o.castShadow = true;
+        o.receiveShadow = true;
+
+        // V13: thân Jimny màu đen dùng material "mat_0".
+        // Material này cũng được dùng ở một phần bánh xe, vì vậy chỉ clone/đổi trên node body_*,
+        // tránh làm lốp/bánh xe bị bạc theo.
+        if (o.name && o.name.startsWith('body_')) {
+          const source = Array.isArray(o.material) ? o.material : [o.material];
+          const changed = source.map(m => {
+            if (!m) return m;
+            const c = m.clone();
+            if (m.name === 'mat_0') {
+              c.color.set('#D9D7D0');
+              if ('metalness' in c) c.metalness = 0.28;
+              if ('roughness' in c) c.roughness = 0.42;
             }
+            c.needsUpdate = true;
+            return c;
           });
+          o.material = Array.isArray(o.material) ? changed : changed[0];
         }
       });
 
