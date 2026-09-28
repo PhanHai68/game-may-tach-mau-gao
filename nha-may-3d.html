@@ -4677,7 +4677,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
-console.info('[DTC] nha-may-3d build v23 - blue air filters + straight under-platform air line');
+console.info('[DTC] nha-may-3d build v25 - CSKH TV includes showroom Dong Thap');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -4793,37 +4793,151 @@ function floorTexture() {
   const fill = new THREE.PointLight('#FFF3E0', 0.35, 14); fill.position.set(-1.2, 6, 0.3); scene.add(fill);   // đèn chiếu sàn thao tác
 }
 
-// ---------- Thông tin CSKH trên bức tường ĐỐI DIỆN màn hình/logo DTCGroup ----------
-{
-  const cv = document.createElement('canvas'); cv.width = 1800; cv.height = 900;
-  const g = cv.getContext('2d');
-  g.clearRect(0, 0, cv.width, cv.height);
+// ---------- TV THÔNG TIN CSKH ở tường đối diện TV Welcome ----------
+const CSKHTV = (() => {
+  // Cùng kích thước / phong cách với TV Welcome, đặt đối xứng qua nhà xưởng.
+  const W = 7.2, H = W * 9 / 16;
+  const cx = (HALL.x0 + HALL.x1) / 2;
+  const cy = 6.0;
+  const z = HALL.z1 - 0.02;
 
-  // Bảng sáng, chữ và số điện thoại đều dùng cùng màu xanh DTC.
-  g.fillStyle = 'rgba(250,252,250,0.97)';
-  roundRect(g, 20, 20, cv.width - 40, cv.height - 40, 54); g.fill();
-  g.strokeStyle = '#12803F'; g.lineWidth = 12;
-  roundRect(g, 28, 28, cv.width - 56, cv.height - 56, 48); g.stroke();
-
-  g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#12803F';
-  g.font = '800 104px Barlow, "Segoe UI", Arial, sans-serif';
-  g.fillText('CHĂM SÓC KHÁCH HÀNG', cv.width / 2, 300);
-  g.font = '900 176px Barlow, "Segoe UI", Arial, sans-serif';
-  g.fillText('0832 66 67 68', cv.width / 2, 575);
-
-  const tex = new THREE.CanvasTexture(cv); tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 8;
-  const sign = new THREE.Mesh(
-    new THREE.PlaneGeometry(7.2, 3.6),
-    new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false, side: THREE.FrontSide })
+  // Giá treo và viền TV.
+  [-1, 1].forEach(k => box(0.12, 1.2, 0.1, '#2A2E34', cx + k * W * 0.3, cy - 0.6, z - 0.05));
+  const bezel = new THREE.Mesh(
+    new THREE.BoxGeometry(W + 0.16, H + 0.16, 0.12),
+    new THREE.MeshStandardMaterial({ color: '#0B0D10', roughness: 0.25, metalness: 0.4 })
   );
-  // Logo DTCGroup/TV nằm ở tường z0, vì vậy bảng CSKH được đặt đúng tường đối diện z1.
-  // Bảng được chuyển sang nửa phải của bức tường khi nhìn từ khu vực máy, đúng vùng người dùng đánh dấu đỏ.
-  // x âm nằm về phía cửa/xe trong bố cục xưởng; y đặt giữa mảng tường trống và tránh khung máy.
-  sign.rotation.y = Math.PI;
-  sign.position.set(-6.8, 7.05, HALL.z1 - 0.018);
-  sign.renderOrder = 3;
-  scene.add(sign);
-}
+  bezel.position.set(cx, cy, z - 0.16);
+  scene.add(bezel);
+
+  const led = new THREE.Mesh(
+    new THREE.SphereGeometry(0.018, 10, 8),
+    new THREE.MeshBasicMaterial({ color: '#39E26B' })
+  );
+  led.position.set(cx - W / 2 + 0.2, cy - H / 2 - 0.045, z - 0.225);
+  scene.add(led);
+
+  // Nội dung TV.
+  const cv = document.createElement('canvas');
+  cv.width = 1280; cv.height = 720;
+  const g = cv.getContext('2d');
+  const tex = new THREE.CanvasTexture(cv);
+  tex.encoding = THREE.sRGBEncoding;
+  tex.anisotropy = 8;
+
+  const screen = new THREE.Mesh(
+    new THREE.PlaneGeometry(W, H),
+    new THREE.MeshBasicMaterial({ map: tex, toneMapped: false, side: THREE.FrontSide })
+  );
+  screen.rotation.y = Math.PI;
+  screen.position.set(cx, cy, z - 0.222);
+  scene.add(screen);
+
+  const glow = new THREE.PointLight('#EAF6EE', 0.30, 9);
+  glow.position.set(cx, cy, z - 1.2);
+  scene.add(glow);
+
+  const wrapText = (txt, x, y, maxW, lineH, maxLines = 2) => {
+    const words = txt.split(' ');
+    let line = '', yy = y, used = 0;
+    for (let i = 0; i < words.length; i++) {
+      const test = line ? line + ' ' + words[i] : words[i];
+      if (g.measureText(test).width > maxW && line) {
+        g.fillText(line, x, yy);
+        line = words[i];
+        yy += lineH;
+        used++;
+        if (used >= maxLines - 1) break;
+      } else {
+        line = test;
+      }
+    }
+    if (line && used < maxLines) g.fillText(line, x, yy);
+  };
+
+  function draw() {
+    const Wc = cv.width, Hc = cv.height;
+
+    // Nền sáng + dải nhận diện DTC, giống TV Welcome.
+    const bg = g.createRadialGradient(Wc / 2, Hc * 0.42, 80, Wc / 2, Hc / 2, Wc * 0.75);
+    bg.addColorStop(0, '#FFFFFF');
+    bg.addColorStop(1, '#E7EEF1');
+    g.fillStyle = bg;
+    g.fillRect(0, 0, Wc, Hc);
+
+    g.fillStyle = '#12803F';
+    g.fillRect(0, 0, Wc, 12);
+    g.fillStyle = '#8DC63F';
+    g.fillRect(0, 12, Wc, 5);
+
+    // Header
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillStyle = '#12803F';
+    g.font = '800 58px Barlow, "Segoe UI", Arial, sans-serif';
+    g.fillText('CHĂM SÓC KHÁCH HÀNG', Wc / 2, 72);
+
+    g.font = '900 76px Barlow, "Segoe UI", Arial, sans-serif';
+    g.fillText('0832 66 67 68', Wc / 2, 145);
+
+    g.strokeStyle = 'rgba(18,128,63,.28)';
+    g.lineWidth = 3;
+    g.beginPath(); g.moveTo(70, 195); g.lineTo(Wc - 70, 195); g.stroke();
+
+    // Hiển thị Trụ sở chính + các Văn phòng + Showroom Đồng Tháp.
+    const rows = [
+      ['TRỤ SỞ CHÍNH', 'Số 86, Đường 65, Phường Tân Hưng, TP.HCM'],
+      ['VP HÀ NỘI', '33 Phố Lộc, phường Xuân Đỉnh, Thành phố Hà Nội'],
+      ['VP TÂY NINH', 'Thửa 1305, tờ bản đồ số 5, Xã Lương Hòa, Tây Ninh'],
+      ['VP CẦN THƠ', 'KV. Lân Thanh 1, Phường Thuận Hưng, TP. Cần Thơ'],
+      ['SHOWROOM ĐỒNG THÁP', 'Ấp Mỹ Trung, Xã Hội Cư, Đồng Tháp'],
+    ];
+
+    let y = 230;
+    for (const [label, addr] of rows) {
+      // bullet vị trí
+      g.fillStyle = '#12803F';
+      g.beginPath(); g.arc(72, y + 13, 10, 0, Math.PI * 2); g.fill();
+      g.fillStyle = '#FFFFFF';
+      g.beginPath(); g.arc(72, y + 13, 3.8, 0, Math.PI * 2); g.fill();
+
+      g.textAlign = 'left';
+      g.textBaseline = 'top';
+      g.fillStyle = '#12803F';
+      g.font = '800 30px Barlow, "Segoe UI", Arial, sans-serif';
+      g.fillText(label, 105, y - 2);
+
+      g.fillStyle = '#2E3B42';
+      g.font = '600 27px Barlow, "Segoe UI", Arial, sans-serif';
+      wrapText(addr, 330, y - 1, 850, 34, 2);
+
+      y += 88;
+    }
+
+    // Footer giống TV Welcome.
+    g.fillStyle = 'rgba(18,128,63,.08)';
+    g.fillRect(0, Hc - 48, Wc, 48);
+    g.font = '600 22px "Segoe UI", Arial, sans-serif';
+    g.fillStyle = '#5B6964';
+    g.textBaseline = 'middle';
+    g.textAlign = 'left';
+    g.fillText('DTCGroup · Thông tin liên hệ', 28, Hc - 24);
+    g.textAlign = 'right';
+    g.fillText('OUR SOLUTION, YOUR SUCCESS', Wc - 28, Hc - 24);
+
+    // lớp kính nhẹ
+    const gl = g.createLinearGradient(0, 0, 0, Hc * 0.42);
+    gl.addColorStop(0, 'rgba(255,255,255,.12)');
+    gl.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gl;
+    g.fillRect(0, 0, Wc, Hc * 0.42);
+
+    tex.needsUpdate = true;
+  }
+
+  draw();
+  return { redraw: draw };
+})();
 
 // ---------- Khu đào tạo: 1 hàng 5 bộ bàn-ghế + TV phía trước ----------
 {
