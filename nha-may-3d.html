@@ -4675,7 +4675,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
-console.info('[DTC] nha-may-3d build v13 - silver Jimny + palm inside sidewalk + 8m entrance');
+console.info('[DTC] nha-may-3d build v14 - brighter Jimny + dark-blue air tank');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -4993,8 +4993,11 @@ function loadMNK(done) {
   new THREE.GLTFLoader().parse(bin, '', g => {
     mnk = g.scene; mnk.rotation.y = -Math.PI / 2; mnk.position.set(MNK.x, 0, MNK.z);
     mnk.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; rayTargets.push(o);
-      const nm = o.name || (o.parent && o.parent.name) || '';
+      const nm = (o.name || (o.parent && o.parent.name) || '').toLowerCase();
       if (nm === 'dryer') o.material = new THREE.MeshStandardMaterial({ color: '#141619', roughness: 0.55, metalness: 0.15, flatShading: true });   // máy sấy xám tối
+      if (nm.includes('tank') || nm.includes('receiver') || nm.includes('binh')) {
+        o.material = new THREE.MeshStandardMaterial({ color: '#2E6FB6', roughness: 0.42, metalness: 0.18, flatShading: true });
+      }
     } });
     scene.add(mnk); done && done();
   }, e => { console.error(e); done && done(e); });
@@ -5535,19 +5538,16 @@ const Intro = (() => {
         o.castShadow = true;
         o.receiveShadow = true;
 
-        // V13: thân Jimny màu đen dùng material "mat_0".
-        // Material này cũng được dùng ở một phần bánh xe, vì vậy chỉ clone/đổi trên node body_*,
-        // tránh làm lốp/bánh xe bị bạc theo.
+        // V14: làm xe sáng rõ hơn. Áp trực tiếp lên các mesh thân vỏ (body_*),
+        // giữ riêng kính và lốp nên không làm cửa kính bị bạc.
         if (o.name && o.name.startsWith('body_')) {
           const source = Array.isArray(o.material) ? o.material : [o.material];
           const changed = source.map(m => {
             if (!m) return m;
             const c = m.clone();
-            if (m.name === 'mat_0') {
-              c.color.set('#D9D7D0');
-              if ('metalness' in c) c.metalness = 0.28;
-              if ('roughness' in c) c.roughness = 0.42;
-            }
+            c.color.set('#E8E2D7');
+            if ('metalness' in c) c.metalness = 0.32;
+            if ('roughness' in c) c.roughness = 0.38;
             c.needsUpdate = true;
             return c;
           });
