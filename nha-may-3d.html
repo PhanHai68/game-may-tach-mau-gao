@@ -5188,11 +5188,36 @@ const DOOR = { x: HALL.x0, z: 2.2, w: 4.4, h: 4.6, open: 0 };
   const stex = new THREE.CanvasTexture(sc); stex.encoding = THREE.sRGBEncoding;
   const sky = new THREE.Mesh(new THREE.PlaneGeometry(160, 60), new THREE.MeshBasicMaterial({ map: stex, fog: false, toneMapped: false }));
   sky.rotation.y = Math.PI / 2; sky.position.set(X - 40, 22, Z); scene.add(sky);
-  // cây xanh ngoài sân cho có chiều sâu
-  [[-4.5, -12.5], [-9, -13], [-5, 11.5], [-11, 11]].forEach(([dx, dz]) => {
-    cyl(0.18, 2.2, '#6B4F36', X + dx, 0, Z + dz, 10);
-    const crown = new THREE.Mesh(new THREE.SphereGeometry(1.6, 16, 12), mat('#3F7D3A', { roughness: 0.9 })); crown.position.set(X + dx, 3.3, Z + dz); crown.castShadow = true; scene.add(crown);
-  });
+  // Cây ngoài sân: dùng model Palm Tree thực tế thay cho cây hình cầu cũ.
+  // Model GLB đã được tối ưu từ file STEP, cao khoảng 5.4 m và dùng chung geometry/material giữa các bản sao.
+  const PALM_SPOTS = [
+    { x: X - 4.5,  z: Z - 12.5, s: 0.96, r: 0.12 },
+    { x: X - 9.0,  z: Z - 13.0, s: 1.00, r: 1.05 },
+    { x: X - 5.0,  z: Z + 11.5, s: 0.97, r: 2.10 },
+    { x: X - 11.0, z: Z + 11.0, s: 1.03, r: 2.85 },
+    // cây cọ trước khối trắng mặt tiền (vị trí cây cũ bên ngoài showroom)
+    { x: DOOR.x - 1.71, z: -6.6, s: 0.80, r: 0.58 }
+  ];
+  new THREE.GLTFLoader().load('Palm_Tree_v10.glb?v=10', gl => {
+    const palmBase = gl.scene;
+    palmBase.traverse(o => {
+      if (o.isMesh) {
+        o.castShadow = true;
+        o.receiveShadow = true;
+        // Lá cần nhìn được cả hai mặt khi camera đi vòng quanh cây.
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach(m => { if (m) { m.side = THREE.DoubleSide; m.needsUpdate = true; } });
+      }
+    });
+    PALM_SPOTS.forEach(p => {
+      const palm = palmBase.clone(true);
+      palm.position.set(p.x, 0, p.z);
+      palm.rotation.y = p.r;
+      palm.scale.setScalar(p.s);
+      palm.name = 'OutdoorPalmTree';
+      scene.add(palm);
+    });
+  }, undefined, err => console.error('Không tải được Palm_Tree_v10.glb', err));
   DOOR.set(0);
 }
 
@@ -5248,10 +5273,7 @@ const DOOR = { x: HALL.x0, z: 2.2, w: 4.4, h: 4.6, open: 0 };
     const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding;
     const m = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 3.1), new THREE.MeshStandardMaterial({ map: t, roughness: 0.6 }));
     m.rotation.y = -Math.PI / 2; m.position.set(X - 2.38, 3.3, -4.9); scene.add(m); }
-  // cây cọ trước khối trắng
-  { cyl(0.13, 2.6, '#7A5A3A', X - 1.4, 0, -6.6, 10);
-    for (let i = 0; i < 8; i++) { const l = new THREE.Mesh(new THREE.ConeGeometry(0.22, 1.9, 6), mat(lin('#2F7A33'), { roughness: 0.8 })); const a = i / 8 * Math.PI * 2;
-      l.position.set(X - 1.4 + Math.cos(a) * 0.7, 2.55, -6.6 + Math.sin(a) * 0.7); l.rotation.set(Math.sin(a) * 1.2, 0, -Math.cos(a) * 1.2); scene.add(l); } }
+  // Cây cọ trước khối trắng đã được thay bằng Palm_Tree_v10.glb trong danh sách PALM_SPOTS phía trên.
   // logo DTCGroup trên mặt tiền
   { const img = new Image(); img.src = 'data:image/png;base64,' + $('logo-dtc').textContent.trim();
     const t = new THREE.Texture(img); img.onload = () => { t.needsUpdate = true; }; t.encoding = THREE.sRGBEncoding;
