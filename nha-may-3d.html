@@ -151,15 +151,16 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 .hmiinfo{color:var(--mut);font-size:.88rem;text-align:center;max-width:760px}
 /* Dải nút chỉnh thông số ngay dưới màn hình điều khiển */
 .hmictl{width:min(720px,44vw,calc((100vh - 330px) * 1.333));display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:7px}
-.hmictl .pc{background:rgba(22,28,36,.97);border:1px solid #3A4452;border-radius:10px;padding:7px 7px 6px;color:#E8ECF2;text-align:center;min-width:0}
-.hmictl .pn{font-size:.82rem;font-weight:700;color:#C9D3DD}
-.hmictl .pr{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:5px 0 3px}
-.hmictl .pv{font:700 1.35rem/1 "Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums;min-width:2.6em}
-.hmictl .pv small{display:block;font-size:.7rem;font-weight:500;color:#9FB0BF;margin-top:3px}
-.hmictl button{flex:none;width:38px;height:38px;border-radius:8px;border:1px solid #6B7587;background:#4A5362;color:#fff;font-size:1.35rem;font-weight:700;cursor:pointer;touch-action:manipulation;user-select:none}
-.hmictl button:hover{background:#5A6475}
-.hmictl button:active{background:#12803F;border-color:#12803F}
-.hmictl .ph{font-size:.72rem;color:#9FB0BF;line-height:1.25}
+/* Cụm chỉnh 4 thông số: chỉ thay giao diện trong vùng ngay dưới màn hình ANYSORT */
+.hmictl .pc{background:rgba(31,40,51,.94);border:1px solid rgba(126,151,176,.55);border-radius:10px;padding:8px 8px 7px;color:#F2F6FA;text-align:center;min-width:0;box-shadow:0 4px 14px rgba(0,0,0,.16)}
+.hmictl .pn{font-size:.84rem;font-weight:800;color:#E5ECF3;letter-spacing:.01em}
+.hmictl .pr{display:flex;align-items:center;justify-content:space-between;gap:7px;margin:6px 0 4px}
+.hmictl .pv{font:800 1.38rem/1 "Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums;min-width:2.8em}
+.hmictl .pv small{display:block;font-size:.68rem;font-weight:500;color:#AAB9C8;margin-top:4px}
+.hmictl button{flex:none;width:40px;height:40px;border-radius:9px;border:1px solid #718095;background:#536071;color:#fff;font-size:1.45rem;font-weight:800;cursor:pointer;touch-action:manipulation;user-select:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.hmictl button:hover{background:#647286;border-color:#8797AA}
+.hmictl button:active{background:#12803F;border-color:#39A867;transform:scale(.97)}
+.hmictl .ph{font-size:.72rem;color:#B8C5D1;line-height:1.28;min-height:2.55em;display:flex;align-items:flex-start;justify-content:center}
 .hmictl.off{opacity:.45;pointer-events:none}
 .hmiinfo button{padding:8px 16px;border-radius:8px;border:1px solid #6B7587;background:#2A313B;color:#fff;cursor:pointer;margin-left:8px}
 /* Van điều áp */
@@ -5283,7 +5284,7 @@ function loadPlant(done) {
     plant = g.scene;
     plant.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; rayTargets.push(o);
       // thân máy SC16: trắng như nền chữ SC16, hai bên hông xanh dương (màu theo đỉnh)
-      if (o.name === 'sc16' || (o.parent && o.parent.name === 'sc16')) o.material = new THREE.MeshStandardMaterial({ color: '#FFFFFF', vertexColors: true, flatShading: true, roughness: 0.5, metalness: 0.02 }); } });
+      if (o.name === 'sc16' || (o.parent && o.parent.name === 'sc16')) o.material = new THREE.MeshStandardMaterial({ color: '#E9EDF0', vertexColors: true, flatShading: true, roughness: 0.64, metalness: 0.01 }); } });
     scene.add(plant); done && done();
   }, e => { console.error(e); done && done(e); });
 }
@@ -6265,10 +6266,10 @@ const nowHM = () => { const d = new Date(); return String(d.getHours()).padStart
 function openHMI() { hmiPage = 'home'; hmiDialog = null; showOverlay('hmi'); renderHMI(); renderHMICtl(); }
 // ---------- Dải nút chỉnh thông số dưới màn hình điều khiển ----------
 const PCTL = [
-  { k: 'rung', name: 'Bộ rung', min: 0, max: 100, sub: v => '≈ ' + fmtT(v * RUNG_TO_TH) + ' t/h', hint: 'Cấp liệu. Bình thường 20–60' },
-  { k: 'sens', name: 'Độ nhạy', min: 0, max: 255, sub: () => '0–255', hint: 'Thấp: bắt nhiều hạt lỗi, dễ loại nhầm hạt tốt' },
-  { k: 'delay', name: 'Độ trễ', min: 0, max: 100, sub: () => '0–100', hint: 'Lúc van mở: căn khung cam trùm vạch hạt' },
-  { k: 'dur', name: 'Độ rộng', min: 0, max: 100, sub: () => '0–100', hint: 'Thời gian mở van: rộng quá dễ thổi ké' },
+  { k: 'rung', name: 'Bộ rung', min: 0, max: 100, sub: v => '≈ ' + fmtT(v * RUNG_TO_TH) + ' t/h', hint: 'Càng tăng → cấp liệu nhiều, năng suất lớn.' },
+  { k: 'sens', name: 'Độ nhạy', min: 0, max: 255, sub: () => '0–255', hint: 'Càng giảm → tách sạch hơn, nhưng dễ loại nhầm hạt tốt.' },
+  { k: 'delay', name: 'Độ trễ', min: 0, max: 100, sub: () => '0–100', hint: 'Thời gian từ camera phát hiện hạt xấu đến lúc van hơi mở.' },
+  { k: 'dur', name: 'Độ rộng', min: 0, max: 100, sub: () => '0–100', hint: 'Càng tăng → thời gian mở van lâu, vùng thổi rộng, dễ loại nhầm hạt tốt.' },
 ];
 function renderHMICtl() {
   const el = $('hmiCtl'); if (!el) return;
