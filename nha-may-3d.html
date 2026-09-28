@@ -4790,6 +4790,41 @@ function floorTexture() {
   const fill = new THREE.PointLight('#FFF3E0', 0.35, 14); fill.position.set(-1.2, 6, 0.3); scene.add(fill);   // đèn chiếu sàn thao tác
 }
 
+// ---------- Thông tin CSKH trên bức tường đối diện mặt tiền/logo DTCGroup ----------
+{
+  const cv = document.createElement('canvas'); cv.width = 2048; cv.height = 560;
+  const g = cv.getContext('2d');
+  g.clearRect(0, 0, cv.width, cv.height);
+
+  // nền bảng sáng, bo góc nhẹ để nổi rõ trên tường xám
+  g.fillStyle = 'rgba(248,250,247,0.96)';
+  roundRect(g, 20, 20, cv.width - 40, cv.height - 40, 54); g.fill();
+  g.strokeStyle = '#12803F'; g.lineWidth = 12;
+  roundRect(g, 28, 28, cv.width - 56, cv.height - 56, 48); g.stroke();
+
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillStyle = '#12803F';
+  g.font = '800 105px Barlow, "Segoe UI", Arial, sans-serif';
+  g.fillText('CHĂM SÓC KHÁCH HÀNG', cv.width / 2, 175);
+
+  g.fillStyle = '#1F2A27';
+  g.font = '900 155px Barlow, "Segoe UI", Arial, sans-serif';
+  g.fillText('0832 66 67 68', cv.width / 2, 365);
+
+  const tex = new THREE.CanvasTexture(cv);
+  tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 8;
+  const sign = new THREE.Mesh(
+    new THREE.PlaneGeometry(8.2, 2.24),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false, side: THREE.FrontSide })
+  );
+  // Tường đối diện mặt tiền nằm ở x = HALL.x1; mặt bảng quay vào trong xưởng.
+  // Đặt cùng vùng z với logo DTCGroup ngoài mặt tiền để nhìn cân đối theo trục đối diện.
+  sign.rotation.y = -Math.PI / 2;
+  sign.position.set(HALL.x1 - 0.012, 7.15, 6.0);
+  sign.renderOrder = 3;
+  scene.add(sign);
+}
+
 // ---------- Vùng đi lại: mặt đất, cầu thang, sàn thao tác (số đo lấy từ bản vẽ STEP) ----------
 const PLAT = { x0: -1.46, x1: 1.76, z0: -2.77, z1: 3.23, y: 3.08 };            // mặt sàn thao tác
 const LAND = { x0: -2.25, x1: -1.45, z0: 2.43, z1: 3.23 };                      // chiếu nghỉ đầu cầu thang
