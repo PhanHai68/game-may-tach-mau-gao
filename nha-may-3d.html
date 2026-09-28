@@ -22,6 +22,9 @@ button{font:inherit}
 #hudTop b{display:block;font-size:1.05rem}
 #hudTop .ph{color:var(--mut);font-size:.9rem}
 #hudTop .sc{color:var(--acc);font-weight:700;margin-top:2px}
+#hudTop .tm{margin-top:5px;font:800 1.08rem/1.2 "Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums;color:#F3C969}
+#hudTop .tm.danger{color:#FF6B5F;animation:timerPulse .8s ease-in-out infinite alternate}
+@keyframes timerPulse{from{opacity:1}to{opacity:.62}}
 #hudKeys{position:fixed;left:14px;bottom:12px;color:var(--mut);font-size:.82rem;background:var(--pan);padding:6px 10px;border-radius:8px;pointer-events:none}
 #hudKeys span{margin-right:12px;white-space:nowrap}
 #checklist{position:fixed;right:14px;top:12px;width:340px;max-height:calc(100% - 120px);overflow:auto;background:var(--pan);padding:10px 12px;border-radius:10px;font-size:.84rem;pointer-events:none}
@@ -170,7 +173,7 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 <div id="cross"></div>
 <div id="tip" hidden></div>
 <div id="busy" hidden><div class="bar"><div id="busyBar"></div></div></div>
-<div id="hudTop"><b id="hudLevel"></b><div class="ph" id="hudPhase"></div><div class="sc" id="hudScore"></div></div>
+<div id="hudTop"><b id="hudLevel"></b><div class="ph" id="hudPhase"></div><div class="sc" id="hudScore"></div><div class="tm" id="hudTimer">Thời gian: 05:00</div></div>
 <div id="checklist"></div>
 <div id="toasts"></div>
 <div id="prog" hidden><div class="bar"><div id="progBar"></div></div><div id="progTxt"></div></div>
@@ -186,15 +189,15 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 
 <div class="ov" id="ov-start" hidden><div class="card">
   <h1 style="margin-bottom:12px">Vận hành máy tách màu SC16 Pro</h1>
-  <div class="rules"><b>Luật chơi</b><p>Bạn là kỹ sư máy tách màu, sẽ hướng dẫn kỹ thuật nhà máy vận hành theo đúng quy trình. Thiếu bước hoặc sai thứ tự, chạy máy không đạt sẽ bị trừ điểm.</p></div>
+  <div class="rules"><b>Luật chơi mới</b><p>Bạn được <b>tự chọn Lô 1, Lô 2, Lô 3 hoặc Lô 4</b>, không bắt buộc chơi theo thứ tự. Mỗi lượt có tối đa <b>05:00 phút</b> để hoàn thành quy trình và chạy xong lô hàng. Hoàn thành càng sớm thì <b>thưởng tốc độ càng cao</b>. Hết 5 phút mà lô chưa hoàn thành thì lượt chơi kết thúc.</p></div>
   <label for="stName">Tên người chơi</label><input type="text" id="stName" maxlength="28" placeholder="Nhập tên của bạn" autocomplete="off">
   <p class="err" id="stNameErr" hidden>Hãy nhập tên người chơi trước khi bắt đầu.</p>
-  <label for="stLevel">Lô gạo</label><select id="stLevel"></select>
+  <label for="stLevel">Chọn lô thử thách (tự do)</label><select id="stLevel"></select>
   <label>Chế độ</label>
   <div class="modes"><label><input type="radio" name="stMode" value="practice">Luyện tập (có bảng quy trình, danh sách bước)</label><label><input type="radio" name="stMode" value="contest">Thi đấu</label></div>
   <label style="font-weight:500;display:flex;gap:8px;align-items:center"><input type="checkbox" id="stInc">Có lỗi thường gặp xảy ra khi vận hành</label>
   <div class="keys"><kbd>W A S D</kbd><span>Đi lại, <kbd>Shift</kbd> để đi nhanh. Chuột để nhìn.</span><kbd>E</kbd><span>Thao tác thiết bị đang nhắm (hoặc click chuột trái)</span><kbd>Tab</kbd><span>Ẩn hoặc hiện danh sách bước</span><kbd>M</kbd><span>Ẩn hoặc hiện sơ đồ phân loại khi máy chạy</span><kbd>V</kbd><span>Đổi góc nhìn: thứ ba (thấy kỹ sư) hoặc thứ nhất</span><kbd>1–5</kbd><span>Chọn thiết bị cần kiểm tra khi có lỗi</span><kbd>K</kbd><span>Bắt đầu kết thúc ca, nhấn lại để chấm điểm ca</span><kbd>Esc</kbd><span>Tạm dừng, trả con trỏ chuột</span></div>
-  <div class="row"><button id="stGo" class="pri">Bắt đầu ca làm việc</button></div>
+  <div class="row"><button id="stGo" class="pri">Bắt đầu thử thách 5 phút</button></div>
 </div></div>
 
 <div class="ov" id="ov-pause" hidden><div class="card">
@@ -4302,11 +4305,49 @@ const lc = t => t.charAt(0).toLowerCase() + t.slice(1);
 
 // Bộ rung 0–100 (bình thường 20–60) quy đổi ra năng suất. Giả định: 1 đơn vị ≈ 0,4 t/h.
 const RUNG_TO_TH = 0.4;
+const GAME_LIMIT_SEC = 5 * 60;
+const SPEED_POINTS_PER_SEC = 3;   // mỗi giây còn lại = +3 điểm; tối đa 900 điểm tốc độ
 const G = {
   mode: 'practice', levelIdx: 0, incPref: true,
   running: false, sim: null, resultShown: false, lots: [],
   rung: 30, sens: 128, delay: 50, dur: 50, P: { feed: 12, sens: 128, delay: 50, dur: 50 },
+  challenge: { elapsed: 0, active: false, pending: false, expired: false },
 };
+
+const fmtClock = secs => {
+  secs = Math.max(0, Math.ceil(secs));
+  return String(Math.floor(secs / 60)).padStart(2, '0') + ':' + String(secs % 60).padStart(2, '0');
+};
+const challengeRemaining = () => Math.max(0, GAME_LIMIT_SEC - G.challenge.elapsed);
+const currentSpeedBonus = () => Math.max(0, Math.round(challengeRemaining() * SPEED_POINTS_PER_SEC));
+function resetChallengeTimer() {
+  Object.assign(G.challenge, { elapsed: 0, active: false, pending: false, expired: false });
+}
+function armChallengeTimer() {
+  resetChallengeTimer();
+  G.challenge.pending = true; // bắt đầu khi người chơi nhận quyền điều khiển sau intro
+}
+function startChallengeTimer() {
+  if (G.challenge.expired) return;
+  G.challenge.pending = false;
+  G.challenge.active = true;
+  ui.refresh();
+}
+function stopChallengeTimer() {
+  G.challenge.active = false;
+  G.challenge.pending = false;
+}
+function challengeTick(dt) {
+  if (!G.challenge.active || G.resultShown) return;
+  G.challenge.elapsed = Math.min(GAME_LIMIT_SEC, G.challenge.elapsed + dt);
+  if (G.challenge.elapsed >= GAME_LIMIT_SEC && !G.challenge.expired) {
+    G.challenge.expired = true;
+    G.challenge.active = false;
+    G.running = false;
+    ui.toast('Hết thời gian 5 phút. Lô hàng chưa hoàn thành.', 'bad');
+    finishBatch(true);
+  }
+}
 const ui = { msg() {}, toast() {}, refresh() {}, alarm() {}, result() {}, shift() {} };   // giao diện gán sau
 const incOn = () => G.mode === 'contest' || G.incPref;
 
@@ -4636,21 +4677,40 @@ function engineStep(dt) {
     if (G.sim.finished && !G.resultShown) finishBatch();
   }
 }
-function finishBatch() {
-  G.resultShown = true; G.running = false;
+function finishBatch(timedOut = false) {
+  if (G.resultShown) return;
+  G.resultShown = true; G.running = false; stopChallengeTimer();
   for (const e of G.sim.inc || []) if (e.on && e.fixing > 0) { e.on = false; e.fixed = true; e.fixing = 0; }
-  const lv = SIM.LEVELS[G.levelIdx], T = lv.targets, m = SIM.summary(G.sim), feed = G.sim.minFeed;
+
+  const lv = SIM.LEVELS[G.levelIdx], T = lv.targets, m = SIM.summary(G.sim);
+  const feed = Number.isFinite(G.sim.minFeed) ? G.sim.minFeed : 0;
   const ok = { p: m.purity >= T.purity, l: m.loss <= T.loss, f: feed >= T.feed };
-  const pass = ok.p && ok.l && ok.f;
+  const pass = !timedOut && ok.p && ok.l && ok.f;
+  const elapsed = timedOut ? GAME_LIMIT_SEC : Math.min(G.challenge.elapsed, GAME_LIMIT_SEC);
+  const remaining = Math.max(0, GAME_LIMIT_SEC - elapsed);
+  const timeBonus = pass ? Math.round(remaining * SPEED_POINTS_PER_SEC) : 0;
+  const processPts = prep.openScore ?? openPts();
   const bInc = incidentPoints();
+
   let score = 0, parts = null;
   if (pass) {
-    const bPur = Math.max(0, (m.purity - T.purity) * 400), bLoss = Math.max(0, (T.loss - m.loss) * 50), bFeed = Math.max(0, (Math.min(feed, 22) - 16) * 60);
+    const bPur = Math.max(0, (m.purity - T.purity) * 400);
+    const bLoss = Math.max(0, (T.loss - m.loss) * 50);
+    const bFeed = Math.max(0, (Math.min(feed, 22) - 16) * 60);
     const mult = [1, 1.1, 1.2, 1.3][G.levelIdx];
-    score = Math.max(100, Math.round((1000 + bPur + bLoss + bFeed + bInc) * mult));
-    parts = { bPur: Math.round(bPur), bLoss: Math.round(bLoss), bFeed: Math.round(bFeed), bInc, mult };
+    const performanceScore = Math.max(100, Math.round((1000 + bPur + bLoss + bFeed + bInc) * mult));
+    score = performanceScore + processPts + timeBonus;
+    parts = {
+      bPur: Math.round(bPur), bLoss: Math.round(bLoss), bFeed: Math.round(bFeed),
+      bInc, mult, performanceScore, processPts, timeBonus, elapsed, remaining
+    };
   }
-  const lot = { level: G.levelIdx, m, feed, pass, ok, score, parts, inc: (G.sim.inc || []).filter(e => e.on || e.fixed) };
+
+  const lot = {
+    level: G.levelIdx, m, feed, pass, ok, score, parts,
+    timedOut, elapsed, remaining, timeBonus,
+    inc: (G.sim.inc || []).filter(e => e.on || e.fixed)
+  };
   G.lots.push(lot);
   ui.result(lot);
 }
@@ -4677,7 +4737,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
-console.info('[DTC] nha-may-3d build v25 - CSKH TV includes showroom Dong Thap');
+console.info('[DTC] nha-may-3d build v26 - free lot choice + 5 minute challenge + speed score');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -5985,7 +6045,8 @@ const Intro = (() => {
     Object.assign(player, { x: px, z: pz, level: 'ground', yaw, pitch }); relevel();
     camDist = 0;  // ép camera gameplay khởi tạo lại ngay, tránh khung hình tối/đứng sau chuyển cảnh
     setFade(0);
-    ui.toast(`Kỹ sư ${G.playerName || 'vận hành'} đã vào ca. Quan sát màn hình DTCGroup rồi bắt đầu quy trình.`, 'info');
+    ui.toast(`Kỹ sư ${G.playerName || 'vận hành'} đã vào ca. Đồng hồ 05:00 bắt đầu tính.`, 'info');
+    if (G.challenge.pending) startChallengeTimer();
   }
   function update(dt) {
     t += dt;
@@ -6051,8 +6112,19 @@ ui.refresh = () => {
   const lv = SIM.LEVELS[G.levelIdx];
   $('hudLevel').textContent = lv.name;
   $('hudPhase').textContent = PHASE_TXT[prep.phase];
-  $('hudScore').textContent = prep.phase === 'open' ? `Quy trình mở máy: ${openPts()}/${OPEN_MAX}` : prep.phase === 'run' ? `Mở máy: ${prep.openScore}/${OPEN_MAX}` : `Quy trình tắt máy: ${closePts()}/${CLOSE_MAX}`;
-  $('hudKeyK').hidden = prep.phase === 'open';
+  const liveBonus = currentSpeedBonus();
+  $('hudScore').textContent = prep.phase === 'open'
+    ? `Quy trình: ${openPts()}/${OPEN_MAX} · Thưởng tốc độ hiện tại: +${liveBonus}`
+    : prep.phase === 'run'
+      ? `Quy trình: ${prep.openScore}/${OPEN_MAX} · Thưởng tốc độ hiện tại: +${liveBonus}`
+      : `Quy trình tắt máy: ${closePts()}/${CLOSE_MAX}`;
+  const tm = $('hudTimer');
+  if (tm) {
+    const rem = challengeRemaining();
+    tm.textContent = `Thời gian còn lại: ${fmtClock(rem)} / 05:00`;
+    tm.classList.toggle('danger', G.challenge.active && rem <= 60);
+  }
+  $('hudKeyK').hidden = true; // v26 chấm điểm ngay khi lô chạy xong, không bắt buộc kết thúc ca
   $('hudKeyK').textContent = prep.phase === 'run' ? 'K: bắt đầu kết thúc ca' : 'K: hoàn tất tắt máy, chấm điểm ca';
   renderChecklist();
   if (overlay === 'hmi') { renderHMI(); const hc = $('hmiCtl'); if (hc) hc.classList.toggle('off', !prepReady()); }
@@ -6069,6 +6141,12 @@ function renderChecklist() {
 }
 function hudTick() {
   const s = G.sim; if (!s) return;
+  const tm = $('hudTimer');
+  if (tm) {
+    const rem = challengeRemaining();
+    tm.textContent = `Thời gian còn lại: ${fmtClock(rem)} / 05:00`;
+    tm.classList.toggle('danger', G.challenge.active && rem <= 60);
+  }
   const b = SIM.LEVELS[G.levelIdx].batch;
   $('prog').hidden = !(s.t > 0);
   $('progBar').style.width = (s.done / b * 100) + '%';
@@ -6232,8 +6310,24 @@ ui.result = lot => {
   const pv = (n, t) => t ? fmtP1(n / t * 100) : '–';
   const rows = [['Tạp chất thành phẩm', fmtPct(100 - m.purity), '≤ ' + fmtPct(100 - T.purity), lot.ok.p], ['Phế phẩm lẫn', fmtPct(m.loss), '≤ ' + fmtPct(T.loss), lot.ok.l], ['Năng suất đầu vào thấp nhất', fmtT(lot.feed) + ' t/h', '≥ ' + fmtT(T.feed), lot.ok.f]];
   const inc = lot.inc.map(e => e.fixed ? `<li class="y">✓ ${FAULTS[e.type].name}, nguyên nhân: ${causeName(e)}. Xử lý sau ${e.resp.toFixed(1).replace('.', ',')} giây${e.wrong ? ', kiểm tra sai ' + e.wrong + ' lần' : ''}</li>` : `<li class="n">✗ ${FAULTS[e.type].name}: chưa tìm ra nguyên nhân (${causeName(e)})</li>`).join('');
-  $('resBody').innerHTML = `<h2 class="${lot.pass ? 'ok' : 'no'}">${lot.pass ? 'Lô đạt chuẩn' : 'Lô chưa đạt'}</h2><p class="sub">${lv.name}</p>
-    ${lot.pass ? `<div class="score">${lot.score.toLocaleString('vi-VN')} điểm <small>cơ bản 1000 + tạp chất thấp ${lot.parts.bPur} + hạn chế loại nhầm ${lot.parts.bLoss} + năng suất ${lot.parts.bFeed}${lot.parts.bInc ? (lot.parts.bInc > 0 ? ' + xử lý lỗi ' : ' − lỗi ') + Math.abs(lot.parts.bInc) : ''}, nhân hệ số lô ${lot.parts.mult}</small></div>` : ''}
+
+  const title = lot.timedOut ? 'Hết thời gian 5 phút' : lot.pass ? 'Lô đạt chuẩn' : 'Lô chưa đạt';
+  const timeLine = lot.timedOut
+    ? `<p class="sub"><b>Thời gian:</b> 05:00 / 05:00 · Lô chưa hoàn thành trong giới hạn.</p>`
+    : `<p class="sub"><b>Thời gian hoàn thành:</b> ${fmtClock(lot.elapsed)} / 05:00 · Còn ${fmtClock(lot.remaining)}</p>`;
+
+  const scoreBox = lot.pass
+    ? `<div class="score">${lot.score.toLocaleString('vi-VN')} điểm
+        <small>Hiệu suất ${lot.parts.performanceScore.toLocaleString('vi-VN')}
+        + quy trình ${lot.parts.processPts}
+        + thưởng tốc độ ${lot.parts.timeBonus}
+        (${Math.round(lot.remaining)} giây còn lại × ${SPEED_POINTS_PER_SEC} điểm)</small>
+      </div>`
+    : `<div class="score" style="color:#D9534F">0 điểm <small>${lot.timedOut ? 'Hết thời gian trước khi hoàn thành lô.' : 'Lô không đạt yêu cầu kỹ thuật nên không nhận thưởng tốc độ.'}</small></div>`;
+
+  $('resBody').innerHTML = `<h2 class="${lot.pass ? 'ok' : 'no'}">${title}</h2><p class="sub">${lv.name}</p>
+    ${timeLine}
+    ${scoreBox}
     <table class="kv">${rows.map(r => `<tr><td>${r[0]}</td><td class="${r[3] ? 'y' : 'n'}">${r[1]}</td><td class="dim">cần ${r[2]}</td></tr>`).join('')}</table>
     <table class="form"><caption>Phiếu lưu mẫu</caption><tr><th></th><th>Tạp</th><th>Hạt tốt</th><th>Vàng, đen hư</th><th>Bạc bụng</th></tr>
       <tr><td>Nguyên liệu</td><td>${pv(d.inVd + d.inBb, d.allN)}</td><td>${pv(d.allN - d.inVd - d.inBb, d.allN)}</td><td>${pv(d.inVd, d.allN)}</td><td>${pv(d.inBb, d.allN)}</td></tr>
@@ -6241,13 +6335,31 @@ ui.result = lot => {
       <tr><td>Phế phẩm</td><td colspan="2">Hạt tốt (phế lẫn): ${pv(d.st.rejectGood, d.rejN)}</td><td colspan="2">Hạt phế: ${pv(d.st.rejectBad, d.rejN)}</td></tr>
       <tr><th>Năng suất (t/h)</th><th>Đầu vào</th><th>Thành phẩm</th><th colspan="2">Phế phẩm</th></tr>
       <tr><td>Đo được</td><td>${fmtT(d.nsIn)}</td><td>${fmtT(d.nsAcc)}</td><td colspan="2">${d.nsRej.toFixed(2).replace('.', ',')}</td></tr>
-      <tr><td><b>Kết luận</b></td><td colspan="4" class="${lot.pass ? 'y' : 'n'}"><b>${lot.pass ? 'Đạt' : 'Không đạt'}</b></td></tr></table>
+      <tr><td><b>Kết luận</b></td><td colspan="4" class="${lot.pass ? 'y' : 'n'}"><b>${lot.pass ? 'Đạt' : lot.timedOut ? 'Không hoàn thành' : 'Không đạt'}</b></td></tr></table>
     ${inc ? `<ul class="inc">${inc}</ul>` : ''}
-    <div class="row"><label>Lô tiếp theo <select id="resLevel">${SIM.LEVELS.map((l, i) => `<option value="${i}" ${i === Math.min(lot.pass ? lot.level + 1 : lot.level, 3) ? 'selected' : ''}>${l.name}</option>`).join('')}</select></label>
-      <button id="resNext" class="pri">Nạp lô mới</button><button id="resEnd">Kết thúc ca</button></div>
-    <p class="hint">Máy vẫn đang bật. Sau khi nạp lô mới, ra màn hình điều khiển bấm nút phân loại để chạy.</p>`;
-  $('resNext').onclick = () => { G.levelIdx = +$('resLevel').value; newBatch(); closeOverlay(); };
-  $('resEnd').onclick = () => { beginClose(); closeOverlay(); ui.refresh(); };
+    <div class="rules"><b>Chọn lô tiếp theo tùy ý</b><p>Lô 1–4 độc lập, không bắt buộc theo thứ tự. Mỗi lượt mới được cấp lại 05:00 phút.</p></div>
+    <div class="row"><label>Chọn lô <select id="resLevel">${SIM.LEVELS.map((l, i) => `<option value="${i}" ${i === lot.level ? 'selected' : ''}>${l.name}</option>`).join('')}</select></label>
+      <button id="resNext" class="pri">Bắt đầu lượt mới</button><button id="resHome">Về màn hình đầu</button></div>`;
+
+  $('resNext').onclick = () => {
+    G.levelIdx = +$('resLevel').value;
+    resetSession();
+    newBatch();
+    resetChallengeTimer();
+    // Đặt người chơi tại vị trí bắt đầu gameplay, không bắt buộc xem lại intro.
+    const px = -5.7, pz = -6.9, tx = (HALL.x0 + HALL.x1) / 2, tz = HALL.z0 + 0.02;
+    const dx = tx - px, dz = tz - pz;
+    Object.assign(player, { x: px, z: pz, level: 'ground', yaw: Math.atan2(-dx, -dz), pitch: -0.05 });
+    relevel();
+    closeOverlay();
+    startChallengeTimer();
+    ui.toast(`Lượt mới: ${SIM.LEVELS[G.levelIdx].name}. Bạn có 05:00 phút.`, 'info');
+  };
+  $('resHome').onclick = () => {
+    stopChallengeTimer();
+    showOverlay('start');
+    renderStart();
+  };
   showOverlay('result');
 };
 
@@ -6272,13 +6384,14 @@ function renderStart() {
   try { const nm = localStorage.getItem('sc16-player'); if (nm && !$('stName').value) $('stName').value = nm; } catch (e) {}
   $('stNameErr').hidden = true;
   $('stLevel').innerHTML = SIM.LEVELS.map((l, i) => `<option value="${i}" ${i === G.levelIdx ? 'selected' : ''}>${l.name}</option>`).join('');
+  $('stLevel').title = 'Tự chọn bất kỳ lô nào; không bắt buộc theo thứ tự 1 → 4';
   document.querySelectorAll('[name=stMode]').forEach(r => { r.checked = r.value === G.mode; });
   $('stInc').checked = G.incPref;
 }
 function renderPause() {
   $('pauseInfo').innerHTML = `<p>${SIM.LEVELS[G.levelIdx].name} · ${PHASE_TXT[prep.phase]}</p>` +
     (prep.pen.length ? '<ul class="pen">' + prep.pen.map(p => `<li><b>−${p.pts}</b> ${p.msg}</li>`).join('') + '</ul>' : '<p class="dim">Chưa có lỗi quy trình.</p>');
-  $('pauseEnd').hidden = prep.phase !== 'run';
+  $('pauseEnd').hidden = true;
 }
 
 // ================== SƠ ĐỒ PHÂN LOẠI 2D (lấy từ bản 2D): cấp liệu → máng → camera → súng hơi → xả liệu ==================
@@ -6863,23 +6976,25 @@ $('stGo').onclick = () => {
   window.setWelcome && window.setWelcome('');
   G.levelIdx = +$('stLevel').value; G.mode = document.querySelector('[name=stMode]:checked').value; G.incPref = $('stInc').checked;
   G.lots = []; Object.assign(player, { x: -11.3, z: 2.2, level: 'ground', yaw: -Math.PI / 2, pitch: -0.05 }); relevel();
-  resetSession(); newBatch(); drawBoard(); labels.forEach(l => { l.visible = false; });   // không hiện nhãn tên thiết bị
+  resetSession(); newBatch(); armChallengeTimer(); drawBoard(); labels.forEach(l => { l.visible = false; });   // không hiện nhãn tên thiết bị
   $('checklist').hidden = !showList;
-  ui.toast(G.mode === 'contest' ? 'Thi đấu: làm đúng quy trình, không có gợi ý.' : 'Bảng quy trình treo trên tường bên trái. Nhấn Tab để ẩn/hiện danh sách bước.', 'info');
+  ui.toast(G.mode === 'contest' ? 'Thi đấu: 5 phút, làm đúng quy trình và hoàn thành càng sớm càng nhiều điểm.' : 'Bạn có 5 phút. Làm đúng quy trình và hoàn thành sớm để nhận thưởng tốc độ.', 'info');
   closeOverlay();
   if (window.__test) Intro.finish(); else Intro.start();   // đoạn mở đầu: lái xe vào xưởng
 };
 $('introSkip').onclick = () => Intro.skip();
 $('pauseGo').onclick = closeOverlay;
 $('pauseEnd').onclick = () => { beginClose(); closeOverlay(); ui.refresh(); };
-$('pauseQuit').onclick = () => { showOverlay('start'); renderStart(); };
+$('pauseQuit').onclick = () => { stopChallengeTimer(); showOverlay('start'); renderStart(); };
 $('hmiBack').onclick = closeOverlay;
 
 // ---------- Vòng lặp ----------
 let last = performance.now();
 function tick(dt, now) {
   if (Intro.active) { Intro.update(dt); TV.tick(now / 1000); if (G.sim) visuals(dt, now / 1000); return; }
-  if (G.sim && !['start', 'pause', 'shift'].includes(overlay)) { engineStep(dt); if (overlay === 'hmi' && Math.floor(now / 500) !== Math.floor((now - dt * 1000) / 500)) renderHMI(); if (overlay === 'reg') regLive(); }
+  // Đồng hồ thử thách chạy trong gameplay/HMI/van điều áp; tạm dừng khi mở Pause/Start/Result.
+  if (!['start', 'pause', 'result', 'shift'].includes(overlay)) challengeTick(dt);
+  if (G.sim && !['start', 'pause', 'shift', 'result'].includes(overlay)) { engineStep(dt); if (overlay === 'hmi' && Math.floor(now / 500) !== Math.floor((now - dt * 1000) / 500)) renderHMI(); if (overlay === 'reg') regLive(); }
   move(dt);
   placeCamera(dt);
   if (G.sim) { aim(); visuals(dt, now / 1000); }
