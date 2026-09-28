@@ -170,7 +170,25 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 .hmictl button:active{background:#12803F;border-color:#39A867;transform:scale(.97)}
 .hmictl .ph{font-size:.72rem;color:#B8C5D1;line-height:1.28;min-height:2.55em;display:flex;align-items:flex-start;justify-content:center}
 .hmictl.off{opacity:.45;pointer-events:none}
+.hmictl .pass-tabs{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:1px}
+.hmictl .pass-tab{width:auto;height:34px;border-radius:8px;font-size:.82rem;line-height:1.1;background:#303A48;border:1px solid #59687A;color:#C9D3DD;padding:0 8px}
+.hmictl .pass-tab.on{background:#146A43;border-color:#43B77A;color:#fff;box-shadow:0 0 0 1px rgba(95,208,138,.18) inset}
+.hmictl .pass-guide{grid-column:1/-1;padding:6px 9px;border-radius:8px;background:rgba(13,19,27,.72);border:1px solid rgba(255,255,255,.09);font-size:.73rem;color:#C5D2DD;text-align:left}
+.hmictl .pass-guide b{color:#76DB9A}
 .hmiinfo button{padding:8px 16px;border-radius:8px;border:1px solid #6B7587;background:#2A313B;color:#fff;cursor:pointer;margin-left:8px}
+/* Sơ đồ dòng vật liệu tách 3 lần – đặt ở vùng trống bên phải màn hình HMI */
+#passFlow{position:fixed;right:18px;bottom:72px;width:min(390px,26vw);z-index:18;pointer-events:none;background:rgba(17,24,33,.93);border:1px solid rgba(126,151,176,.55);border-radius:12px;padding:11px 12px;color:#EAF1F6;box-shadow:0 8px 28px rgba(0,0,0,.28);backdrop-filter:blur(4px)}
+#passFlow .pf-title{font-weight:800;font-size:.95rem;color:#F0D47A;margin-bottom:3px}
+#passFlow .pf-input{font-size:.75rem;color:#B8C6D2;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.1)}
+#passFlow .pf-line{display:grid;grid-template-columns:68px 1fr auto;gap:7px;align-items:center;margin:5px 0}
+#passFlow .pf-node{font-weight:800;font-size:.78rem;padding:5px 6px;border-radius:7px;background:#31404D;text-align:center}
+#passFlow .pf-val{font-weight:800;font-variant-numeric:tabular-nums}
+#passFlow .pf-good{color:#70E098}.pf-warn{color:#F2C15F}.pf-bad{color:#FF8875}
+#passFlow .pf-arrow{font-size:.72rem;color:#9FB0BF;line-height:1.25;padding-left:76px;margin:-1px 0 2px}
+#passFlow .pf-return{font-size:.71rem;color:#9FD2B0;background:rgba(47,158,85,.10);border-left:3px solid #4EB878;padding:4px 6px;margin:3px 0 5px 76px;border-radius:4px}
+#passFlow .pf-foot{font-size:.7rem;color:#9FB0BF;margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,.08)}
+@media (max-width:1250px){#passFlow{width:310px;right:10px;font-size:.9em}}
+@media (max-width:1030px){#passFlow{display:none!important}}
 /* Van điều áp */
 #regBody .dial{width:260px;margin:0 auto}
 #regBody .st{text-align:center}
@@ -199,7 +217,7 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 
 <div class="ov" id="ov-start" hidden><div class="card">
   <h1 style="margin-bottom:12px">Vận hành máy tách màu SC16 Pro</h1>
-  <div class="rules"><b>Luật chơi</b><p>Cả 4 cấp độ đều dùng <b>Gạo ST25</b>, khác nhau về độ lẫn phế và năng suất yêu cầu. Mỗi lượt có tối đa <b>03:00 phút</b>. Để đạt kỹ thuật phải đồng thời đạt <b>chất lượng thành phẩm ≥ 99% hạt tốt</b>, <b>hạt tốt trong phế phẩm ≤ 5%</b> và năng suất của cấp độ đã chọn. Tổng tối đa <b>1.000 điểm</b>: 500 điểm quy trình + 500 điểm kết quả máy. <b>Thi đấu chỉ so sánh/xếp hạng giữa người chơi cùng cấp độ.</b></p></div>
+  <div class="rules"><b>Luật chơi</b><p>Cả 4 cấp độ đều dùng <b>Gạo ST25</b>, khác nhau về độ lẫn phế và năng suất yêu cầu. Mỗi lượt có tối đa <b>03:00 phút</b>. Để đạt kỹ thuật phải đồng thời đạt <b>chất lượng thành phẩm ≥ 99% hạt tốt</b>, <b>hạt tốt trong phế cuối sau lần 3 ≤ 5%</b> và năng suất của cấp độ đã chọn. Tổng tối đa <b>1.000 điểm</b>: 500 điểm quy trình + 500 điểm kết quả máy. <b>Thi đấu chỉ so sánh/xếp hạng giữa người chơi cùng cấp độ.</b></p></div>
   <div class="rules" style="background:#EEF5F0;border-left-color:#4C8BD8"><b style="color:#2F4E8C">Tham quan Showroom</b><p>Đi lại tự do trong nhà máy 3D, xem máy móc và bố trí thiết bị. Không tính giờ, không chấm điểm và không cần thực hiện quy trình.</p></div>
   <label for="stName">Tên người chơi</label><input type="text" id="stName" maxlength="28" placeholder="Nhập tên của bạn" autocomplete="off">
   <p class="err" id="stNameErr" hidden>Hãy nhập tên người chơi trước khi bắt đầu.</p>
@@ -219,9 +237,9 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 
 <div class="ov" id="ov-hmi" hidden><div class="hmiwrap">
   <div id="hmiScreen" class="hmi"></div>
-  <div class="hmictl" id="hmiCtl" role="group" aria-label="Thông số phân loại"></div>
+  <div class="hmictl" id="hmiCtl" role="group" aria-label="Thông số phân loại theo 3 lần tách"></div>
   <div class="hmiinfo"><button id="hmiBack">Rời màn hình (Esc)</button></div>
-</div></div>
+</div><div id="passFlow" aria-live="polite"></div></div>
 
 <div class="ov" id="ov-reg" hidden><div class="card"><h2>Van điều áp trong máy tách màu</h2><p class="sub">Kéo núm lên để xoay. Xoay theo chiều kim đồng hồ tăng áp, ngược chiều giảm áp. Chỉnh xong nhấn núm xuống để khóa.</p><div id="regBody"></div></div></div>
 
@@ -4117,22 +4135,22 @@ const SIM = (() => {
 
   const LEVELS = [
     { name: 'Cấp độ 1 – Dễ · ST25 · 2,5% phế · ≥ 12 t/h',
-      desc: 'Gạo ST25. Độ lẫn phế đầu vào 2,5% (0,7% vàng/đen hư + 0,3% vàng mơ + 0,2% chấm kim + 1,3% bạc bụng). Yêu cầu: năng suất ≥ 12 t/h, chất lượng thành phẩm ≥ 99% hạt tốt, hạt tốt trong phế phẩm ≤ 5%.',
+      desc: 'Gạo ST25. Độ lẫn phế đầu vào 2,5% (0,7% vàng/đen hư + 0,3% vàng mơ + 0,2% chấm kim + 1,3% bạc bụng). Yêu cầu: năng suất ≥ 12 t/h, chất lượng thành phẩm ≥ 99% hạt tốt, hạt tốt trong phế cuối sau lần 3 ≤ 5%.',
       mix: { vang_hu: 0.007, vang_mo: 0.003, cham_kim: 0.002, chalky: 0.013 }, T0: 0.32, pReq: 0, batch: 15000, thr: 0.26, durB: 0.55,
       cameraMiss: 0.0015, falseFlag: 0.00006, timingJitter: 0.008, ejectCap: 0.998, extraNoise: 0.003,
       targets: { purity: 99.0, loss: 5.0, feed: 12.0 } },
     { name: 'Cấp độ 2 – Trung bình · ST25 · 5,5% phế · ≥ 15 t/h',
-      desc: 'Gạo ST25. Độ lẫn phế đầu vào 5,5% (1,5% vàng/đen hư + 0,7% vàng mơ + 0,5% chấm kim + 2,8% bạc bụng). Yêu cầu: năng suất ≥ 15 t/h, chất lượng thành phẩm ≥ 99% hạt tốt, hạt tốt trong phế phẩm ≤ 5%.',
+      desc: 'Gạo ST25. Độ lẫn phế đầu vào 5,5% (1,5% vàng/đen hư + 0,7% vàng mơ + 0,5% chấm kim + 2,8% bạc bụng). Yêu cầu: năng suất ≥ 15 t/h, chất lượng thành phẩm ≥ 99% hạt tốt, hạt tốt trong phế cuối sau lần 3 ≤ 5%.',
       mix: { vang_hu: 0.015, vang_mo: 0.007, cham_kim: 0.005, chalky: 0.028 }, T0: 0.31, pReq: 0.1, batch: 15000, thr: 0.255, durB: 0.58,
       cameraMiss: 0.0018, falseFlag: 0.00007, timingJitter: 0.009, ejectCap: 0.997, extraNoise: 0.0035,
       targets: { purity: 99.0, loss: 5.0, feed: 15.0 } },
     { name: 'Cấp độ 3 – Khó · ST25 · 9,0% phế · ≥ 18 t/h',
-      desc: 'Gạo ST25. Độ lẫn phế đầu vào 9,0% (2,4% vàng/đen hư + 1,2% vàng mơ + 0,8% chấm kim + 4,6% bạc bụng). Yêu cầu: năng suất ≥ 18 t/h, chất lượng thành phẩm ≥ 99% hạt tốt, hạt tốt trong phế phẩm ≤ 5%.',
+      desc: 'Gạo ST25. Độ lẫn phế đầu vào 9,0% (2,4% vàng/đen hư + 1,2% vàng mơ + 0,8% chấm kim + 4,6% bạc bụng). Yêu cầu: năng suất ≥ 18 t/h, chất lượng thành phẩm ≥ 99% hạt tốt, hạt tốt trong phế cuối sau lần 3 ≤ 5%.',
       mix: { vang_hu: 0.024, vang_mo: 0.012, cham_kim: 0.008, chalky: 0.046 }, T0: 0.30, pReq: 0.2, batch: 15000, thr: 0.25, durB: 0.60,
       cameraMiss: 0.0020, falseFlag: 0.00008, timingJitter: 0.010, ejectCap: 0.996, extraNoise: 0.004,
       targets: { purity: 99.0, loss: 5.0, feed: 18.0 } },
     { name: 'Cấp độ 4 – Thử thách · ST25 · 14,0% phế · ≥ 18 t/h',
-      desc: 'Gạo ST25. Độ lẫn phế đầu vào 14,0% (3,8% vàng/đen hư + 2,0% vàng mơ + 1,2% chấm kim + 7,0% bạc bụng). Yêu cầu: năng suất ≥ 18 t/h, chất lượng thành phẩm ≥ 99% hạt tốt, hạt tốt trong phế phẩm ≤ 5%.',
+      desc: 'Gạo ST25. Độ lẫn phế đầu vào 14,0% (3,8% vàng/đen hư + 2,0% vàng mơ + 1,2% chấm kim + 7,0% bạc bụng). Yêu cầu: năng suất ≥ 18 t/h, chất lượng thành phẩm ≥ 99% hạt tốt, hạt tốt trong phế cuối sau lần 3 ≤ 5%.',
       mix: { vang_hu: 0.038, vang_mo: 0.020, cham_kim: 0.012, chalky: 0.070 }, T0: 0.29, pReq: 0.25, batch: 15000, thr: 0.245, durB: 0.62,
       cameraMiss: 0.0025, falseFlag: 0.00009, timingJitter: 0.011, ejectCap: 0.995, extraNoise: 0.0045,
       targets: { purity: 99.0, loss: 5.0, feed: 18.0 } },
@@ -4295,11 +4313,63 @@ const SIM = (() => {
     const st = s.stats;
     const acc = st.acceptGood + st.acceptBad;
     const rejected = st.rejectGood + st.rejectBad;
-    // Phế lẫn = tỷ lệ hạt tốt nằm trong tổng lượng hạt ở thùng phế.
+    // Đây là kết quả của LẦN 1. PP1 có thể còn nhiều hạt tốt và chưa phải phế cuối.
     return { purity: acc ? st.acceptGood / acc * 100 : 100, loss: rejected ? st.rejectGood / rejected * 100 : 0 };
   }
 
-  return { LEVELS, GROUP, LOAD, CH, L, FEED_T, create, step, summary, effective, threshold, blowForce, rng };
+  // Mô hình tuần hoàn 3 lần:
+  // L1: nguyên liệu -> TP1 + PP1
+  // L2: PP1 -> TP2 quay lại L1 + PP2
+  // L3: PP2 -> TP3 quay lại L2 + phế cuối.
+  // L1 vẫn dùng mô phỏng hạt/van chi tiết phía trên. L2 và L3 dùng cân bằng dòng vật liệu
+  // phụ thuộc vào bộ thông số riêng của từng lần để người chơi có thể điều chỉnh trực tiếp.
+  function stageQuality(cfg, passNo, levelIdx) {
+    cfg = cfg || {};
+    const lv = levelIdx || 0;
+    const opt = passNo === 2
+      ? { rung: 28 + lv * 2, sens: 120 - lv * 3, delay: 50 + lv * 2, dur: 44 + lv }
+      : { rung: 22 + lv * 2, sens: 110 - lv * 2, delay: 50 + lv * 2, dur: 38 + lv };
+    const dr = Math.abs((cfg.rung ?? opt.rung) - opt.rung) / 34;
+    const ds = Math.abs((cfg.sens ?? opt.sens) - opt.sens) / 80;
+    const dd = Math.abs((cfg.delay ?? opt.delay) - opt.delay) / 28;
+    const dw = Math.abs((cfg.dur ?? opt.dur) - opt.dur) / 30;
+    return clamp(1 - (0.18 * dr + 0.27 * ds + 0.31 * dd + 0.24 * dw), 0, 1);
+  }
+
+  function threePassSummary(s, cfgs) {
+    const st = s.stats || {};
+    const g1 = st.rejectGood || 0, b1 = st.rejectBad || 0;
+    const n1 = g1 + b1;
+    const pct = (g, b) => (g + b) > 0 ? g / (g + b) * 100 : 0;
+    const c2 = cfgs && (cfgs[2] || cfgs['2']);
+    const c3 = cfgs && (cfgs[3] || cfgs['3']);
+    const q2 = stageQuality(c2, 2, s.levelIdx);
+    const q3 = stageQuality(c3, 3, s.levelIdx);
+
+    // Lần 2: khi chỉnh tốt, thu hồi khoảng 88% hạt tốt của PP1 và chỉ kéo theo ~5% hạt phế.
+    // Với PP1 khoảng 40–55% hạt tốt, PP2 thường còn khoảng 10–15% hạt tốt.
+    const goodRecover2 = clamp(0.70 + 0.18 * q2, 0.58, 0.88);
+    const badReturn2 = clamp(0.18 - 0.13 * q2, 0.05, 0.22);
+    const tp2Good = g1 * goodRecover2, tp2Bad = b1 * badReturn2;
+    const g2 = Math.max(0, g1 - tp2Good), b2 = Math.max(0, b1 - tp2Bad);
+
+    // Lần 3: thu hồi lần cuối. Khi chỉnh tốt, phế cuối còn khoảng 2–5% hạt tốt.
+    const goodRecover3 = clamp(0.25 + 0.43 * q3, 0.20, 0.68);
+    const badReturn3 = clamp(0.16 - 0.12 * q3, 0.04, 0.20);
+    const tp3Good = g2 * goodRecover3, tp3Bad = b2 * badReturn3;
+    const g3 = Math.max(0, g2 - tp3Good), b3 = Math.max(0, b2 - tp3Bad);
+
+    return {
+      pass1: { good: g1, bad: b1, total: n1, goodPct: pct(g1, b1) },
+      pass2: { good: g2, bad: b2, total: g2 + b2, goodPct: pct(g2, b2) },
+      final: { good: g3, bad: b3, total: g3 + b3, goodPct: pct(g3, b3) },
+      return2: { good: tp2Good, bad: tp2Bad, total: tp2Good + tp2Bad },
+      return3: { good: tp3Good, bad: tp3Bad, total: tp3Good + tp3Bad },
+      quality2: q2, quality3: q3
+    };
+  }
+
+  return { LEVELS, GROUP, LOAD, CH, L, FEED_T, create, step, summary, threePassSummary, effective, threshold, blowForce, rng };
 })();
 if (typeof module !== 'undefined') module.exports = SIM;
 
@@ -4325,7 +4395,7 @@ const GAME_LIMIT_SEC = 3 * 60;
 //    Mỗi bước luôn có 20 điểm cơ bản; làm nhanh được cộng thêm 15 / 10 / 5.
 //    Mỗi lỗi thao tác chỉ trừ nhẹ 10 điểm.
 // B. Kết quả chạy máy: 500 điểm
-//    Chất lượng thành phẩm 225 + phế lẫn 175 + năng suất 100.
+//    Chất lượng thành phẩm 225 + hạt tốt trong phế cuối L3 175 + năng suất 100.
 //    Không còn cơ chế "không đạt = 0 điểm".
 const PROCESS_MAX = 500;
 const MACHINE_MAX = 500;
@@ -4339,9 +4409,31 @@ const MISTAKE_PENALTY = 10;
 const G = {
   mode: 'practice', levelIdx: 0, incPref: true, tourMode: false,
   running: false, sim: null, resultShown: false, lots: [],
+  // Ba bộ thông số độc lập. L1 là tách chính; L2/L3 là hai lần thu hồi phế.
+  activePass: 1,
+  passCfg: {
+    1: { rung: 30, sens: 128, delay: 50, dur: 50 },
+    2: { rung: 28, sens: 120, delay: 50, dur: 44 },
+    3: { rung: 22, sens: 110, delay: 50, dur: 38 }
+  },
+  // Giữ các biến cũ làm alias cho L1 để không ảnh hưởng các phần game hiện có.
   rung: 30, sens: 128, delay: 50, dur: 50, P: { feed: 12, sens: 128, delay: 50, dur: 50 },
   challenge: { elapsed: 0, active: false, pending: false, expired: false },
 };
+function resetPassConfigs() {
+  G.activePass = 1;
+  G.passCfg = {
+    1: { rung: 30, sens: 128, delay: 50, dur: 50 },
+    2: { rung: 28, sens: 120, delay: 50, dur: 44 },
+    3: { rung: 22, sens: 110, delay: 50, dur: 38 }
+  };
+  syncPass1Legacy();
+}
+function getPassCfg(n = G.activePass) { return G.passCfg[n] || G.passCfg[1]; }
+function syncPass1Legacy() {
+  const p = G.passCfg[1];
+  G.rung = p.rung; G.sens = p.sens; G.delay = p.delay; G.dur = p.dur;
+}
 
 const fmtClock = secs => {
   secs = Math.max(0, Math.ceil(secs));
@@ -4428,6 +4520,7 @@ function resetSession() {
     cdone: {}, cskipped: {}, voltSeen: false, srcSeen: false, login: false, mfDrained: false, regOk: false,
   });
   G.running = false;
+  resetPassConfigs();
   ui.refresh();
 }
 const pressOK = () => prep.pm >= 0.2;
@@ -4730,7 +4823,8 @@ function engineStep(dt) {
   if (G.running && !pressOK() && G.sim.t > 0.5) { G.running = false; ui.msg(`Máy báo lỗi áp lực khí thấp (${fmtMPa(prep.pm)} MPa) và tự dừng.`); }
   updateIncidents(dt); maybeWater();
   if (G.running && G.sim.fx.noPower) { G.running = false; }
-  G.P.feed = G.rung * RUNG_TO_TH; G.P.sens = G.sens; G.P.delay = G.delay; G.P.dur = G.dur;   // kỹ sư tự chỉnh cả độ trễ, độ rộng
+  const p1 = getPassCfg(1); syncPass1Legacy();
+  G.P.feed = p1.rung * RUNG_TO_TH; G.P.sens = p1.sens; G.P.delay = p1.delay; G.P.dur = p1.dur;   // Lần 1 chạy mô phỏng hạt/van chi tiết
   if (G.running && !G.sim.finished) {
     let t = dt;
     while (t > 0) { const h = Math.min(1 / 120, t); SIM.step(G.sim, G.P, h); t -= h; }
@@ -4773,9 +4867,11 @@ function finishBatch(timedOut = false) {
   G.resultShown = true; G.running = false; stopChallengeTimer();
   for (const e of G.sim.inc || []) if (e.on && e.fixing > 0) { e.on = false; e.fixed = true; e.fixing = 0; }
 
-  const lv = SIM.LEVELS[G.levelIdx], T = lv.targets, m = SIM.summary(G.sim);
+  const lv = SIM.LEVELS[G.levelIdx], T = lv.targets, m1 = SIM.summary(G.sim);
+  const flow = SIM.threePassSummary(G.sim, G.passCfg);
+  const m = { ...m1, pass1Loss: flow.pass1.goodPct, pass2Loss: flow.pass2.goodPct, finalLoss: flow.final.goodPct, loss: flow.final.goodPct, flow };
   const feed = Number.isFinite(G.sim.minFeed) ? G.sim.minFeed : 0;
-  const ok = { p: m.purity >= T.purity, l: m.loss <= T.loss, f: feed >= T.feed };
+  const ok = { p: m.purity >= T.purity, l: m.finalLoss <= T.loss, f: feed >= T.feed };
   const pass = !timedOut && ok.p && ok.l && ok.f;
   const elapsed = timedOut ? GAME_LIMIT_SEC : Math.min(G.challenge.elapsed, GAME_LIMIT_SEC);
   const remaining = Math.max(0, GAME_LIMIT_SEC - elapsed);
@@ -4806,6 +4902,7 @@ function finishBatch(timedOut = false) {
 
   const lot = {
     level: G.levelIdx, m, feed, pass, ok, score, parts,
+    passCfg: JSON.parse(JSON.stringify(G.passCfg)),
     timedOut, elapsed, remaining,
     inc: (G.sim.inc || []).filter(e => e.on || e.fixed)
   };
@@ -4819,7 +4916,8 @@ function sampleFormData() {
   const accN = st.acceptGood + st.acceptBad, rejN = st.rejectGood + st.rejectBad, allN = accN + rejN || 1;
   const inVd = grp(st.passByType, 'vd') + grp(st.rejByType, 'vd'), inBb = grp(st.passByType, 'bb') + grp(st.rejByType, 'bb');
   const nsIn = sim.feedTime ? sim.feedSum / sim.feedTime : G.P.feed;
-  return { accN, rejN, allN, inVd, inBb, accVd: grp(st.passByType, 'vd'), accBb: grp(st.passByType, 'bb'), st, nsIn, nsAcc: nsIn * accN / allN, nsRej: nsIn * rejN / allN };
+  const flow = SIM.threePassSummary(sim, G.passCfg);
+  return { accN, rejN, allN, inVd, inBb, accVd: grp(st.passByType, 'vd'), accBb: grp(st.passByType, 'bb'), st, flow, nsIn, nsAcc: nsIn * accN / allN, nsRej: nsIn * rejN / allN };
 }
 
 // ================== SCENE: nhà xưởng và thiết bị (khối thô) ==================
@@ -6283,7 +6381,8 @@ function hudTick() {
   const b = SIM.LEVELS[G.levelIdx].batch;
   $('prog').hidden = !(s.t > 0);
   $('progBar').style.width = (s.done / b * 100) + '%';
-  $('progTxt').textContent = `Đã tách ${s.done.toLocaleString('vi-VN')} / ${b.toLocaleString('vi-VN')} hạt · Bộ rung ${G.rung} (≈ ${fmtT(G.rung * RUNG_TO_TH)} t/h) · Độ nhạy ${G.sens}` + (G.running ? '' : ' · Máy đang dừng');
+  const p1cfg = getPassCfg(1);
+  $('progTxt').textContent = `Đã tách ${s.done.toLocaleString('vi-VN')} / ${b.toLocaleString('vi-VN')} hạt · L1 Bộ rung ${p1cfg.rung} (≈ ${fmtT(p1cfg.rung * RUNG_TO_TH)} t/h) · Độ nhạy ${p1cfg.sens}` + (G.running ? '' : ' · Máy đang dừng');
   const e = activeInc();
   if (e) { const a = $('alarmAge'); if (a) a.textContent = e.fixing ? '' : 'đã ' + Math.floor((performance.now() - e.real0) / 1000) + ' giây'; const f = $('fixBar'); if (f) f.style.width = (100 - e.fixing / FIX_TIME * 100) + '%'; }
   if (prep.busy) { $('busy').hidden = false; $('busyBar').style.width = (100 - prep.busyLeft / prep.busyTotal * 100) + '%'; }
@@ -6309,25 +6408,41 @@ ui.alarm = () => {
 // ---------- Màn hình điều khiển ANYSORT ----------
 let hmiPage = 'home', hmiDialog = null, pin = '', hmiAfterLogin = null, hmiShot = 1;
 const nowHM = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0'); };
-function openHMI() { hmiPage = 'home'; hmiDialog = null; showOverlay('hmi'); renderHMI(); renderHMICtl(); }
-// ---------- Dải nút chỉnh thông số dưới màn hình điều khiển ----------
+function openHMI() { hmiPage = 'home'; hmiDialog = null; hmiShot = G.activePass || 1; showOverlay('hmi'); renderHMI(); renderHMICtl(); renderPassFlow(); }
+// ---------- Dải nút chỉnh thông số theo từng lần tách ----------
 const PCTL = [
   { k: 'rung', name: 'Bộ rung', min: 0, max: 100, sub: v => '≈ ' + fmtT(v * RUNG_TO_TH) + ' t/h', hint: 'Càng tăng → cấp liệu nhiều, năng suất lớn.' },
   { k: 'sens', name: 'Độ nhạy', min: 0, max: 255, sub: () => '0–255', hint: 'Càng giảm → tách sạch hơn, nhưng dễ loại nhầm hạt tốt.' },
   { k: 'delay', name: 'Độ trễ', min: 0, max: 100, sub: () => '0–100', hint: 'Thời gian từ camera phát hiện hạt xấu đến lúc van hơi mở.' },
   { k: 'dur', name: 'Độ rộng', min: 0, max: 100, sub: () => '0–100', hint: 'Càng tăng → thời gian mở van lâu, vùng thổi rộng, dễ loại nhầm hạt tốt.' },
 ];
+const PASS_GUIDE = {
+  1: '<b>Lần 1 – Tách chính:</b> ưu tiên thành phẩm ≥ 99% hạt tốt. PP1 còn khoảng 40–55% hạt tốt có thể là bình thường vì sẽ được thu hồi tiếp.',
+  2: '<b>Lần 2 – Thu hồi PP1:</b> TP2 quay lại L1; điều chỉnh để PP2 còn khoảng 10–15% hạt tốt.',
+  3: '<b>Lần 3 – Làm sạch phế:</b> TP3 quay lại L2; phế cuối phải ≤ 5% hạt tốt.'
+};
 function renderHMICtl() {
   const el = $('hmiCtl'); if (!el) return;
+  const passNo = G.activePass || 1, cfg = getPassCfg(passNo);
   el.classList.toggle('off', !prepReady());
-  el.innerHTML = PCTL.map(c => `<div class="pc"><div class="pn">${c.name}</div>
+  const tabs = `<div class="pass-tabs">${[1,2,3].map(i => `<button type="button" class="pass-tab ${passNo===i?'on':''}" data-pass="${i}">Lần ${i}${i===1?' · Tách chính':i===2?' · Thu hồi':' · Phế cuối'}</button>`).join('')}</div>`;
+  const guide = `<div class="pass-guide">${PASS_GUIDE[passNo]}</div>`;
+  el.innerHTML = tabs + guide + PCTL.map(c => `<div class="pc"><div class="pn">${c.name}</div>
     <div class="pr"><button type="button" data-k="${c.k}" data-d="-1" aria-label="Giảm ${c.name}">−</button>
-      <div class="pv" id="pv-${c.k}">${G[c.k]}<small>${c.sub(G[c.k])}</small></div>
+      <div class="pv" id="pv-${c.k}">${cfg[c.k]}<small>${c.sub(cfg[c.k])}</small></div>
       <button type="button" data-k="${c.k}" data-d="1" aria-label="Tăng ${c.name}">+</button></div>
     <div class="ph">${c.hint}</div></div>`).join('');
+  el.querySelectorAll('button[data-pass]').forEach(b => b.onclick = () => { G.activePass = +b.dataset.pass; hmiShot = G.activePass; renderHMICtl(); renderHMI(); renderPassFlow(); });
   el.querySelectorAll('button[data-k]').forEach(b => {
     const c = PCTL.find(x => x.k === b.dataset.k), d = +b.dataset.d; let t1, t2;
-    const stepV = () => { G[c.k] = Math.max(c.min, Math.min(c.max, G[c.k] + d)); const v = $('pv-' + c.k); if (v) v.innerHTML = `${G[c.k]}<small>${c.sub(G[c.k])}</small>`; renderQuickVals(); };
+    const stepV = () => {
+      const pcfg = getPassCfg(passNo);
+      pcfg[c.k] = Math.max(c.min, Math.min(c.max, pcfg[c.k] + d));
+      if (passNo === 1) syncPass1Legacy();
+      const v = $('pv-' + c.k); if (v) v.innerHTML = `${pcfg[c.k]}<small>${c.sub(pcfg[c.k])}</small>`;
+      if (hmiShot === passNo) renderQuickVals();
+      renderPassFlow();
+    };
     const stop = () => { clearTimeout(t1); clearInterval(t2); };
     b.onpointerdown = e => { e.preventDefault(); stop(); stepV(); t1 = setTimeout(() => { t2 = setInterval(stepV, 55); }, 350); };
     ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, stop));
@@ -6337,8 +6452,8 @@ function needLogin(page) { hmiPage = page; renderHMI(); }   // không cần mậ
 function renderHMI() {
   const sc = $('hmiScreen');
   const d = new Date(), clock = [d.getHours(), d.getMinutes(), d.getSeconds()].map(v => String(v).padStart(2, '0')).join(':');
-  if (!prep.power) { sc.className = 'hmi off'; sc.innerHTML = '<div class="center dim">Màn hình tắt. Máy chưa có nguồn.</div>'; return; }
-  if (!prep.booted) { sc.className = 'hmi boot'; sc.innerHTML = `<div class="center big">${prep.bootLeft > 0 ? '12.1Y' : ''}</div>` + (prep.bootLeft > 0 ? '' : '<div class="center dim" style="top:60%">Đèn đỏ sáng. Ấn nút khởi động màu xanh để khởi động máy.</div>'); return; }
+  if (!prep.power) { sc.className = 'hmi off'; sc.innerHTML = '<div class="center dim">Màn hình tắt. Máy chưa có nguồn.</div>'; renderPassFlow(); return; }
+  if (!prep.booted) { sc.className = 'hmi boot'; sc.innerHTML = `<div class="center big">${prep.bootLeft > 0 ? '12.1Y' : ''}</div>` + (prep.bootLeft > 0 ? '' : '<div class="center dim" style="top:60%">Đèn đỏ sáng. Ấn nút khởi động màu xanh để khởi động máy.</div>'); renderPassFlow(); return; }
   sc.className = 'hmi on';
   const top = `<div class="topbar"><span>🔔</span><span class="clock">${clock}</span><span class="grow"></span><button data-h="home" title="Màn hình chính">⌂</button></div>`;
   let body = '';
@@ -6350,12 +6465,13 @@ function renderHMI() {
   } else if (hmiPage === 'modes') {
     body = `<div class="list">${MODES.map(m => `<div class="row${m.id === prep.mode ? ' cur' : ''}"><span>${m.id === prep.mode ? '★ ' : ''}${m.id}</span><small>${m.name}</small><button data-h="apply:${m.id}">Apply</button></div>`).join('')}</div>`;
   } else if (hmiPage === 'quick') {
-    body = `<div class="tabs">Thứ tự bắn ${[1, 2, 3].map(i => `<button data-h="shot:${i}" class="${hmiShot === i ? 'on' : ''}">${i}</button>`).join('')}</div>
+    const qc = getPassCfg(hmiShot);
+    body = `<div class="tabs">Lần tách ${[1, 2, 3].map(i => `<button data-h="shot:${i}" class="${hmiShot === i ? 'on' : ''}">${i}</button>`).join('')}</div>
       <div class="cols">
-        ${qcol('Bộ rung', G.rung, 'rung', 100)}
-        ${qcol('B:Tối · Độ nhạy phía trước', G.sens, 'sens', 255)}
+        ${qcol('Bộ rung', qc.rung, 'rung', 100)}
+        ${qcol('B:Tối · Độ nhạy phía trước', qc.sens, 'sens', 255)}
         ${qcol('E:Vàng · Độ nhạy phía sau', 40, 'rear', 255, true)}
-      </div>${hmiShot !== 1 ? '<p class="dim small">Bản thử mô phỏng lần bắn 1. Lần bắn 2 và 3 sẽ có ở bản sau.</p>' : '<p class="dim small">Bộ rung bình thường 20–60, các máng đều nhau. Độ nhạy 0–255.</p>'}`;
+      </div><p class="dim small">Đang chỉnh Lần ${hmiShot}. Dùng cụm 4 thông số bên dưới để chỉnh cả Độ trễ và Độ rộng.</p>`;
   } else if (hmiPage === 'menu') {
     const tiles = [['Chìa khóa thông', 'x'], ['Điều chỉnh độ nhạy', 'quick'], ['Điều chỉnh độ rung', 'quick'], ['Kiểm tra súng hơi', 'x'], ['Cài đặt lau kính', 'x'], ['Cài đặt nền', 'x']];
     body = `<div class="tiles">${tiles.map(([t, p]) => `<button data-h="${p === 'x' ? 'na' : 'go:' + p}">${t}</button>`).join('')}</div>`;
@@ -6371,17 +6487,51 @@ function renderHMI() {
   sc.querySelectorAll('[data-h]').forEach(b => b.onclick = () => hmiAction(b.dataset.h));
   sc.querySelectorAll('[data-q]').forEach(b => {
     let t1, t2; const [k, dir] = b.dataset.q.split(':');
-    const stepQ = () => { if (k === 'rung') G.rung = Math.max(0, Math.min(100, G.rung + +dir)); if (k === 'sens') G.sens = Math.max(0, Math.min(255, G.sens + +dir)); renderQuickVals(); PCTL.forEach(c => { const v = $('pv-' + c.k); if (v) v.innerHTML = `${G[c.k]}<small>${c.sub(G[c.k])}</small>`; }); };
+    const stepQ = () => {
+      const cfg = getPassCfg(hmiShot);
+      if (k === 'rung') cfg.rung = Math.max(0, Math.min(100, cfg.rung + +dir));
+      if (k === 'sens') cfg.sens = Math.max(0, Math.min(255, cfg.sens + +dir));
+      if (hmiShot === 1) syncPass1Legacy();
+      renderQuickVals();
+      if (G.activePass === hmiShot) PCTL.forEach(c => { const v = $('pv-' + c.k); if (v) v.innerHTML = `${cfg[c.k]}<small>${c.sub(cfg[c.k])}</small>`; });
+      renderPassFlow();
+    };
     b.onpointerdown = e => { e.preventDefault(); stepQ(); t1 = setTimeout(() => { t2 = setInterval(stepQ, 60); }, 350); };
     ['pointerup', 'pointerleave'].forEach(ev => b.addEventListener(ev, () => { clearTimeout(t1); clearInterval(t2); }));
   });
+  renderPassFlow();
 }
 function qcol(name, v, k, max, ro) {
   return `<div class="qc${ro ? ' ro' : ''}"><div class="qn">${name}</div><button data-q="${k}:1" ${ro ? 'disabled' : ''}>+</button>
     <div class="qbar"><div id="qb-${k}" style="height:${v / max * 100}%"></div></div><div class="qv" id="qv-${k}">${v}</div><button data-q="${k}:-1" ${ro ? 'disabled' : ''}>−</button></div>`;
 }
 function renderQuickVals() {
-  [['rung', G.rung, 100], ['sens', G.sens, 255]].forEach(([k, v, max]) => { const a = $('qv-' + k), b = $('qb-' + k); if (a) a.textContent = v; if (b) b.style.height = v / max * 100 + '%'; });
+  const cfg = getPassCfg(hmiShot);
+  [['rung', cfg.rung, 100], ['sens', cfg.sens, 255]].forEach(([k, v, max]) => { const a = $('qv-' + k), b = $('qb-' + k); if (a) a.textContent = v; if (b) b.style.height = v / max * 100 + '%'; });
+}
+function renderPassFlow() {
+  const el = $('passFlow'); if (!el || !G.sim) return;
+  const lv = SIM.LEVELS[G.levelIdx];
+  const badIn = Object.values(lv.mix).reduce((a,b)=>a+b,0) * 100;
+  const goodIn = 100 - badIn;
+  const f = SIM.threePassSummary(G.sim, G.passCfg);
+  const enough = f.pass1.total >= 30;
+  const p1 = enough ? fmtP1(f.pass1.goodPct) : 'đang lấy mẫu';
+  const p2 = enough ? fmtP1(f.pass2.goodPct) : '–';
+  const p3 = enough ? fmtP1(f.final.goodPct) : '–';
+  const c2 = enough ? (f.pass2.goodPct <= 15 ? 'pf-good' : 'pf-warn') : '';
+  const c3 = enough ? (f.final.goodPct <= 5 ? 'pf-good' : f.final.goodPct <= 8 ? 'pf-warn' : 'pf-bad') : '';
+  el.innerHTML = `<div class="pf-title">NGUYÊN LÝ TÁCH 3 LẦN</div>
+    <div class="pf-input">Gạo ST25 · đầu vào: <b>${fmtP1(goodIn)} hạt tốt</b> · ${fmtP1(badIn)} phế</div>
+    <div class="pf-line"><span class="pf-node">LẦN 1</span><span>TP1 → Thành phẩm</span><span class="pf-val">${SIM.summary(G.sim).purity.toFixed(1).replace('.',',')}%</span></div>
+    <div class="pf-arrow">↓ PP1 · hạt tốt trong PP1</div>
+    <div class="pf-line"><span class="pf-node">PP1</span><span>đưa sang Lần 2</span><span class="pf-val">${p1}</span></div>
+    <div class="pf-return">↺ TP2: ${Math.round(f.return2.total).toLocaleString('vi-VN')} hạt thu hồi → quay lại Lần 1</div>
+    <div class="pf-line"><span class="pf-node">LẦN 2</span><span>PP2 → Lần 3</span><span class="pf-val ${c2}">${p2}</span></div>
+    <div class="pf-arrow">Mục tiêu tham khảo PP2: khoảng 10–15% hạt tốt</div>
+    <div class="pf-return">↺ TP3: ${Math.round(f.return3.total).toLocaleString('vi-VN')} hạt thu hồi → quay lại Lần 2</div>
+    <div class="pf-line"><span class="pf-node">LẦN 3</span><span>PHẾ CUỐI</span><span class="pf-val ${c3}">${p3}</span></div>
+    <div class="pf-foot">Chỉ <b>phế cuối sau Lần 3</b> dùng để xét yêu cầu ≤ 5%. PP1 có thể khoảng 40–55% và PP2 khoảng 10–15%.</div>`;
 }
 function hmiAction(h) {
   if (h === 'home') { hmiPage = 'home'; hmiDialog = null; }
@@ -6394,7 +6544,7 @@ function hmiAction(h) {
   else if (h === 'modes') { hmiPage = 'modes'; ACT.modeView(); }
   else if (h === 'na') ui.msg('Chức năng này chưa có trong bản thử.');
   else if (h.startsWith('go:')) hmiPage = h.slice(3);
-  else if (h.startsWith('shot:')) hmiShot = +h.slice(5);
+  else if (h.startsWith('shot:')) { hmiShot = +h.slice(5); G.activePass = hmiShot; renderHMICtl(); renderPassFlow(); }
   else if (h.startsWith('apply:')) { const id = h.slice(6); hmiDialog = { type: 'confirm', text: `Apply “${id}”?`, yes: () => { ACT.modeApply(id); ui.toast('Đã chuyển chế độ ' + id, 'info'); } }; }
   else if (h === 'power') hmiDialog = { type: 'confirm', text: 'Bạn có muốn tắt máy không?', yes: 'ask2' };
   else if (h === 'yes') {
@@ -6443,7 +6593,9 @@ ui.result = lot => {
   const pv = (n, t) => t ? fmtP1(n / t * 100) : '–';
   const rows = [
     ['Chất lượng thành phẩm (hạt tốt)', fmtPct(m.purity), '≥ ' + fmtPct(T.purity), lot.ok.p],
-    ['Hạt tốt trong phế phẩm', fmtPct(m.loss), '≤ ' + fmtPct(T.loss), lot.ok.l],
+    ['Hạt tốt trong PP lần 1', fmtPct(m.pass1Loss), 'tham khảo 40–55%', null],
+    ['Hạt tốt trong PP lần 2', fmtPct(m.pass2Loss), 'tham khảo 10–15%', null],
+    ['Hạt tốt trong phế cuối (lần 3)', fmtPct(m.finalLoss), '≤ ' + fmtPct(T.loss), lot.ok.l],
     ['Năng suất đầu vào thấp nhất', fmtT(lot.feed) + ' t/h', '≥ ' + fmtT(T.feed), lot.ok.f]
   ];
   const inc = lot.inc.map(e => e.fixed
@@ -6467,7 +6619,7 @@ ui.result = lot => {
 
   const machineBreakdown = `<table class="kv">
     <tr><td>Chất lượng thành phẩm</td><td><b>${lot.parts.qPts} / 225</b></td><td class="dim">càng sạch càng cao</td></tr>
-    <tr><td>Hạt tốt lẫn trong phế</td><td><b>${lot.parts.lPts} / 175</b></td><td class="dim">càng thấp càng cao</td></tr>
+    <tr><td>Hạt tốt trong phế cuối (Lần 3)</td><td><b>${lot.parts.lPts} / 175</b></td><td class="dim">càng thấp càng cao</td></tr>
     <tr><td>Năng suất</td><td><b>${lot.parts.fPts} / 100</b></td><td class="dim">càng tốt càng cao</td></tr>
   </table>`;
 
@@ -6478,18 +6630,21 @@ ui.result = lot => {
 
     <div class="rules"><b>Cách tính điểm thi đấu</b>
       <p><b>500 điểm quy trình</b>: mỗi bước hoàn thành đều có điểm, bước càng nhanh càng cao.
-      <b>500 điểm kết quả máy</b>: chất lượng 225 + phế lẫn 175 + năng suất 100.
+      <b>500 điểm kết quả máy</b>: chất lượng 225 + phế cuối sau L3 175 + năng suất 100.
       Trong chế độ thi đấu, <b>chỉ xét/xếp hạng giữa người chơi cùng cấp độ</b>. Trong cùng cấp độ, người có <b>tổng điểm cao hơn</b> xếp trên; nếu bằng điểm thì thời gian hoàn thành thấp hơn xếp trên.</p>
     </div>
 
     <h3>Kết quả chạy máy</h3>
     ${machineBreakdown}
-    <table class="kv">${rows.map(r => `<tr><td>${r[0]}</td><td class="${r[3] ? 'y' : 'n'}">${r[1]}</td><td class="dim">mục tiêu ${r[2]}</td></tr>`).join('')}</table>
+    <table class="kv">${rows.map(r => `<tr><td>${r[0]}</td><td class="${r[3] == null ? '' : (r[3] ? 'y' : 'n')}">${r[1]}</td><td class="dim">${r[2].startsWith('tham khảo') ? r[2] : 'mục tiêu ' + r[2]}</td></tr>`).join('')}</table>
 
+    <div class="rules" style="background:#EEF3F8;border-left-color:#4C8BD8"><b style="color:#2F4E8C">Dòng vật liệu 3 lần</b><p>PP1 → Lần 2; TP2 quay lại Lần 1. PP2 → Lần 3; TP3 quay lại Lần 2. Chỉ phế sau Lần 3 là phế cuối để xét yêu cầu ≤ 5% hạt tốt.</p></div>
     <table class="form"><caption>Phiếu lưu mẫu</caption><tr><th></th><th>Tạp</th><th>Hạt tốt</th><th>Vàng, đen hư</th><th>Bạc bụng</th></tr>
       <tr><td>Nguyên liệu</td><td>${pv(d.inVd + d.inBb, d.allN)}</td><td>${pv(d.allN - d.inVd - d.inBb, d.allN)}</td><td>${pv(d.inVd, d.allN)}</td><td>${pv(d.inBb, d.allN)}</td></tr>
       <tr><td>Thành phẩm</td><td>${pv(d.st.acceptBad, d.accN)}</td><td>${pv(d.st.acceptGood, d.accN)}</td><td>${pv(d.accVd, d.accN)}</td><td>${pv(d.accBb, d.accN)}</td></tr>
-      <tr><td>Phế phẩm</td><td colspan="2">Hạt tốt (phế lẫn): ${pv(d.st.rejectGood, d.rejN)}</td><td colspan="2">Hạt phế: ${pv(d.st.rejectBad, d.rejN)}</td></tr>
+      <tr><td>PP lần 1</td><td colspan="4">Hạt tốt trong PP1: ${fmtP1(m.pass1Loss)} · chuyển sang Lần 2</td></tr>
+      <tr><td>PP lần 2</td><td colspan="4">Hạt tốt trong PP2: ${fmtP1(m.pass2Loss)} · TP2 quay lại L1, PP2 chuyển sang L3</td></tr>
+      <tr><td>Phế cuối (L3)</td><td colspan="4"><b>Hạt tốt: ${fmtP1(m.finalLoss)}</b> · mục tiêu ≤ ${fmtP1(T.loss)}</td></tr>
       <tr><th>Năng suất (t/h)</th><th>Đầu vào</th><th>Thành phẩm</th><th colspan="2">Phế phẩm</th></tr>
       <tr><td>Đo được</td><td>${fmtT(d.nsIn)}</td><td>${fmtT(d.nsAcc)}</td><td colspan="2">${d.nsRej.toFixed(2).replace('.', ',')}</td></tr>
       <tr><td><b>Đánh giá kỹ thuật</b></td><td colspan="4" class="${lot.pass ? 'y' : 'n'}"><b>${technical}</b></td></tr>
@@ -6529,7 +6684,7 @@ ui.shift = r => {
   $('shiftBody').innerHTML = `<h2>Tổng kết ca làm việc</h2>
     <table class="kv"><tr><td>Quy trình mở máy</td><td>${r.open ?? 0} / ${OPEN_MAX}</td></tr><tr><td>Quy trình tắt máy</td><td>${r.close} / ${CLOSE_MAX}</td></tr>
       <tr><td>Vận hành (điểm cao nhất mỗi cấp độ đạt)</td><td>${lotsPts.toLocaleString('vi-VN')}</td></tr><tr class="tot"><td>Tổng điểm ca</td><td>${total.toLocaleString('vi-VN')}</td></tr></table>
-    <h3>Các cấp độ đã chơi</h3><ul class="inc">${r.lots.map(l => `<li class="${l.pass ? 'y' : 'n'}">${SIM.LEVELS[l.level].name}: tạp ${fmtPct(100 - l.m.purity)}, phế lẫn ${fmtPct(l.m.loss)}, ${fmtT(l.feed)} t/h. ${l.score.toLocaleString('vi-VN')} / 1.000 điểm · ${l.pass ? 'Đạt chuẩn kỹ thuật' : 'Chưa đạt chuẩn kỹ thuật'}</li>`).join('') || '<li>Chưa hoàn thành cấp độ nào.</li>'}</ul>
+    <h3>Các cấp độ đã chơi</h3><ul class="inc">${r.lots.map(l => `<li class="${l.pass ? 'y' : 'n'}">${SIM.LEVELS[l.level].name}: tạp ${fmtPct(100 - l.m.purity)}, phế cuối L3 ${fmtPct(l.m.loss)}, ${fmtT(l.feed)} t/h. ${l.score.toLocaleString('vi-VN')} / 1.000 điểm · ${l.pass ? 'Đạt chuẩn kỹ thuật' : 'Chưa đạt chuẩn kỹ thuật'}</li>`).join('') || '<li>Chưa hoàn thành cấp độ nào.</li>'}</ul>
     <h3>Lỗi quy trình</h3><ul class="pen">${r.pen.map(p => `<li><b>−${p.pts}</b> ${p.msg}</li>`).join('') || '<li>Không có lỗi. Làm đúng toàn bộ quy trình.</li>'}</ul>
     <div class="row"><button id="shiftNew" class="pri">Bắt đầu ca mới</button></div>`;
   $('shiftNew').onclick = () => { G.lots = []; resetSession(); newBatch(); showOverlay('start'); renderStart(); };
@@ -6544,7 +6699,7 @@ function renderStartLotInfo() {
   const lv = SIM.LEVELS[i], T = lv.targets;
   const mixPct = Object.values(lv.mix).reduce((a, b) => a + b, 0) * 100;
   box.innerHTML = `<b>${lv.name}</b><br><b>Nguyên liệu: Gạo ST25 · Độ lẫn phế đầu vào: ${fmtP1(mixPct)}</b>
-    <div class="req"><span>Năng suất<br><b>≥ ${fmtT(T.feed)} t/h</b></span><span>Chất lượng thành phẩm<br><b>≥ ${fmtP1(T.purity)} hạt tốt</b></span><span>Hạt tốt trong phế phẩm<br><b>≤ ${fmtP1(T.loss)}</b></span></div>
+    <div class="req"><span>Năng suất<br><b>≥ ${fmtT(T.feed)} t/h</b></span><span>Chất lượng thành phẩm<br><b>≥ ${fmtP1(T.purity)} hạt tốt</b></span><span>Hạt tốt trong phế cuối (L3)<br><b>≤ ${fmtP1(T.loss)}</b></span></div>
     <div class="mix">${lv.desc}</div>`;
 }
 function renderStart() {
@@ -7171,7 +7326,7 @@ function tick(dt, now) {
   if (Intro.active) { Intro.update(dt); TV.tick(now / 1000); if (G.sim) visuals(dt, now / 1000); return; }
   // Đồng hồ thử thách chạy trong gameplay/HMI/van điều áp; tạm dừng khi mở Pause/Start/Result.
   if (!['start', 'pause', 'result', 'shift'].includes(overlay)) challengeTick(dt);
-  if (G.sim && !['start', 'pause', 'shift', 'result'].includes(overlay)) { engineStep(dt); if (overlay === 'hmi' && Math.floor(now / 500) !== Math.floor((now - dt * 1000) / 500)) renderHMI(); if (overlay === 'reg') regLive(); }
+  if (G.sim && !['start', 'pause', 'shift', 'result'].includes(overlay)) { engineStep(dt); if (overlay === 'hmi' && Math.floor(now / 500) !== Math.floor((now - dt * 1000) / 500)) { renderHMI(); renderPassFlow(); } if (overlay === 'reg') regLive(); }
   move(dt);
   placeCamera(dt);
   if (G.sim) { aim(); visuals(dt, now / 1000); }
