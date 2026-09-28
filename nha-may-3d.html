@@ -4675,7 +4675,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
-console.info('[DTC] nha-may-3d build v8 - engineer faces forward/back-to-camera + centered third-person + walk rig + moved CSKH');
+console.info('[DTC] nha-may-3d build v9 - continuous skinned engineer rig (no mesh tearing) + correct direction + CSKH');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -5369,42 +5369,18 @@ const avatar = (() => {
   let model = null, phase = 0, amp = 0;
   const J = {}; // các khớp giả tạo từ model đã tách thành từng chi
 
-  function addPivot(base, part, name, pivot, parentPivot = null, parentOrigin = null) {
-    if (!part) return null;
-    const g = new THREE.Group(); g.name = name;
-    if (parentPivot) {
-      const po = parentOrigin || new THREE.Vector3();
-      g.position.set(pivot.x - po.x, pivot.y - po.y, pivot.z - po.z);
-      parentPivot.add(g);
-    } else {
-      g.position.copy(pivot); base.add(g);
-    }
-    g.add(part);
-    // Geometry của từng chi vẫn dùng hệ tọa độ gốc của model; bù pivot để tư thế đứng không đổi.
-    part.position.set(-pivot.x, -pivot.y, -pivot.z);
-    return g;
-  }
-
   function buildWalkRig(root) {
-    const LU = root.getObjectByName('LeftUpperArm'), LF = root.getObjectByName('LeftForearm');
-    const RU = root.getObjectByName('RightUpperArm'), RF = root.getObjectByName('RightForearm');
-    const LT = root.getObjectByName('LeftThigh'), LS = root.getObjectByName('LeftShin');
-    const RT = root.getObjectByName('RightThigh'), RS = root.getObjectByName('RightShin');
-    if (!(LU && LF && RU && RF && LT && LS && RT && RS)) return false;
-    const base = LU.parent; // tất cả part cùng nằm trong node world của GLB
-    const pLS = new THREE.Vector3(-0.205,  0.515, 0.00), pLE = new THREE.Vector3(-0.305,  0.185, 0.00);
-    const pRS = new THREE.Vector3( 0.205,  0.515, 0.00), pRE = new THREE.Vector3( 0.305,  0.185, 0.00);
-    const pLH = new THREE.Vector3(-0.105, -0.175, 0.00), pLK = new THREE.Vector3(-0.105, -0.585, 0.00);
-    const pRH = new THREE.Vector3( 0.105, -0.175, 0.00), pRK = new THREE.Vector3( 0.105, -0.585, 0.00);
-    J.lShoulder = addPivot(base, LU, 'LeftShoulderPivot', pLS);
-    J.lElbow    = addPivot(base, LF, 'LeftElbowPivot', pLE, J.lShoulder, pLS);
-    J.rShoulder = addPivot(base, RU, 'RightShoulderPivot', pRS);
-    J.rElbow    = addPivot(base, RF, 'RightElbowPivot', pRE, J.rShoulder, pRS);
-    J.lHip      = addPivot(base, LT, 'LeftHipPivot', pLH);
-    J.lKnee     = addPivot(base, LS, 'LeftKneePivot', pLK, J.lHip, pLH);
-    J.rHip      = addPivot(base, RT, 'RightHipPivot', pRH);
-    J.rKnee     = addPivot(base, RS, 'RightKneePivot', pRK, J.rHip, pRH);
-    return true;
+    // v9 uses ONE continuous skinned mesh with real bones.
+    // No rigidly separated arm/leg meshes, so joints cannot open visible gaps while walking.
+    J.lShoulder = root.getObjectByName('LeftShoulderBone');
+    J.lElbow    = root.getObjectByName('LeftElbowBone');
+    J.rShoulder = root.getObjectByName('RightShoulderBone');
+    J.rElbow    = root.getObjectByName('RightElbowBone');
+    J.lHip      = root.getObjectByName('LeftHipBone');
+    J.lKnee     = root.getObjectByName('LeftKneeBone');
+    J.rHip      = root.getObjectByName('RightHipBone');
+    J.rKnee     = root.getObjectByName('RightKneeBone');
+    return !!(J.lShoulder && J.lElbow && J.rShoulder && J.rElbow && J.lHip && J.lKnee && J.rHip && J.rKnee);
   }
 
   function prepare(root) {
@@ -5432,7 +5408,7 @@ const avatar = (() => {
     // Kết quả: nhấn W -> kỹ sư quay lưng về camera và mặt nhìn đúng hướng di chuyển.
     root.rotation.y = Math.PI;
     const rigOK = buildWalkRig(root);
-    console.info('[DTC v8] Engineer walk rig:', rigOK ? 'READY' : 'NOT FOUND');
+    console.info('[DTC v9] Engineer skinned walk rig:', rigOK ? 'READY' : 'NOT FOUND');
     G0.add(root); model = root;
   }
 
@@ -5447,7 +5423,7 @@ const avatar = (() => {
 
   function load(done) {
     const loader = new THREE.GLTFLoader();
-    loader.load('Enginneer_v8.glb?v=8', gl => {
+    loader.load('Enginneer_v9.glb?v=9', gl => {
       prepare(gl.scene); done && done();
     }, undefined, e => {
       console.warn('Không tải được Enginneer.glb, dùng model kỹ sư dự phòng.', e);
@@ -5468,21 +5444,20 @@ const avatar = (() => {
       amp += (targetAmp - amp) * Math.min(1, dt * 9);
       if (moving) phase += dt * (fast ? 11.5 : 8.2);
       const s = Math.sin(phase), c = Math.cos(phase);
-      // Biên độ đủ rõ ở góc nhìn thứ ba: tay và chân đánh ngược pha tự nhiên.
-      const arm = s * (fast ? 0.92 : 0.72) * amp;
-      const leg = s * (fast ? 0.82 : 0.66) * amp;
-      dampJoint(J.lShoulder,  arm, dt, 16); dampJoint(J.rShoulder, -arm, dt, 16);
-      dampJoint(J.lHip,      -leg, dt, 16); dampJoint(J.rHip,       leg, dt, 16);
-      // Gập khuỷu và đầu gối theo pha nhấc chân để không còn cảm giác mannequin cứng.
-      dampJoint(J.lElbow, -0.16 - Math.max(0, -s) * 0.28 * amp, dt, 16);
-      dampJoint(J.rElbow, -0.16 - Math.max(0,  s) * 0.28 * amp, dt, 16);
-      dampJoint(J.lKnee,   Math.max(0,  s) * 0.72 * amp, dt, 18);
-      dampJoint(J.rKnee,   Math.max(0, -s) * 0.72 * amp, dt, 18);
-      // Nhún thân và xoay vai rất nhẹ theo nhịp bước.
-      G0.position.y = y + Math.abs(Math.sin(phase * 2)) * 0.028 * amp;
+      // v9: animation trên skeleton/skinning liên tục. Biên độ vừa phải để giữ hình thể tự nhiên.
+      const arm = s * (fast ? 0.62 : 0.48) * amp;
+      const leg = s * (fast ? 0.52 : 0.38) * amp;
+      dampJoint(J.lShoulder,  arm, dt, 15); dampJoint(J.rShoulder, -arm, dt, 15);
+      dampJoint(J.lHip,      -leg, dt, 15); dampJoint(J.rHip,       leg, dt, 15);
+      dampJoint(J.lElbow, -0.10 - Math.max(0, -s) * 0.22 * amp, dt, 16);
+      dampJoint(J.rElbow, -0.10 - Math.max(0,  s) * 0.22 * amp, dt, 16);
+      dampJoint(J.lKnee,   Math.max(0,  s) * (fast ? 0.66 : 0.48) * amp, dt, 17);
+      dampJoint(J.rKnee,   Math.max(0, -s) * (fast ? 0.66 : 0.48) * amp, dt, 17);
+      // Nhún thân rất nhẹ; model vẫn là một bề mặt liên tục.
+      G0.position.y = y + Math.abs(Math.sin(phase * 2)) * (fast ? 0.025 : 0.018) * amp;
       if (model) {
-        model.rotation.z = moving ? c * 0.012 * amp : 0;
-        model.rotation.x = moving ? Math.abs(s) * 0.012 * amp : 0;
+        model.rotation.z = moving ? c * 0.008 * amp : 0;
+        model.rotation.x = moving ? Math.abs(s) * 0.008 * amp : 0;
       }
     },
   };
