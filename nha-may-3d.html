@@ -5928,7 +5928,7 @@ const DOOR = { x: HALL.x0, z: 2.2, w: 8.0, h: 4.6, open: 0 };
 
 // ---------- Màn hình TV lớn trên tường: chiếu logo DTCGroup và lời chào người chơi (căn giữa bức tường) ----------
 const TV = (() => {
-  const W = 7.2, H = W * 9 / 16, cx = (HALL.x0 + HALL.x1) / 2, cy = 6.9, z = HALL.z0 + 0.02;
+  const W = 7.2, H = W * 9 / 16, cx = (HALL.x0 + HALL.x1) / 2, cy = 7.65, z = HALL.z0 + 0.02;
   // giá treo, viền màn hình, đèn nguồn
   [-1, 1].forEach(k => box(0.12, 1.2, 0.1, '#2A2E34', cx + k * W * 0.3, cy - 0.6, z + 0.05));
   const bezel = new THREE.Mesh(new THREE.BoxGeometry(W + 0.16, H + 0.16, 0.12), new THREE.MeshStandardMaterial({ color: '#0B0D10', roughness: 0.25, metalness: 0.4 }));
@@ -6036,10 +6036,10 @@ const threePassGuideFrame = new THREE.Mesh(
   new THREE.BoxGeometry(7.06, 4.77, 0.08),
   new THREE.MeshStandardMaterial({ color: '#0F1419', roughness: 0.56, metalness: 0.18 })
 );
-threePassGuideFrame.position.set(-2.2, 3.15, HALL.z0 + 0.02);
+threePassGuideFrame.position.set(-3.33, 2.9475, HALL.z0 + 0.02);
 scene.add(threePassGuideFrame);
 const threePassGuide = canvasPlane(1536, 1024, 6.9, 4.6);
-threePassGuide.position.set(-2.2, 3.15, HALL.z0 + 0.065);
+threePassGuide.position.set(-3.33, 2.8625, HALL.z0 + 0.065);
 (function drawThreePassGuide() {
   const cv = threePassGuide.userData.cv, g = cv.getContext('2d');
   g.fillStyle = '#F4F7FA'; g.fillRect(0, 0, cv.width, cv.height);
