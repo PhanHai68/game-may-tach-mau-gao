@@ -4677,7 +4677,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
-console.info('[DTC] nha-may-3d build v18 - Bu Dai cabinet + first SOP step');
+console.info('[DTC] nha-may-3d build v19 - training desks + TV + roll-up entrance');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -4825,12 +4825,106 @@ function floorTexture() {
   scene.add(sign);
 }
 
+// ---------- Khu đào tạo: 1 hàng 5 bộ bàn-ghế + TV phía trước ----------
+{
+  const wood = mat('#C99562', { roughness: 0.72, metalness: 0.02 });
+  const woodEdge = mat('#A97445', { roughness: 0.72, metalness: 0.02 });
+  const steel = mat('#727980', { roughness: 0.42, metalness: 0.55 });
+  const rubber = mat('#22262A', { roughness: 0.8, metalness: 0.05 });
+
+  function partBox(w, h, d, material, x, y, z, parent) {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
+    m.position.set(x, y + h / 2, z);
+    m.castShadow = true; m.receiveShadow = true;
+    (parent || scene).add(m);
+    return m;
+  }
+
+  function makeDeskChair() {
+    const g = new THREE.Group();
+
+    // Bàn học viên – mặt bàn gỗ, yếm trước và khung thép.
+    partBox(0.92, 0.055, 0.52, wood, 0, 0.72, 0, g);
+    partBox(0.86, 0.28, 0.035, woodEdge, 0, 0.42, -0.20, g);
+    [-0.39, 0.39].forEach(x => {
+      partBox(0.045, 0.69, 0.045, steel, x, 0.02, -0.18, g);
+      partBox(0.045, 0.69, 0.045, steel, x, 0.02,  0.18, g);
+      partBox(0.055, 0.045, 0.50, steel, x, 0.02, 0, g);
+      partBox(0.12, 0.025, 0.12, rubber, x, 0, -0.18, g);
+      partBox(0.12, 0.025, 0.12, rubber, x, 0,  0.18, g);
+    });
+
+    // Ghế đặt sau bàn, học viên quay mặt về -Z (ra phía xe/TV).
+    const cz = 0.76;
+    partBox(0.44, 0.055, 0.39, wood, 0, 0.43, cz, g);
+    partBox(0.44, 0.43, 0.055, wood, 0, 0.69, cz + 0.17, g);
+    [-0.18, 0.18].forEach(x => {
+      partBox(0.038, 0.43, 0.038, steel, x, 0.01, cz - 0.12, g);
+      partBox(0.038, 0.73, 0.038, steel, x, 0.01, cz + 0.14, g);
+      partBox(0.08, 0.025, 0.08, rubber, x, 0, cz - 0.12, g);
+      partBox(0.08, 0.025, 0.08, rubber, x, 0, cz + 0.14, g);
+    });
+    return g;
+  }
+
+  // Chỉ 1 hàng, 5 bộ – đặt sát tường phía bảng CSKH như bản demo đã duyệt.
+  const deskXs = [-9.0, -7.9, -6.8, -5.7, -4.6];
+  const deskZ = 8.45;
+  deskXs.forEach((x, i) => {
+    const set = makeDeskChair();
+    set.position.set(x, 0, deskZ);
+    set.name = 'TrainingDeskSet_' + (i + 1);
+    scene.add(set);
+  });
+
+  // TV đứng phía trước bên trái, xoay nhẹ hướng về hàng ghế.
+  const tv = new THREE.Group();
+  tv.position.set(-10.55, 0, 6.35);
+  tv.rotation.y = 0.72;
+  scene.add(tv);
+
+  // Khung và màn hình
+  partBox(1.92, 1.12, 0.09, mat('#ECEFF2', { roughness: 0.35, metalness: 0.15 }), 0, 1.55, 0, tv);
+  partBox(1.76, 0.96, 0.025, mat('#101419', { roughness: 0.25, metalness: 0.1 }), 0, 1.63, 0.057, tv);
+
+  const cvTV = document.createElement('canvas'); cvTV.width = 1024; cvTV.height = 560;
+  const tg = cvTV.getContext('2d');
+  const grd = tg.createLinearGradient(0, 0, 1024, 560);
+  grd.addColorStop(0, '#F9FCF9'); grd.addColorStop(1, '#E7F3E8');
+  tg.fillStyle = grd; tg.fillRect(0, 0, 1024, 560);
+  tg.fillStyle = '#12803F'; tg.font = '900 92px Barlow, "Segoe UI", Arial, sans-serif';
+  tg.textAlign = 'center'; tg.textBaseline = 'middle'; tg.fillText('DTCGroup', 512, 220);
+  tg.fillStyle = '#3A5145'; tg.font = '700 34px Barlow, "Segoe UI", Arial, sans-serif';
+  tg.fillText('ĐÀO TẠO VẬN HÀNH SC16 PRO', 512, 318);
+  tg.fillStyle = '#76B947'; tg.fillRect(0, 470, 1024, 90);
+  tg.fillStyle = '#FFFFFF'; tg.font = '700 30px Barlow, "Segoe UI", Arial, sans-serif';
+  tg.fillText('OUR SOLUTION, YOUR SUCCESS', 512, 518);
+  const tvTex = new THREE.CanvasTexture(cvTV); tvTex.encoding = THREE.sRGBEncoding; tvTex.anisotropy = 8;
+  const tvScreen = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.68, 0.88),
+    new THREE.MeshBasicMaterial({ map: tvTex, toneMapped: false })
+  );
+  tvScreen.position.set(0, 2.11, 0.071);
+  tv.add(tvScreen);
+
+  // Chân TV dạng khung/giá đỡ.
+  partBox(0.07, 1.45, 0.07, steel, -0.68, 0.08, 0, tv);
+  partBox(0.07, 1.45, 0.07, steel,  0.68, 0.08, 0, tv);
+  partBox(0.85, 0.055, 0.07, steel, -0.34, 0.04, 0, tv);
+  partBox(0.85, 0.055, 0.07, steel,  0.34, 0.04, 0, tv);
+
+  // Kích thước vùng chiếm chỗ được thêm vào obsGround phía dưới.
+}
+
 // ---------- Vùng đi lại: mặt đất, cầu thang, sàn thao tác (số đo lấy từ bản vẽ STEP) ----------
 const PLAT = { x0: -1.46, x1: 1.76, z0: -2.77, z1: 3.23, y: 3.08 };            // mặt sàn thao tác
 const LAND = { x0: -2.25, x1: -1.45, z0: 2.43, z1: 3.23 };                      // chiếu nghỉ đầu cầu thang
 const STAIR = { x0: -2.28, x1: -1.52, zb: 0.02, zt: 2.43 };                     // cầu thang: chân ở zb, đỉnh ở zt
 const obsGround = [], obsPlat = [];
 const ob = (list, x0, x1, z0, z1) => list.push({ x0, x1, z0, z1 });
+// Khu đào tạo v19: 5 bộ bàn-ghế sát tường CSKH + TV phía trước.
+ob(obsGround, -9.55, -4.05, 8.05, 9.75);
+ob(obsGround, -11.35, -9.80, 5.75, 7.05);
 // chân cột sàn, gầu tải
 [[-0.66, -2.14], [0.97, -2.14], [-0.66, 2.6], [0.97, 2.6]].forEach(([x, z]) => ob(obsGround, x - 0.12, x + 0.12, z - 0.12, z + 0.12));
 ob(obsGround, 1.68, 2.14, -1.3, 2.42); ob(obsGround, 0.14, 2.28, -3.22, -2.02);
@@ -5205,16 +5299,28 @@ const DOOR = { x: HALL.x0, z: 2.2, w: 8.0, h: 4.6, open: 0 };
   // khung cửa, ray trên
   P(0.22, Hh + 0.3, 0.22, FR, X + 0.1, (Hh + 0.3) / 2, za - 0.11); P(0.22, Hh + 0.3, 0.22, FR, X + 0.1, (Hh + 0.3) / 2, zb + 0.11);
   P(0.26, 0.3, W * 2 + 1.2, FR, X + 0.13, Hh + 0.15, Z);
-  // hai cánh cửa lùa (trượt dọc vách phía trong)
-  DOOR.leaves = [-1, 1].map(k => {
-    const g = new THREE.Group(); g.position.set(X + 0.07, 0, Z + k * W / 4); scene.add(g);
-    P(0.07, Hh - 0.04, W / 2 - 0.02, LEAF, 0, (Hh - 0.04) / 2, 0, g);
-    for (let i = -4; i <= 4; i++) P(0.02, Hh - 0.2, 0.03, RIB, 0.045, (Hh - 0.04) / 2, i * (W / 2 - 0.2) / 9, g);
-    P(0.02, 0.9, W / 2 - 0.5, GLASS, 0.05, Hh * 0.68, 0, g);
-    P(0.05, 0.6, 0.04, FR, 0.08, 1.1, -k * (W / 4 - 0.12), g);
-    g.userData.k = k; g.userData.z0 = Z + k * W / 4; return g;
-  });
-  DOOR.set = o => { DOOR.open = o; DOOR.leaves.forEach(g => { g.position.z = g.userData.z0 + g.userData.k * o * (W / 2 + 0.05); }); };
+  // Cửa cuốn công nghiệp: 1 lá nan ngang kéo lên trên như bản demo đã duyệt.
+  const shutter = new THREE.Group();
+  shutter.position.set(X + 0.07, 0, Z);
+  scene.add(shutter);
+  const shutterPanel = P(0.07, Hh - 0.08, W - 0.10, LEAF, 0, 0.04 + (Hh - 0.08) / 2, 0, shutter);
+  // nan ngang cửa cuốn
+  for (let i = 0; i < 22; i++) {
+    const yy = 0.12 + i * (Hh - 0.22) / 21;
+    P(0.018, 0.028, W - 0.18, RIB, 0.045, yy, 0, shutter);
+  }
+  // ray đứng hai bên + hộp cuốn phía trên
+  P(0.12, Hh + 0.18, 0.12, FR, X + 0.12, (Hh + 0.18) / 2, za - 0.06);
+  P(0.12, Hh + 0.18, 0.12, FR, X + 0.12, (Hh + 0.18) / 2, zb + 0.06);
+  P(0.34, 0.42, W + 0.36, FR, X + 0.13, Hh + 0.02, Z);
+  DOOR.leaves = [shutter];
+  DOOR.set = o => {
+    o = Math.max(0, Math.min(1, o));
+    DOOR.open = o;
+    // Khi mở: lá cửa đi lên và thu nhỏ theo chiều cao để mô phỏng cuộn vào hộp trên.
+    shutter.position.y = o * (Hh * 0.88);
+    shutter.scale.y = Math.max(0.10, 1 - o * 0.90);
+  };
   // biển LỐI RA VÀO + đèn phía trên
   const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 256; const g = cv.getContext('2d');
   g.fillStyle = '#12803F'; g.fillRect(0, 0, 1024, 256); g.strokeStyle = '#FFFFFF'; g.lineWidth = 10; g.strokeRect(12, 12, 1000, 232);
@@ -5659,7 +5765,7 @@ const Intro = (() => {
     avatar.group.visible = false; setFade(1);
   }
   function finish() {
-    active = false; place(L); DOOR.set(0);
+    active = false; place(L); DOOR.set(1);
     if (driver) driver.visible = false;
     document.body.classList.remove('intro'); skipBtn.hidden = true; cap.hidden = true;
     // Sau đoạn giới thiệu, đặt kỹ sư gần xe và vẫn hướng về màn hình DTCGroup trên tường.
@@ -5675,8 +5781,8 @@ const Intro = (() => {
   function update(dt) {
     t += dt;
     const s = dist(t); place(s);
-    // cửa mở khi xe tới gần, đóng lại sau khi xe đã vào
-    const op = t < 3.6 ? 0 : t < 5.8 ? (t - 3.6) / 2.2 : t < 11.4 ? 1 : Math.max(0, 1 - (t - 11.4) / 2);
+    // cửa cuốn mở khi xe tới gần và giữ mở sau khi xe đã vào, phù hợp khu đào tạo nhìn ra xe.
+    const op = t < 3.6 ? 0 : t < 5.8 ? (t - 3.6) / 2.2 : 1;
     DOOR.set(op * op * (3 - 2 * op));
     const p = pose(s), fw = new THREE.Vector3(Math.sin(p.yaw), 0, Math.cos(p.yaw)), cpos = new THREE.Vector3(p.x, 0.9, p.z);
     // Sau khi xe đỗ, giữ thêm một shot riêng nhìn thẳng vào màn hình/logo DTCGroup để giới thiệu nhân vật.
