@@ -4675,7 +4675,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#C9DAE6', 40, 90);
 const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80);
 const HALL = { x0: -13, x1: 10, z0: -12, z1: 11, h: 12 };
-console.info('[DTC] nha-may-3d build v14 - brighter Jimny + dark-blue air tank');
+console.info('[DTC] nha-may-3d build v15 - approved gray Jimny + dark-blue air tank');
 const colliders = [];     // AABB {x0,x1,z0,z1}
 const rayTargets = [];    // mọi mesh chặn tia nhìn
 const hot = {};           // id → mesh vùng tương tác
@@ -5538,16 +5538,16 @@ const Intro = (() => {
         o.castShadow = true;
         o.receiveShadow = true;
 
-        // V14: làm xe sáng rõ hơn. Áp trực tiếp lên các mesh thân vỏ (body_*),
-        // giữ riêng kính và lốp nên không làm cửa kính bị bạc.
+        // V15: màu xe đã được người dùng xác nhận qua ảnh preview: xám trung tính hơi ấm.
+        // Chỉ áp lên thân vỏ (body_*), giữ kính và lốp tối như model gốc.
         if (o.name && o.name.startsWith('body_')) {
           const source = Array.isArray(o.material) ? o.material : [o.material];
           const changed = source.map(m => {
             if (!m) return m;
             const c = m.clone();
-            c.color.set('#E8E2D7');
-            if ('metalness' in c) c.metalness = 0.32;
-            if ('roughness' in c) c.roughness = 0.38;
+            c.color.set('#6E6B65');
+            if ('metalness' in c) c.metalness = 0.24;
+            if ('roughness' in c) c.roughness = 0.48;
             c.needsUpdate = true;
             return c;
           });
