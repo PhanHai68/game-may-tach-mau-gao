@@ -109,6 +109,8 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 .card .rules b{display:block;color:#12803F;margin-bottom:2px}
 .card .rules p{margin:0}
 .card .hint{color:#5B6964;font-size:.88rem}
+.card .lotinfo{margin:8px 0 4px;padding:10px 12px;border-radius:9px;background:#F0F4F7;border:1px solid #D6DEE5;color:#31404A;font-size:.88rem;line-height:1.4}
+.card .lotinfo b{color:#12803F}.card .lotinfo .req{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:7px}.card .lotinfo .req span{background:#fff;border:1px solid #DDE4E9;border-radius:7px;padding:6px 7px;text-align:center}.card .lotinfo .mix{color:#5B6964;margin-top:6px}@media(max-width:700px){.card .lotinfo .req{grid-template-columns:1fr}}
 .card table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.92rem}
 .card td,.card th{padding:5px 8px;border-bottom:1px solid #DDE3DC;text-align:left}
 .card th{font-size:.8rem;color:#5B6964}
@@ -180,7 +182,7 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 <div id="cross"></div>
 <div id="tip" hidden></div>
 <div id="busy" hidden><div class="bar"><div id="busyBar"></div></div></div>
-<div id="hudTop"><b id="hudLevel"></b><div class="ph" id="hudPhase"></div><div class="sc" id="hudScore"></div><div class="tm" id="hudTimer">Thời gian: 03:30</div></div>
+<div id="hudTop"><b id="hudLevel"></b><div class="ph" id="hudPhase"></div><div class="sc" id="hudScore"></div><div class="tm" id="hudTimer">Thời gian: 03:00</div></div>
 <div id="checklist"></div>
 <div id="toasts"></div>
 <div id="prog" hidden><div class="bar"><div id="progBar"></div></div><div id="progTxt"></div></div>
@@ -197,16 +199,17 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 
 <div class="ov" id="ov-start" hidden><div class="card">
   <h1 style="margin-bottom:12px">Vận hành máy tách màu SC16 Pro</h1>
-  <div class="rules"><b>Luật chơi</b><p>Tự chọn Lô 1–4. Mỗi lượt có tối đa <b>03:30 phút</b>. Tổng tối đa <b>1.000 điểm</b>: 500 điểm quy trình (mỗi bước đều có điểm, làm nhanh được nhiều hơn) + 500 điểm kết quả máy (kết quả càng tốt điểm càng cao). Thi đấu chỉ xét tổng điểm; bằng điểm thì người hoàn thành nhanh hơn xếp trên.</p></div>
+  <div class="rules"><b>Luật chơi</b><p>Cả 4 lô đều dùng <b>Gạo ST25</b>, khác nhau về độ lẫn phế và năng suất yêu cầu. Mỗi lượt có tối đa <b>03:00 phút</b>. Để đạt kỹ thuật phải đồng thời đạt <b>chất lượng thành phẩm ≥ 99% hạt tốt</b>, <b>hạt tốt trong phế phẩm ≤ 5%</b> và năng suất theo từng lô. Tổng tối đa <b>1.000 điểm</b>: 500 điểm quy trình + 500 điểm kết quả máy.</p></div>
   <div class="rules" style="background:#EEF5F0;border-left-color:#4C8BD8"><b style="color:#2F4E8C">Tham quan Showroom</b><p>Đi lại tự do trong nhà máy 3D, xem máy móc và bố trí thiết bị. Không tính giờ, không chấm điểm và không cần thực hiện quy trình.</p></div>
   <label for="stName">Tên người chơi</label><input type="text" id="stName" maxlength="28" placeholder="Nhập tên của bạn" autocomplete="off">
   <p class="err" id="stNameErr" hidden>Hãy nhập tên người chơi trước khi bắt đầu.</p>
   <label for="stLevel">Chọn lô thử thách (tự do)</label><select id="stLevel"></select>
+  <div id="stLotInfo" class="lotinfo" aria-live="polite"></div>
   <label>Chế độ</label>
   <div class="modes"><label><input type="radio" name="stMode" value="practice">Luyện tập (có bảng quy trình, danh sách bước)</label><label><input type="radio" name="stMode" value="contest">Thi đấu</label></div>
   <label style="font-weight:500;display:flex;gap:8px;align-items:center"><input type="checkbox" id="stInc">Có lỗi thường gặp xảy ra khi vận hành</label>
   <div class="keys"><kbd>W A S D</kbd><span>Đi lại, <kbd>Shift</kbd> để đi nhanh. Chuột để nhìn.</span><kbd>E</kbd><span>Thao tác thiết bị đang nhắm (hoặc click chuột trái)</span><kbd>Tab</kbd><span>Ẩn hoặc hiện danh sách bước</span><kbd>M</kbd><span>Ẩn hoặc hiện sơ đồ phân loại khi máy chạy</span><kbd>V</kbd><span>Đổi góc nhìn: thứ ba (thấy kỹ sư) hoặc thứ nhất</span><kbd>1–5</kbd><span>Chọn thiết bị cần kiểm tra khi có lỗi</span><kbd>K</kbd><span>Bắt đầu kết thúc ca, nhấn lại để chấm điểm ca</span><kbd>Esc</kbd><span>Tạm dừng, trả con trỏ chuột</span></div>
-  <div class="row"><button id="stGo" class="pri">Bắt đầu thử thách 03:30</button><button id="stTour" type="button" class="tour">Tham quan Showroom</button></div>
+  <div class="row"><button id="stGo" class="pri">Bắt đầu thử thách 03:00</button><button id="stTour" type="button" class="tour">Tham quan Showroom</button></div>
 </div></div>
 
 <div class="ov" id="ov-pause" hidden><div class="card">
@@ -4113,26 +4116,26 @@ const SIM = (() => {
   const LAND_T = 0.55;    // thời gian rơi vào thùng
 
   const LEVELS = [
-    { name: 'Lô 1: Nguyên liệu 1,8% tạp',
-      desc: 'Nguyên liệu 1,8% tạp: 0,4% vàng, đen hư và 1,4% bạc bụng. Chỉ tiêu: thành phẩm tối đa 1,2% tạp, phế phẩm lẫn tối đa 4,4%, năng suất từ 15,3 t/h.',
-      mix: { vang_hu: 0.004, chalky: 0.014 }, T0: 0.32, pReq: 0, batch: 15000, thr: 0.26, durB: 0.55,
-      cameraMiss: 0.004, falseFlag: 0.00008, timingJitter: 0.012, ejectCap: 0.985, extraNoise: 0.004,
-      targets: { purity: 98.8, loss: 4.4, feed: 15.3 } },
-    { name: 'Lô 2: Khách đòi thành phẩm sạch hơn',
-      desc: 'Cùng nguyên liệu lô 1, nhưng khách yêu cầu thành phẩm chỉ còn tối đa 1,0% tạp. Phải bắt thêm hạt bạc bụng nhẹ, chấp nhận phế lẫn cao hơn.',
-      mix: { vang_hu: 0.004, chalky: 0.014 }, T0: 0.32, pReq: 0, batch: 15000, thr: 0.24, durB: 0.60,
-      cameraMiss: 0.005, falseFlag: 0.0001, timingJitter: 0.015, ejectCap: 0.98, extraNoise: 0.006,
-      targets: { purity: 99.0, loss: 12, feed: 15.3 } },
-    { name: 'Lô 3: Tăng năng suất lên 18 t/h',
-      desc: 'Cùng nguyên liệu lô 1, nhưng nhà máy cần chạy 18 t/h. Dòng hạt dày hơn nên camera nhiễu hơn, van dễ thổi ké.',
-      mix: { vang_hu: 0.004, chalky: 0.014 }, T0: 0.30, pReq: 0.3, batch: 15000, thr: 0.25, durB: 0.60,
-      cameraMiss: 0.006, falseFlag: 0.00012, timingJitter: 0.018, ejectCap: 0.975, extraNoise: 0.008,
-      targets: { purity: 98.8, loss: 6, feed: 18 } },
-    { name: 'Lô 4: Nguyên liệu xấu 4% tạp',
-      desc: 'Nguyên liệu kém: 1% vàng, đen hư (có vàng mơ, chấm kim khó bắt) và 3% bạc bụng. Mật độ hạt lỗi cao làm kết quả dao động mạnh.',
-      mix: { vang_hu: 0.006, vang_mo: 0.002, cham_kim: 0.002, chalky: 0.03 }, T0: 0.30, pReq: 0.3, batch: 15000, thr: 0.24, durB: 0.70,
-      cameraMiss: 0.01, falseFlag: 0.00015, timingJitter: 0.02, ejectCap: 0.97, extraNoise: 0.01,
-      targets: { purity: 97.5, loss: 6, feed: 15.3 } },
+    { name: 'Lô 1 – ST25 · 2,5% phế · ≥ 12 t/h',
+      desc: 'Gạo ST25. Độ lẫn phế đầu vào 2,5% (0,7% vàng/đen hư + 0,3% vàng mơ + 0,2% chấm kim + 1,3% bạc bụng). Yêu cầu: năng suất ≥ 12 t/h, chất lượng thành phẩm ≥ 99% hạt tốt, hạt tốt trong phế phẩm ≤ 5%.',
+      mix: { vang_hu: 0.007, vang_mo: 0.003, cham_kim: 0.002, chalky: 0.013 }, T0: 0.32, pReq: 0, batch: 15000, thr: 0.26, durB: 0.55,
+      cameraMiss: 0.004, falseFlag: 0.00008, timingJitter: 0.012, ejectCap: 0.99, extraNoise: 0.004,
+      targets: { purity: 99.0, loss: 5.0, feed: 12.0 } },
+    { name: 'Lô 2 – ST25 · 5,5% phế · ≥ 15 t/h',
+      desc: 'Gạo ST25. Độ lẫn phế đầu vào 5,5% (1,5% vàng/đen hư + 0,7% vàng mơ + 0,5% chấm kim + 2,8% bạc bụng). Yêu cầu: năng suất ≥ 15 t/h, chất lượng thành phẩm ≥ 99% hạt tốt, hạt tốt trong phế phẩm ≤ 5%.',
+      mix: { vang_hu: 0.015, vang_mo: 0.007, cham_kim: 0.005, chalky: 0.028 }, T0: 0.31, pReq: 0.1, batch: 15000, thr: 0.255, durB: 0.58,
+      cameraMiss: 0.0045, falseFlag: 0.00009, timingJitter: 0.014, ejectCap: 0.988, extraNoise: 0.005,
+      targets: { purity: 99.0, loss: 5.0, feed: 15.0 } },
+    { name: 'Lô 3 – ST25 · 9,0% phế · ≥ 18 t/h',
+      desc: 'Gạo ST25. Độ lẫn phế đầu vào 9,0% (2,4% vàng/đen hư + 1,2% vàng mơ + 0,8% chấm kim + 4,6% bạc bụng). Yêu cầu: năng suất ≥ 18 t/h, chất lượng thành phẩm ≥ 99% hạt tốt, hạt tốt trong phế phẩm ≤ 5%.',
+      mix: { vang_hu: 0.024, vang_mo: 0.012, cham_kim: 0.008, chalky: 0.046 }, T0: 0.30, pReq: 0.2, batch: 15000, thr: 0.25, durB: 0.60,
+      cameraMiss: 0.005, falseFlag: 0.00010, timingJitter: 0.016, ejectCap: 0.986, extraNoise: 0.006,
+      targets: { purity: 99.0, loss: 5.0, feed: 18.0 } },
+    { name: 'Lô 4 – ST25 · 14,0% phế · ≥ 18 t/h',
+      desc: 'Gạo ST25. Độ lẫn phế đầu vào 14,0% (3,8% vàng/đen hư + 2,0% vàng mơ + 1,2% chấm kim + 7,0% bạc bụng). Yêu cầu: năng suất ≥ 18 t/h, chất lượng thành phẩm ≥ 99% hạt tốt, hạt tốt trong phế phẩm ≤ 5%.',
+      mix: { vang_hu: 0.038, vang_mo: 0.020, cham_kim: 0.012, chalky: 0.070 }, T0: 0.29, pReq: 0.25, batch: 15000, thr: 0.245, durB: 0.62,
+      cameraMiss: 0.0055, falseFlag: 0.00011, timingJitter: 0.018, ejectCap: 0.985, extraNoise: 0.007,
+      targets: { purity: 99.0, loss: 5.0, feed: 18.0 } },
   ];
   // Gom nhóm theo phiếu lưu mẫu thực tế
   const GROUP = { vang_hu: 'vd', vang_mo: 'vd', cham_kim: 'vd', chalky: 'bb' };
@@ -4314,7 +4317,7 @@ const lc = t => t.charAt(0).toLowerCase() + t.slice(1);
 
 // Bộ rung 0–100 (bình thường 20–60) quy đổi ra năng suất. Giả định: 1 đơn vị ≈ 0,4 t/h.
 const RUNG_TO_TH = 0.4;
-const GAME_LIMIT_SEC = 3 * 60 + 30;
+const GAME_LIMIT_SEC = 3 * 60;
 
 // ----- Hệ điểm thi đấu v27: TỔNG TỐI ĐA 1000 -----
 // A. Quy trình mở máy: 500 điểm
@@ -4369,7 +4372,7 @@ function challengeTick(dt) {
     G.challenge.expired = true;
     G.challenge.active = false;
     G.running = false;
-    ui.toast('Hết thời gian 03:30. Lô hàng chưa hoàn thành.', 'bad');
+    ui.toast('Hết thời gian 03:00. Lô hàng chưa hoàn thành.', 'bad');
     finishBatch(true);
   }
 }
@@ -4462,7 +4465,7 @@ function doneOpen(id) {
   if (prep.skippedOver[id]) penal(PEN.late, `Sai thứ tự: bước ${st.n} “${lc(st.t)}” phải làm trước bước ${prep.skippedOver[id]}.`);
 
   // Tốc độ của bước được tính từ thời điểm hoàn thành bước trước.
-  // Riêng bước đầu tiên tính từ lúc đồng hồ 03:30 bắt đầu.
+  // Riêng bước đầu tiên tính từ lúc đồng hồ 03:00 bắt đầu.
   const nowElapsed = Math.max(0, G.challenge.elapsed || 0);
   const delta = Math.max(0, nowElapsed - (prep.lastStepElapsed || 0));
   const sp = stepSpeedPoints(delta);
@@ -6144,7 +6147,7 @@ const Intro = (() => {
     Object.assign(player, { x: px, z: pz, level: 'ground', yaw, pitch }); relevel();
     camDist = 0;  // ép camera gameplay khởi tạo lại ngay, tránh khung hình tối/đứng sau chuyển cảnh
     setFade(0);
-    ui.toast(`Kỹ sư ${G.playerName || 'vận hành'} đã vào ca. Đồng hồ 03:30 bắt đầu tính.`, 'info');
+    ui.toast(`Kỹ sư ${G.playerName || 'vận hành'} đã vào ca. Đồng hồ 03:00 bắt đầu tính.`, 'info');
     if (G.challenge.pending) startChallengeTimer();
   }
   function update(dt) {
@@ -6251,7 +6254,7 @@ ui.refresh = () => {
   const tm = $('hudTimer');
   if (tm) {
     const rem = challengeRemaining();
-    tm.textContent = `Thời gian còn lại: ${fmtClock(rem)} / 03:30`;
+    tm.textContent = `Thời gian còn lại: ${fmtClock(rem)} / 03:00`;
     tm.classList.toggle('danger', G.challenge.active && rem <= 60);
   }
   $('hudKeyK').hidden = true; // v26 chấm điểm ngay khi lô chạy xong, không bắt buộc kết thúc ca
@@ -6274,7 +6277,7 @@ function hudTick() {
   const tm = $('hudTimer');
   if (tm) {
     const rem = challengeRemaining();
-    tm.textContent = `Thời gian còn lại: ${fmtClock(rem)} / 03:30`;
+    tm.textContent = `Thời gian còn lại: ${fmtClock(rem)} / 03:00`;
     tm.classList.toggle('danger', G.challenge.active && rem <= 60);
   }
   const b = SIM.LEVELS[G.levelIdx].batch;
@@ -6439,8 +6442,8 @@ ui.result = lot => {
   const d = sampleFormData(), lv = SIM.LEVELS[lot.level], T = lv.targets, m = lot.m;
   const pv = (n, t) => t ? fmtP1(n / t * 100) : '–';
   const rows = [
-    ['Tạp chất thành phẩm', fmtPct(100 - m.purity), '≤ ' + fmtPct(100 - T.purity), lot.ok.p],
-    ['Phế phẩm lẫn', fmtPct(m.loss), '≤ ' + fmtPct(T.loss), lot.ok.l],
+    ['Chất lượng thành phẩm (hạt tốt)', fmtPct(m.purity), '≥ ' + fmtPct(T.purity), lot.ok.p],
+    ['Hạt tốt trong phế phẩm', fmtPct(m.loss), '≤ ' + fmtPct(T.loss), lot.ok.l],
     ['Năng suất đầu vào thấp nhất', fmtT(lot.feed) + ' t/h', '≥ ' + fmtT(T.feed), lot.ok.f]
   ];
   const inc = lot.inc.map(e => e.fixed
@@ -6449,10 +6452,10 @@ ui.result = lot => {
   ).join('');
 
   const technical = lot.pass ? 'Đạt chuẩn kỹ thuật' : lot.timedOut ? 'Hết thời gian' : 'Chưa đạt chuẩn kỹ thuật';
-  const title = lot.timedOut ? 'Kết thúc lượt – hết 03:30' : 'Hoàn thành lô';
+  const title = lot.timedOut ? 'Kết thúc lượt – hết 03:00' : 'Hoàn thành lô';
   const timeLine = lot.timedOut
-    ? `<p class="sub"><b>Thời gian:</b> 03:30 / 03:30 · Giữ toàn bộ điểm các bước đã hoàn thành.</p>`
-    : `<p class="sub"><b>Thời gian hoàn thành:</b> ${fmtClock(lot.elapsed)} / 03:30 · Còn ${fmtClock(lot.remaining)}</p>`;
+    ? `<p class="sub"><b>Thời gian:</b> 03:00 / 03:00 · Giữ toàn bộ điểm các bước đã hoàn thành.</p>`
+    : `<p class="sub"><b>Thời gian hoàn thành:</b> ${fmtClock(lot.elapsed)} / 03:00 · Còn ${fmtClock(lot.remaining)}</p>`;
 
   const scoreBox = `<div class="score">${lot.score.toLocaleString('vi-VN')} / ${TOTAL_MAX.toLocaleString('vi-VN')} điểm
       <small>
@@ -6492,7 +6495,7 @@ ui.result = lot => {
       <tr><td><b>Đánh giá kỹ thuật</b></td><td colspan="4" class="${lot.pass ? 'y' : 'n'}"><b>${technical}</b></td></tr>
     </table>
     ${inc ? `<ul class="inc">${inc}</ul>` : ''}
-    <div class="rules"><b>Chọn lô tiếp theo tùy ý</b><p>Lô 1–4 độc lập. Mỗi lượt mới được cấp lại 03:30 phút và chấm trên thang 1.000 điểm.</p></div>
+    <div class="rules"><b>Chọn lô tiếp theo tùy ý</b><p>Lô 1–4 độc lập. Mỗi lượt mới được cấp lại 03:00 phút và chấm trên thang 1.000 điểm.</p></div>
     <div class="row"><label>Chọn lô <select id="resLevel">${SIM.LEVELS.map((l, i) => `<option value="${i}" ${i === lot.level ? 'selected' : ''}>${l.name}</option>`).join('')}</select></label>
       <button id="resNext" class="pri">Bắt đầu lượt mới</button><button id="resHome">Về màn hình đầu</button></div>`;
 
@@ -6507,7 +6510,7 @@ ui.result = lot => {
     relevel();
     closeOverlay();
     startChallengeTimer();
-    ui.toast(`Lượt mới: ${SIM.LEVELS[G.levelIdx].name}. 03:30 phút · tối đa 1.000 điểm.`, 'info');
+    ui.toast(`Lượt mới: ${SIM.LEVELS[G.levelIdx].name}. 03:00 phút · tối đa 1.000 điểm.`, 'info');
   };
   $('resHome').onclick = () => {
     stopChallengeTimer(); G.tourMode = false; setTourUI(false);
@@ -6534,11 +6537,22 @@ ui.shift = r => {
 };
 
 // ---------- Màn hình bắt đầu và tạm dừng ----------
+function renderStartLotInfo() {
+  const sel = $('stLevel'), box = $('stLotInfo');
+  if (!sel || !box) return;
+  const i = Math.max(0, Math.min(SIM.LEVELS.length - 1, +(sel.value || G.levelIdx || 0)));
+  const lv = SIM.LEVELS[i], T = lv.targets;
+  const mixPct = Object.values(lv.mix).reduce((a, b) => a + b, 0) * 100;
+  box.innerHTML = `<b>Nguyên liệu: Gạo ST25 · Độ lẫn phế đầu vào: ${fmtP1(mixPct)}</b>
+    <div class="req"><span>Năng suất<br><b>≥ ${fmtT(T.feed)} t/h</b></span><span>Chất lượng thành phẩm<br><b>≥ ${fmtP1(T.purity)} hạt tốt</b></span><span>Hạt tốt trong phế phẩm<br><b>≤ ${fmtP1(T.loss)}</b></span></div>
+    <div class="mix">${lv.desc}</div>`;
+}
 function renderStart() {
   try { const nm = localStorage.getItem('sc16-player'); if (nm && !$('stName').value) $('stName').value = nm; } catch (e) {}
   $('stNameErr').hidden = true;
   $('stLevel').innerHTML = SIM.LEVELS.map((l, i) => `<option value="${i}" ${i === G.levelIdx ? 'selected' : ''}>${l.name}</option>`).join('');
   $('stLevel').title = 'Tự chọn bất kỳ lô nào; không bắt buộc theo thứ tự 1 → 4';
+  renderStartLotInfo();
   document.querySelectorAll('[name=stMode]').forEach(r => { r.checked = r.value === G.mode; });
   $('stInc').checked = G.incPref;
 }
@@ -7128,6 +7142,7 @@ function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.asp
 
 // ---------- Màn hình bắt đầu, tạm dừng ----------
 $('stName').addEventListener('input', () => { $('stNameErr').hidden = true; });
+$('stLevel').addEventListener('change', renderStartLotInfo);
 $('stTour').onclick = () => enterTourMode();
 $('stGo').onclick = () => {
   G.tourMode = false; setTourUI(false);
@@ -7140,7 +7155,7 @@ $('stGo').onclick = () => {
   G.lots = []; Object.assign(player, { x: -11.3, z: 2.2, level: 'ground', yaw: -Math.PI / 2, pitch: -0.05 }); relevel();
   resetSession(); newBatch(); armChallengeTimer(); drawBoard(); labels.forEach(l => { l.visible = false; });   // không hiện nhãn tên thiết bị
   $('checklist').hidden = !showList;
-  ui.toast(G.mode === 'contest' ? 'Thi đấu: 3 phút 30 giây, làm đúng quy trình và hoàn thành càng sớm càng nhiều điểm.' : 'Bạn có 3 phút 30 giây. Làm đúng quy trình và hoàn thành sớm để nhận thưởng tốc độ.', 'info');
+  ui.toast(G.mode === 'contest' ? 'Thi đấu: 3 phút, làm đúng quy trình và hoàn thành càng sớm càng nhiều điểm.' : 'Bạn có 3 phút. Làm đúng quy trình và hoàn thành sớm để nhận thưởng tốc độ.', 'info');
   closeOverlay();
   if (window.__test) Intro.finish(); else Intro.start();   // đoạn mở đầu: lái xe vào xưởng
 };
@@ -7180,7 +7195,7 @@ showOverlay('start'); renderStart();
 $('stGo').disabled = true; $('stGo').textContent = 'Đang tải mô hình nhà máy…';
 $('stTour').disabled = true; $('stTour').textContent = 'Đang tải Showroom…';
 setTimeout(() => loadPlant(err => loadMNK(err2 => loadCYC(err3 => avatar.load(() => Intro.load(() => {
-  $('stGo').disabled = false; $('stGo').textContent = err || err2 || err3 ? 'Bắt đầu (thiếu một phần mô hình)' : 'Bắt đầu thử thách 03:30';
+  $('stGo').disabled = false; $('stGo').textContent = err || err2 || err3 ? 'Bắt đầu (thiếu một phần mô hình)' : 'Bắt đầu thử thách 03:00';
   $('stTour').disabled = false; $('stTour').textContent = 'Tham quan Showroom';
   drawBoard(); scene.updateMatrixWorld(true);
 }))))), 30);
