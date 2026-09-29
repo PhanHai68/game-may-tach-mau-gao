@@ -5767,7 +5767,7 @@ const DOOR = { x: HALL.x0, z: 2.2, w: 8.0, h: 4.6, open: 0 };
   const P = (w, h, d, m, x, y, z, par) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); o.castShadow = true; o.receiveShadow = true; (par || scene).add(o); return o; };
   // khung cửa, ray trên
   P(0.22, Hh + 0.3, 0.22, FR, X + 0.1, (Hh + 0.3) / 2, za - 0.11); P(0.22, Hh + 0.3, 0.22, FR, X + 0.1, (Hh + 0.3) / 2, zb + 0.11);
-  P(0.26, 0.3, W * 2 + 1.2, FR, X + 0.13, Hh + 0.15, Z);
+  P(0.26, 0.3, W + 0.6, FR, X + 0.13, Hh + 0.15, Z);
   // Cửa cuốn công nghiệp: 1 lá nan ngang kéo lên trên như bản demo đã duyệt.
   const shutter = new THREE.Group();
   shutter.position.set(X + 0.07, 0, Z);
@@ -6069,11 +6069,11 @@ const sc16DrawFrame = new THREE.Mesh(
   new THREE.BoxGeometry(0.08, 4.30, 5.78),
   new THREE.MeshStandardMaterial({ color: '#11161B', roughness: 0.58, metalness: 0.18 })
 );
-sc16DrawFrame.position.set(HALL.x0 + 0.03, 4.45, -2.75);
+sc16DrawFrame.position.set(HALL.x0 + 0.03, 4.05, -5.35);
 scene.add(sc16DrawFrame);
 const sc16DrawBoard = canvasPlane(1366, 1024, 5.6, 4.2);
 sc16DrawBoard.rotation.y = Math.PI / 2;
-sc16DrawBoard.position.set(HALL.x0 + 0.075, 4.45, -2.75);
+sc16DrawBoard.position.set(HALL.x0 + 0.075, 4.05, -5.35);
 (function drawSC16Drawing() {
   const cv = sc16DrawBoard.userData.cv, g = cv.getContext('2d');
   g.fillStyle = '#F4F4F4'; g.fillRect(0, 0, cv.width, cv.height);
