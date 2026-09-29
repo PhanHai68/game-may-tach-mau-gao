@@ -106,7 +106,7 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 .card button:disabled{opacity:.6;cursor:default}
 .card .keys{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.92rem;margin-top:10px}
 .card .rules{background:#E6F1E8;border-left:4px solid #12803F;border-radius:8px;padding:9px 12px;margin:0 0 6px}
-.card .rules b{display:block;color:#12803F;margin-bottom:2px}
+.card .rules > b{display:block;color:#12803F;margin-bottom:4px}.card .rules p b{display:inline;color:#12803F;margin:0}
 .card .rules p{margin:0}
 .card .hint{color:#5B6964;font-size:.88rem}
 .card .lotinfo{margin:8px 0 4px;padding:10px 12px;border-radius:9px;background:#F0F4F7;border:1px solid #D6DEE5;color:#31404A;font-size:.88rem;line-height:1.4}
@@ -6781,16 +6781,22 @@ ui.result = lot => {
     ${scoreBox}
 
     <div class="rules"><b>Cách tính điểm thi đấu</b>
-      <p><b>500 điểm quy trình</b>: mỗi bước hoàn thành đều có điểm, bước càng nhanh càng cao.
-      <b>500 điểm kết quả máy</b>: chất lượng 225 + phế cuối sau L3 175 + năng suất 100.
-      Trong chế độ thi đấu, <b>chỉ xét/xếp hạng giữa người chơi cùng cấp độ</b>. Trong cùng cấp độ, người có <b>tổng điểm cao hơn</b> xếp trên; nếu bằng điểm thì thời gian hoàn thành thấp hơn xếp trên.</p>
+      <p><b>500 điểm quy trình:</b> Mỗi bước hoàn thành đều có điểm; hoàn thành càng nhanh, điểm càng cao.</p>
+      <p><b>500 điểm kết quả máy:</b> Chất lượng 225 điểm + phế cuối sau L3 175 điểm + năng suất 100 điểm.</p>
+      <p>Trong chế độ thi đấu, <b>chỉ xét và xếp hạng giữa người chơi cùng cấp độ.</b></p>
+      <p>Trong cùng cấp độ, người có <b>tổng điểm cao hơn</b> xếp trên. Nếu bằng điểm, người có thời gian hoàn thành thấp hơn xếp trên.</p>
     </div>
 
     <h3>Kết quả chạy máy</h3>
     ${machineBreakdown}
     <table class="kv">${rows.map(r => `<tr><td>${r[0]}</td><td class="${r[3] == null ? '' : (r[3] ? 'y' : 'n')}">${r[1]}</td><td class="dim">${r[2].startsWith('tham khảo') ? r[2] : 'mục tiêu ' + r[2]}</td></tr>`).join('')}</table>
 
-    <div class="rules" style="background:#EEF3F8;border-left-color:#4C8BD8"><b style="color:#2F4E8C">Dòng vật liệu 3 lần · Logic v3</b><p>PP1 → Lần 2; TP2 quay lại Lần 1. PP2 → Lần 3; TP3 quay lại Lần 2. Vùng vận hành tốt: PP1 khoảng 40–50% hạt tốt, PP2 khoảng 10–15%. Phế cuối L3 không thể thấp hơn 1,5% và tăng dần khi nguyên liệu lẫn phế nhiều hơn. 1,5–2%: Rất tốt; >2–3,5%: Tốt; >3,5–<5%: Chấp nhận được; từ 5% trở lên: Không đạt.</p></div>
+    <div class="rules" style="background:#EEF3F8;border-left-color:#4C8BD8"><b style="color:#2F4E8C">Dòng vật liệu 3 lần · Logic v3</b>
+      <p>PP1 → Lần 2; TP2 quay lại Lần 1. PP2 → Lần 3; TP3 quay lại Lần 2.</p>
+      <p>Vùng vận hành tốt: PP1 khoảng 40–50% hạt tốt; PP2 khoảng 10–15% hạt tốt.</p>
+      <p>Phế cuối L3 không thể thấp hơn 1,5% và sẽ tăng dần khi nguyên liệu lẫn phế nhiều hơn.</p>
+      <p><b>1,5–2,0%:</b> Rất tốt; <b>&gt;2,0–3,5%:</b> Tốt; <b>&gt;3,5–&lt;5,0%:</b> Chấp nhận được; <b>từ 5,0% trở lên:</b> Không đạt.</p>
+    </div>
     <table class="form"><caption>Phiếu lưu mẫu</caption><tr><th></th><th>Tạp</th><th>Hạt tốt</th><th>Vàng, đen hư</th><th>Bạc bụng</th></tr>
       <tr><td>Nguyên liệu</td><td>${pv(d.inVd + d.inBb, d.allN)}</td><td>${pv(d.allN - d.inVd - d.inBb, d.allN)}</td><td>${pv(d.inVd, d.allN)}</td><td>${pv(d.inBb, d.allN)}</td></tr>
       <tr><td>Thành phẩm</td><td>${fmtPct(d.accBadPct)}</td><td>${fmtPct(d.accPurity)}</td><td>${fmtPct(d.accVdPct)}</td><td>${fmtPct(d.accBbPct)}</td></tr>
