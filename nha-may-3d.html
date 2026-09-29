@@ -5236,6 +5236,15 @@ const CSKHTV = (() => {
       ['SHOWROOM ĐỒNG THÁP', 'Ấp Mỹ Trung, Xã Hội Cư, Đồng Tháp'],
     ];
 
+    // Căn cột địa chỉ theo nhãn dài nhất để tránh chồng chữ, đặc biệt ở dòng Showroom.
+    g.textAlign = 'left';
+    g.textBaseline = 'top';
+    g.font = '800 30px Barlow, "Segoe UI", Arial, sans-serif';
+    const maxLabelW = rows.reduce((m, [label]) => Math.max(m, g.measureText(label).width), 0);
+    const labelX = 105;
+    const addrX = Math.max(330, Math.ceil(labelX + maxLabelW + 42));
+    const addrMaxW = Wc - addrX - 85;
+
     let y = 230;
     for (const [label, addr] of rows) {
       // bullet vị trí
@@ -5248,11 +5257,11 @@ const CSKHTV = (() => {
       g.textBaseline = 'top';
       g.fillStyle = '#12803F';
       g.font = '800 30px Barlow, "Segoe UI", Arial, sans-serif';
-      g.fillText(label, 105, y - 2);
+      g.fillText(label, labelX, y - 2);
 
       g.fillStyle = '#2E3B42';
       g.font = '600 27px Barlow, "Segoe UI", Arial, sans-serif';
-      wrapText(addr, 330, y - 1, 850, 34, 2);
+      wrapText(addr, addrX, y - 1, addrMaxW, 34, 2);
 
       y += 88;
     }
@@ -6781,7 +6790,6 @@ ui.result = lot => {
     ${machineBreakdown}
     <table class="kv">${rows.map(r => `<tr><td>${r[0]}</td><td class="${r[3] == null ? '' : (r[3] ? 'y' : 'n')}">${r[1]}</td><td class="dim">${r[2].startsWith('tham khảo') ? r[2] : 'mục tiêu ' + r[2]}</td></tr>`).join('')}</table>
 
-    <div class="rules" style="background:#FFF4E5;border-left-color:#D97706"><b style="color:#92400E">Liên động bắt buộc trước khi chạy</b><p>Không thể bắt đầu phân loại nếu chưa: <b>bật máy nén khí</b>, <b>mở gàu tải</b>, <b>kiểm tra/xác nhận van điều áp 0,25–0,30 MPa</b>, <b>kiểm tra điện áp ổn áp</b> và <b>mở ổn áp</b>. Nếu một điều kiện này mất trong khi đang chạy, máy tự dừng.</p></div>
     <div class="rules" style="background:#EEF3F8;border-left-color:#4C8BD8"><b style="color:#2F4E8C">Dòng vật liệu 3 lần · Logic v3</b><p>PP1 → Lần 2; TP2 quay lại Lần 1. PP2 → Lần 3; TP3 quay lại Lần 2. Vùng vận hành tốt: PP1 khoảng 40–50% hạt tốt, PP2 khoảng 10–15%. Phế cuối L3 không thể thấp hơn 1,5% và tăng dần khi nguyên liệu lẫn phế nhiều hơn. 1,5–2%: Rất tốt; >2–3,5%: Tốt; >3,5–<5%: Chấp nhận được; từ 5% trở lên: Không đạt.</p></div>
     <table class="form"><caption>Phiếu lưu mẫu</caption><tr><th></th><th>Tạp</th><th>Hạt tốt</th><th>Vàng, đen hư</th><th>Bạc bụng</th></tr>
       <tr><td>Nguyên liệu</td><td>${pv(d.inVd + d.inBb, d.allN)}</td><td>${pv(d.allN - d.inVd - d.inBb, d.allN)}</td><td>${pv(d.inVd, d.allN)}</td><td>${pv(d.inBb, d.allN)}</td></tr>
@@ -6791,7 +6799,6 @@ ui.result = lot => {
       <tr><td>Phế cuối (L3)</td><td colspan="4"><b>Hạt tốt: ${fmtP1(m.finalLoss)} · ${lossGrade(m.finalLoss)}</b> · yêu cầu &lt; ${fmtP1(T.loss)}</td></tr>
       <tr><th>Năng suất (t/h)</th><th>Đầu vào</th><th>Thành phẩm</th><th colspan="2">Phế phẩm</th></tr>
       <tr><td>Đo được</td><td>${fmtT(d.nsIn)}</td><td>${fmtT(d.nsAcc)}</td><td colspan="2">${d.nsRej.toFixed(2).replace('.', ',')}</td></tr>
-      <tr><td><b>Đánh giá kỹ thuật</b></td><td colspan="4" class="${lot.pass ? 'y' : 'n'}"><b>${technical}</b></td></tr>
     </table>
     ${inc ? `<ul class="inc">${inc}</ul>` : ''}
     <div class="rules"><b>Chọn cấp độ tiếp theo tùy ý</b><p>4 cấp độ độc lập. Mỗi lượt mới được cấp lại 03:00 phút và chấm trên thang 1.000 điểm. Khi thi đấu, điểm chỉ được so sánh với người chơi cùng cấp độ.</p></div>
