@@ -5928,7 +5928,7 @@ const DOOR = { x: HALL.x0, z: 2.2, w: 8.0, h: 4.6, open: 0 };
 
 // ---------- Màn hình TV lớn trên tường: chiếu logo DTCGroup và lời chào người chơi (căn giữa bức tường) ----------
 const TV = (() => {
-  const W = 7.2, H = W * 9 / 16, cx = (HALL.x0 + HALL.x1) / 2, cy = 7.65, z = HALL.z0 + 0.02;
+  const W = 7.2, H = W * 9 / 16, cx = (HALL.x0 + HALL.x1) / 2, cy = 8.02, z = HALL.z0 + 0.02; // nâng TV để không đè lên bảng nguyên lý sau khi căn bảng theo mép sơn
   // giá treo, viền màn hình, đèn nguồn
   [-1, 1].forEach(k => box(0.12, 1.2, 0.1, '#2A2E34', cx + k * W * 0.3, cy - 0.6, z + 0.05));
   const bezel = new THREE.Mesh(new THREE.BoxGeometry(W + 0.16, H + 0.16, 0.12), new THREE.MeshStandardMaterial({ color: '#0B0D10', roughness: 0.25, metalness: 0.4 }));
@@ -5986,7 +5986,9 @@ const TV = (() => {
 window.setWelcome = n => TV.setName(n);
 
 // ---------- Bảng quy trình trên tường ----------
-const board = canvasPlane(1024, 1400, 3.2, 4.375); board.position.set(-8.55, 2.75, HALL.z0 + 0.04);   // bảng lớn, dễ đọc khi vừa vào ca
+// Mép trên của dải sơn tường xanh đậm cao 1.10 m; chừa 2 cm để khung không chạm màu sơn.
+const WALL_BOARD_BOTTOM = 1.12;
+const board = canvasPlane(1024, 1400, 3.2, 4.375); board.position.set(-8.55, WALL_BOARD_BOTTOM + 4.375 / 2, HALL.z0 + 0.04);   // mép dưới thẳng hàng mép sơn tường đậm
 function drawBoard() {
   const g = board.userData.cv.getContext('2d'), W = 1024, H = 1400;
   g.fillStyle = '#F6F7F2'; g.fillRect(0, 0, W, H);
@@ -6036,10 +6038,10 @@ const threePassGuideFrame = new THREE.Mesh(
   new THREE.BoxGeometry(7.06, 4.77, 0.08),
   new THREE.MeshStandardMaterial({ color: '#0F1419', roughness: 0.56, metalness: 0.18 })
 );
-threePassGuideFrame.position.set(-3.33, 2.9475, HALL.z0 + 0.02);
+threePassGuideFrame.position.set(-3.33, WALL_BOARD_BOTTOM + 4.77 / 2, HALL.z0 + 0.02);
 scene.add(threePassGuideFrame);
 const threePassGuide = canvasPlane(1536, 1024, 6.9, 4.6);
-threePassGuide.position.set(-3.33, 2.8625, HALL.z0 + 0.065);
+threePassGuide.position.set(-3.33, WALL_BOARD_BOTTOM + 4.6 / 2, HALL.z0 + 0.065);
 (function drawThreePassGuide() {
   const cv = threePassGuide.userData.cv, g = cv.getContext('2d');
   g.fillStyle = '#F4F7FA'; g.fillRect(0, 0, cv.width, cv.height);
@@ -6069,11 +6071,11 @@ const sc16DrawFrame = new THREE.Mesh(
   new THREE.BoxGeometry(0.08, 4.30, 5.78),
   new THREE.MeshStandardMaterial({ color: '#11161B', roughness: 0.58, metalness: 0.18 })
 );
-sc16DrawFrame.position.set(HALL.x0 + 0.03, 4.05, -5.35);
+sc16DrawFrame.position.set(HALL.x0 + 0.03, WALL_BOARD_BOTTOM + 4.30 / 2, -5.35);
 scene.add(sc16DrawFrame);
 const sc16DrawBoard = canvasPlane(1366, 1024, 5.6, 4.2);
 sc16DrawBoard.rotation.y = Math.PI / 2;
-sc16DrawBoard.position.set(HALL.x0 + 0.075, 4.05, -5.35);
+sc16DrawBoard.position.set(HALL.x0 + 0.075, WALL_BOARD_BOTTOM + 4.30 / 2, -5.35);
 (function drawSC16Drawing() {
   const cv = sc16DrawBoard.userData.cv, g = cv.getContext('2d');
   g.fillStyle = '#F4F4F4'; g.fillRect(0, 0, cv.width, cv.height);
