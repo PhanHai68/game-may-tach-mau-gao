@@ -4951,11 +4951,15 @@ function finishBatch(timedOut = false) {
   // Điểm quy trình: có bao nhiêu bước hoàn thành thì giữ bấy nhiêu điểm.
   const processPts = prep.phase === 'open' ? openPts() : (prep.openScore ?? openPts());
 
-  // Điểm kết quả máy: chỉ có khi lô đã thực sự chạy xong.
-  // Không yêu cầu "Đạt" mới được điểm.
+  // Điểm kết quả máy: nếu máy đã thực sự chạy và đã có đủ dữ liệu mẫu thì vẫn chấm điểm,
+  // kể cả khi hết 03:00. Hết giờ chỉ kết thúc lượt/chặn trạng thái Đạt, không được xóa điểm máy.
+  // Nếu người chơi chưa chạy máy hoặc chưa có đủ 30 hạt đã xử lý thì kết quả máy vẫn là 0.
   let qPts = 0, lPts = 0, fPts = 0;
-  const batchFinished = !timedOut && G.sim && G.sim.finished;
-  if (batchFinished) {
+  const stScore = (G.sim && G.sim.stats) || {};
+  const processedForScore = (stScore.acceptGood || 0) + (stScore.acceptBad || 0)
+    + (stScore.rejectGood || 0) + (stScore.rejectBad || 0);
+  const hasMachineResult = !!G.sim && processedForScore >= 30;
+  if (hasMachineResult) {
     qPts = qualityPoints(m.purity, T.purity, 225);
     lPts = lossPoints(m.loss, T.loss, 175);
     fPts = feedPoints(feed, T.feed, 100);
@@ -6745,7 +6749,7 @@ ui.result = lot => {
   const technical = lot.pass ? 'Đạt chuẩn kỹ thuật' : lot.timedOut ? 'Hết thời gian' : 'Chưa đạt chuẩn kỹ thuật';
   const title = lot.timedOut ? 'Kết thúc lượt – hết 03:00' : 'Hoàn thành cấp độ';
   const timeLine = lot.timedOut
-    ? `<p class="sub"><b>Thời gian:</b> 03:00 / 03:00 · Giữ toàn bộ điểm các bước đã hoàn thành.</p>`
+    ? `<p class="sub"><b>Thời gian:</b> 03:00 / 03:00 · Giữ điểm quy trình đã hoàn thành và vẫn chấm điểm kết quả máy theo dữ liệu đo được trước khi hết giờ.</p>`
     : `<p class="sub"><b>Thời gian hoàn thành:</b> ${fmtClock(lot.elapsed)} / 03:00 · Còn ${fmtClock(lot.remaining)}</p>`;
 
   const scoreBox = `<div class="score">${lot.score.toLocaleString('vi-VN')} / ${TOTAL_MAX.toLocaleString('vi-VN')} điểm
