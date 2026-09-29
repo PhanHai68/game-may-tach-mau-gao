@@ -217,7 +217,7 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 
 <div class="ov" id="ov-start" hidden><div class="card">
   <h1 style="margin-bottom:12px">Vận hành máy tách màu SC16 Pro</h1>
-  <div class="rules"><b>Luật chơi</b><p>Cả 4 cấp độ đều dùng <b>Gạo ST25</b>, khác nhau về độ lẫn phế và năng suất yêu cầu. Mỗi lượt có tối đa <b>03:00 phút</b>. Để đạt kỹ thuật phải đồng thời đạt <b>chất lượng thành phẩm ≥ 99% hạt tốt (trần thực tế 99,6%)</b>, <b>hạt tốt trong phế cuối sau lần 3 < 5%</b> và năng suất của cấp độ đã chọn. Tổng tối đa <b>1.000 điểm</b>: 500 điểm quy trình + 500 điểm kết quả máy. <b>Thi đấu chỉ so sánh/xếp hạng giữa người chơi cùng cấp độ.</b></p></div>
+  <div class="rules"><b>Luật chơi</b><p>Cả 4 cấp độ đều dùng <b>Gạo ST25</b>, khác nhau về độ lẫn phế và năng suất yêu cầu. Mỗi lượt có tối đa <b>03:00 phút</b>. Để đạt kỹ thuật phải đồng thời đạt <b>chất lượng thành phẩm ≥ 99% hạt tốt</b>, <b>hạt tốt trong phế cuối sau lần 3 < 5%</b> và năng suất của cấp độ đã chọn. Tổng tối đa <b>1.000 điểm</b>: 500 điểm quy trình + 500 điểm kết quả máy. <b>Thi đấu chỉ so sánh/xếp hạng giữa người chơi cùng cấp độ.</b></p></div>
   <div class="rules" style="background:#EEF5F0;border-left-color:#4C8BD8"><b style="color:#2F4E8C">Tham quan Showroom</b><p>Đi lại tự do trong nhà máy 3D, xem máy móc và bố trí thiết bị. Không tính giờ, không chấm điểm và không cần thực hiện quy trình.</p></div>
   <label for="stName">Tên người chơi</label><input type="text" id="stName" maxlength="28" placeholder="Nhập tên của bạn" autocomplete="off">
   <p class="err" id="stNameErr" hidden>Hãy nhập tên người chơi trước khi bắt đầu.</p>
@@ -6569,7 +6569,7 @@ const PCTL = [
   { k: 'dur', name: 'Độ rộng', min: 0, max: 100, sub: () => '0–100', hint: 'Càng tăng → thời gian mở van lâu, vùng thổi rộng, dễ loại nhầm hạt tốt.' },
 ];
 const PASS_GUIDE = {
-  1: '<b>Lần 1 – Tách chính:</b> ưu tiên thành phẩm ≥ 99% hạt tốt; trần mô phỏng thực tế là 99,6%. PP1 còn khoảng 40–50% hạt tốt có thể là bình thường vì sẽ được thu hồi tiếp.',
+  1: '<b>Lần 1 – Tách chính:</b> ưu tiên thành phẩm ≥ 99% hạt tốt. PP1 còn khoảng 40–50% hạt tốt có thể là bình thường vì sẽ được thu hồi tiếp.',
   2: '<b>Lần 2 – Thu hồi PP1:</b> TP2 quay lại L1; điều chỉnh để PP2 còn khoảng 10–15% hạt tốt.',
   3: '<b>Lần 3 – Làm sạch phế:</b> TP3 quay lại L2; tỷ lệ hạt tốt trong phế cuối không thể thấp hơn 1,5%. Mức đánh giá: 1,5–2% Rất tốt, >2–3,5% Tốt, >3,5–<5% Chấp nhận được, từ 5% trở lên Không đạt.'
 };
