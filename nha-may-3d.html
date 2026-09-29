@@ -4338,54 +4338,71 @@ const SIM = (() => {
 
   function threePassSummary(s, cfgs) {
     const st = s.stats || {};
-    const rawG1 = st.rejectGood || 0, rawB1 = st.rejectBad || 0;
     const pct = (g, b) => (g + b) > 0 ? g / (g + b) * 100 : 0;
+    const totalIn = (st.acceptGood || 0) + (st.acceptBad || 0) + (st.rejectGood || 0) + (st.rejectBad || 0);
+    const inputBad = (st.acceptBad || 0) + (st.rejectBad || 0);
+    const inputBadPct = totalIn > 0
+      ? inputBad / totalIn * 100
+      : Object.values(LEVELS[s.levelIdx || 0].mix || {}).reduce((a, v) => a + v, 0) * 100;
+
+    const rawG1 = st.rejectGood || 0;
+    const rawB1 = st.rejectBad || 0;
     const rawP1 = pct(rawG1, rawB1);
     const c2 = cfgs && (cfgs[2] || cfgs['2']);
     const c3 = cfgs && (cfgs[3] || cfgs['3']);
     const q2 = stageQuality(c2, 2, s.levelIdx);
     const q3 = stageQuality(c3, 3, s.levelIdx);
 
-    // PP1 thực tế của dây chuyền thu hồi thường còn nhiều hạt tốt.
-    // Chuẩn mô phỏng khi Lần 1 vận hành hợp lý: khoảng 40–50% hạt tốt.
-    // Dùng kết quả chi tiết của L1 làm biến thiên, nhưng hiệu chuẩn lại thành phần PP1
-    // để mô hình 3 lần phản ánh đúng dòng vật liệu thực tế hơn.
-    const p1Target = clamp(45 + (rawP1 - 10) * 0.35, 30, 65);
-    const b1 = rawB1;
-    const g1 = b1 > 0 ? b1 * p1Target / Math.max(1, 100 - p1Target) : rawG1;
+    // LOGIC 3-PASS v2
+    // PP1: vùng vận hành tốt khoảng 40–50% hạt tốt. Không cho kết quả phi thực tế <40%.
+    // Dùng kết quả L1 chi tiết để tạo biến thiên; nguyên liệu xấu hơn làm tỷ lệ hạt tốt trong PP1 giảm nhẹ.
+    const p1Target = clamp(
+      45 + (rawP1 - 5) * 0.30 - Math.max(0, inputBadPct - 2.5) * 0.08,
+      40, 65
+    );
+    const b1 = rawB1 > 0 ? rawB1 : Math.max(1, inputBad * 0.70);
+    const g1 = b1 * p1Target / Math.max(1, 100 - p1Target);
     const n1 = g1 + b1;
     const p1 = pct(g1, b1);
 
-    // Lần 2 thu hồi phần lớn hạt tốt trong PP1.
-    // Khi thông số L2 gần tối ưu, PP2 được giữ trong khoảng 10–15% hạt tốt
-    // tương ứng với PP1 khoảng 40–50%. Khi chỉnh sai, tỷ lệ PP2 tăng rõ rệt.
-    const p2Base = clamp(10 + (p1 - 40) * 0.50, 10, 15);
-    const p2Target = clamp(p2Base + (1 - q2) * 22, 7, 40);
+    // PP2: khi L2 chỉnh tốt phải nằm khoảng 10–15% hạt tốt; không thể tụt về 0–5% như bản cũ.
+    // Chỉnh sai thông số L2 làm PP2 tăng, thể hiện mất hạt tốt nhiều hơn ở dòng phế.
+    const p2Base = clamp(
+      12.5 + (p1 - 45) * 0.18 - Math.max(0, inputBadPct - 2.5) * 0.03,
+      10, 15
+    );
+    const p2Target = clamp(p2Base + (1 - q2) * 25, 10, 40);
     const badReturn2 = clamp(0.05 + (1 - q2) * 0.15, 0.05, 0.20);
     const b2 = Math.max(0, b1 * (1 - badReturn2));
     const g2Need = b2 * p2Target / Math.max(1, 100 - p2Target);
     const g2 = clamp(g2Need, 0, g1);
     const tp2Good = Math.max(0, g1 - g2), tp2Bad = Math.max(0, b1 - b2);
+    const p2 = Math.max(10, pct(g2, b2));
 
-    // Lần 3 làm sạch phế cuối. Giới hạn vật lý của mô hình: tỷ lệ hạt tốt trong phế cuối
-    // không bao giờ thấp hơn 1,5%. Khi chỉnh tối ưu, vùng tốt nhất là 1,5–2,0%.
-    // Phân cấp: 1,5–2% Rất tốt; >2–3,5% Tốt; >3,5–<5% Chấp nhận; >=5% Không đạt.
-    const p2 = pct(g2, b2);
-    const finalBase = clamp(1.5 + Math.max(0, p2 - 10) * 0.10, 1.5, 2.0);
+    // Phế cuối L3: tuyệt đối không dưới 1,5% hạt tốt.
+    // Nguyên liệu càng lẫn phế nhiều thì mức nền phế cuối tăng dần; L3 chỉnh sai làm tăng mạnh hơn.
+    // Khi chỉnh rất tốt: khoảng 1,5% ở đầu vào 2,5% phế; 1,9% ở 5,5%; 2,3% ở 9%; 2,9% ở 14%.
+    const finalBase = clamp(
+      1.5
+      + Math.max(0, inputBadPct - 2.5) * 0.12
+      + Math.max(0, p2 - 12.5) * 0.04,
+      1.5, 4.6
+    );
     const finalTarget = clamp(finalBase + (1 - q3) * 8.0, 1.5, 12.0);
     const badReturn3 = clamp(0.04 + (1 - q3) * 0.14, 0.04, 0.18);
     const b3 = Math.max(0, b2 * (1 - badReturn3));
     const g3Need = b3 * finalTarget / Math.max(1, 100 - finalTarget);
     const g3 = clamp(g3Need, 0, g2);
     const tp3Good = Math.max(0, g2 - g3), tp3Bad = Math.max(0, b2 - b3);
+    const p3 = Math.max(1.5, pct(g3, b3));
 
     return {
-      pass1: { good: g1, bad: b1, total: n1, goodPct: pct(g1, b1) },
-      pass2: { good: g2, bad: b2, total: g2 + b2, goodPct: pct(g2, b2) },
-      final: { good: g3, bad: b3, total: g3 + b3, goodPct: pct(g3, b3) },
+      pass1: { good: g1, bad: b1, total: n1, goodPct: Math.max(40, p1) },
+      pass2: { good: g2, bad: b2, total: g2 + b2, goodPct: p2 },
+      final: { good: g3, bad: b3, total: g3 + b3, goodPct: p3 },
       return2: { good: tp2Good, bad: tp2Bad, total: tp2Good + tp2Bad },
       return3: { good: tp3Good, bad: tp3Bad, total: tp3Good + tp3Bad },
-      quality2: q2, quality3: q3
+      quality2: q2, quality3: q3, inputBadPct
     };
   }
 
@@ -4897,7 +4914,8 @@ function finishBatch(timedOut = false) {
 
   const lv = SIM.LEVELS[G.levelIdx], T = lv.targets, m1 = SIM.summary(G.sim);
   const flow = SIM.threePassSummary(G.sim, G.passCfg);
-  const m = { ...m1, pass1Loss: flow.pass1.goodPct, pass2Loss: flow.pass2.goodPct, finalLoss: flow.final.goodPct, loss: flow.final.goodPct, flow };
+  const safeP1 = Math.max(40, flow.pass1.goodPct), safeP2 = Math.max(10, flow.pass2.goodPct), safeP3 = Math.max(1.5, flow.final.goodPct);
+  const m = { ...m1, pass1Loss: safeP1, pass2Loss: safeP2, finalLoss: safeP3, loss: safeP3, flow };
   const feed = Number.isFinite(G.sim.minFeed) ? G.sim.minFeed : 0;
   const ok = { p: m.purity >= T.purity, l: m.finalLoss < T.loss, f: feed >= T.feed };
   const pass = !timedOut && ok.p && ok.l && ok.f;
@@ -6726,7 +6744,7 @@ ui.result = lot => {
     ${machineBreakdown}
     <table class="kv">${rows.map(r => `<tr><td>${r[0]}</td><td class="${r[3] == null ? '' : (r[3] ? 'y' : 'n')}">${r[1]}</td><td class="dim">${r[2].startsWith('tham khảo') ? r[2] : 'mục tiêu ' + r[2]}</td></tr>`).join('')}</table>
 
-    <div class="rules" style="background:#EEF3F8;border-left-color:#4C8BD8"><b style="color:#2F4E8C">Dòng vật liệu 3 lần</b><p>PP1 → Lần 2; TP2 quay lại Lần 1. PP2 → Lần 3; TP3 quay lại Lần 2. Chỉ phế sau Lần 3 là phế cuối. Tỷ lệ hạt tốt trong phế cuối không thể thấp hơn 1,5%. 1,5–2%: Rất tốt; >2–3,5%: Tốt; >3,5–<5%: Chấp nhận được; từ 5% trở lên: Không đạt.</p></div>
+    <div class="rules" style="background:#EEF3F8;border-left-color:#4C8BD8"><b style="color:#2F4E8C">Dòng vật liệu 3 lần · Logic v2</b><p>PP1 → Lần 2; TP2 quay lại Lần 1. PP2 → Lần 3; TP3 quay lại Lần 2. Vùng vận hành tốt: PP1 khoảng 40–50% hạt tốt, PP2 khoảng 10–15%. Phế cuối L3 không thể thấp hơn 1,5% và tăng dần khi nguyên liệu lẫn phế nhiều hơn. 1,5–2%: Rất tốt; >2–3,5%: Tốt; >3,5–<5%: Chấp nhận được; từ 5% trở lên: Không đạt.</p></div>
     <table class="form"><caption>Phiếu lưu mẫu</caption><tr><th></th><th>Tạp</th><th>Hạt tốt</th><th>Vàng, đen hư</th><th>Bạc bụng</th></tr>
       <tr><td>Nguyên liệu</td><td>${pv(d.inVd + d.inBb, d.allN)}</td><td>${pv(d.allN - d.inVd - d.inBb, d.allN)}</td><td>${pv(d.inVd, d.allN)}</td><td>${pv(d.inBb, d.allN)}</td></tr>
       <tr><td>Thành phẩm</td><td>${pv(d.st.acceptBad, d.accN)}</td><td>${pv(d.st.acceptGood, d.accN)}</td><td>${pv(d.accVd, d.accN)}</td><td>${pv(d.accBb, d.accN)}</td></tr>
