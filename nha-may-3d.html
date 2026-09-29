@@ -217,7 +217,7 @@ body.intro #hudTop,body.intro #checklist,body.intro #hudKeys,body.intro #prog,bo
 
 <div class="ov" id="ov-start" hidden><div class="card">
   <h1 style="margin-bottom:12px">Vận hành máy tách màu SC16 Pro</h1>
-  <div class="rules"><b>Luật chơi</b><p>Cả 4 cấp độ đều dùng <b>Gạo ST25</b>, khác nhau về độ lẫn phế và năng suất yêu cầu. Mỗi lượt có tối đa <b>03:00 phút</b>. Để đạt kỹ thuật phải đồng thời đạt <b>chất lượng thành phẩm ≥ 99% hạt tốt</b>, <b>hạt tốt trong phế cuối sau lần 3 < 5%</b> và năng suất của cấp độ đã chọn. Tổng tối đa <b>1.000 điểm</b>: 500 điểm quy trình + 500 điểm kết quả máy. <b>Thi đấu chỉ so sánh/xếp hạng giữa người chơi cùng cấp độ.</b></p></div>
+  <div class="rules"><b>Luật chơi</b><p>Cả 4 cấp độ đều dùng <b>Gạo ST25</b>, khác nhau về độ lẫn phế và năng suất yêu cầu. Mỗi lượt có tối đa <b>03:00 phút</b>. Để đạt kỹ thuật phải đồng thời đạt <b>chất lượng thành phẩm ≥ 99% hạt tốt (trần thực tế 99,6%)</b>, <b>hạt tốt trong phế cuối sau lần 3 < 5%</b> và năng suất của cấp độ đã chọn. Tổng tối đa <b>1.000 điểm</b>: 500 điểm quy trình + 500 điểm kết quả máy. <b>Thi đấu chỉ so sánh/xếp hạng giữa người chơi cùng cấp độ.</b></p></div>
   <div class="rules" style="background:#EEF5F0;border-left-color:#4C8BD8"><b style="color:#2F4E8C">Tham quan Showroom</b><p>Đi lại tự do trong nhà máy 3D, xem máy móc và bố trí thiết bị. Không tính giờ, không chấm điểm và không cần thực hiện quy trình.</p></div>
   <label for="stName">Tên người chơi</label><input type="text" id="stName" maxlength="28" placeholder="Nhập tên của bạn" autocomplete="off">
   <p class="err" id="stNameErr" hidden>Hãy nhập tên người chơi trước khi bắt đầu.</p>
@@ -4132,6 +4132,7 @@ const SIM = (() => {
   const L = 0.03;         // nửa chiều dài hạt (theo thời gian) = 0.3 ms
   const FEED_T = 1.3;     // thời gian từ phễu tới camera
   const LAND_T = 0.55;    // thời gian rơi vào thùng
+  const PURITY_CAP = 99.6; // trần chất lượng thành phẩm thực tế dùng trong game
 
   const LEVELS = [
     { name: 'Cấp độ 1 – Dễ · ST25 · 2,5% phế · ≥ 12 t/h',
@@ -4314,7 +4315,9 @@ const SIM = (() => {
     const acc = st.acceptGood + st.acceptBad;
     const rejected = st.rejectGood + st.rejectBad;
     // Đây là kết quả của LẦN 1. PP1 có thể còn nhiều hạt tốt và chưa phải phế cuối.
-    return { purity: acc ? st.acceptGood / acc * 100 : 100, loss: rejected ? st.rejectGood / rejected * 100 : 0 };
+    // Trần mô phỏng thành phẩm là 99,6%: dù chỉnh tối ưu cũng không hiển thị/được chấm cao hơn mức này.
+    const rawPurity = acc ? st.acceptGood / acc * 100 : PURITY_CAP;
+    return { purity: Math.min(PURITY_CAP, rawPurity), loss: rejected ? st.rejectGood / rejected * 100 : 0 };
   }
 
   // Mô hình tuần hoàn 3 lần:
@@ -4406,7 +4409,7 @@ const SIM = (() => {
     };
   }
 
-  return { LEVELS, GROUP, LOAD, CH, L, FEED_T, create, step, summary, threePassSummary, effective, threshold, blowForce, rng };
+  return { LEVELS, GROUP, LOAD, CH, L, FEED_T, PURITY_CAP, create, step, summary, threePassSummary, effective, threshold, blowForce, rng };
 })();
 if (typeof module !== 'undefined') module.exports = SIM;
 
@@ -4521,7 +4524,7 @@ const MODES = [
 ];
 const RIGHT_MODE = 'VANG-BAC-BUNG';
 const SOP_OPEN = [
-  { id: 'budai', n: 1, sec: 'A', t: 'Mở bù đài' },
+  { id: 'budai', n: 1, sec: 'A', t: 'Mở gàu tải' },
   { id: 'dryer', n: 2, sec: 'A', t: 'Bật máy sấy khí' },
   { id: 'comp', n: 3, sec: 'A', t: 'Bật máy nén khí' },
   { id: 'drainF', n: 4, sec: 'A', t: 'Kiểm tra và xả nước trong các bộ lọc' },
@@ -4562,6 +4565,17 @@ function resetSession() {
 }
 const pressOK = () => prep.pm >= 0.2;
 const prepReady = () => prep.power && prep.booted;
+// Liên động bắt buộc trước khi cho phép chạy phân loại. Các bước này không còn là bước có thể bỏ qua để chỉ bị trừ điểm.
+function mandatoryRunChecks() {
+  const miss = [];
+  if (!prep.comp) miss.push('bật máy nén khí');
+  if (!prep.budai) miss.push('mở gàu tải');
+  const regValid = prep.regOk && !prep.regPulled && prep.reg >= 0.25 - 1e-9 && prep.reg <= 0.30 + 1e-9;
+  if (!regValid) miss.push('kiểm tra/xác nhận van điều áp và khóa tại 0,25–0,30 MPa');
+  if (!prep.voltSeen) miss.push('kiểm tra điện áp ổn áp 220V ± 5%');
+  if (!prep.stab) miss.push('mở ổn áp');
+  return miss;
+}
 const dryerMin = () => prep.dryer ? (performance.now() - prep.dryerAt) / 1000 * SIM_SCALE / 60 : 0;
 const fmtMin = m => Math.floor(m) + ':' + String(Math.floor((m % 1) * 60)).padStart(2, '0');
 const completedStepPoints = () => Object.values(prep.stepScores || {}).reduce((a, b) => a + b, 0);
@@ -4673,6 +4687,8 @@ const ACT = {
     if (!prep.power) { prep.booted = false; prep.bootLeft = 0; G.running = false; checkCut(); }
   },
   start() {
+    const missing = mandatoryRunChecks();
+    if (missing.length) return 'KHÔNG THỂ KHỞI ĐỘNG MÁY. Bắt buộc phải ' + missing.join('; ') + ' trước.';
     if (!prep.power) return 'Máy chưa có nguồn, đèn đỏ chưa sáng. Mở ổn áp trước.';
     if (prep.booted || prep.bootLeft > 0) return prep.booted ? 'Máy đã khởi động.' : 'Máy đang khởi động…';
     prep.bootLeft = 3; doneOpen('start');
@@ -4695,11 +4711,15 @@ function step7() { if (prep.mfDrained && prep.regOk) doneOpen('reg'); }
 function checkCut() { if (prep.phase === 'close' && !prep.power && !prep.comp) doneClose('cut'); }
 // Nút phân loại trên màn hình: chạy / dừng
 function toggleSort() {
-  if (!prepReady()) return 'Máy chưa khởi động.';
+  // Luôn cho phép dừng máy ngay cả khi một liên động vừa mất trong lúc đang chạy.
   if (G.running) { G.running = false; if (prep.phase === 'close') doneClose('stop'); return; }
   if (prep.phase === 'close') return 'Đang kết thúc ca, không chạy lại máy.';
   if (G.sim.finished) return 'Cấp độ đã hoàn thành. Xem phiếu kết quả để chọn cấp độ tiếp theo.';
-  if (!pressOK()) return `Áp lực khí thấp (${fmtMPa(prep.pm)} MPa), máy báo lỗi không chạy được. Kiểm tra máy nén và van điều áp.`;
+
+  const missing = mandatoryRunChecks();
+  if (missing.length) return 'KHÔNG THỂ CHẠY MÁY. Bắt buộc phải ' + missing.join('; ') + ' trước.';
+  if (!prepReady()) return 'Máy chưa khởi động. Sau khi hoàn tất các điều kiện bắt buộc, ấn nút khởi động màu xanh.';
+  if (!pressOK()) return `Áp lực khí thấp (${fmtMPa(prep.pm)} MPa), máy báo lỗi không chạy được. Chờ máy nén đủ áp và kiểm tra lại van điều áp.`;
   if (G.sim.fx.noPower) return 'Máy mất nguồn.';
   firstRun(); G.running = true;
 }
@@ -4856,7 +4876,11 @@ function updatePressure(dt) {
 }
 function engineStep(dt) {
   updatePressure(dt); tickBusy(dt);
-  if (G.running && !prepReady()) { G.running = false; ui.msg('Máy dừng: máy tách màu mất nguồn.'); }
+  if (G.running && !prepReady()) { G.running = false; ui.msg('Máy dừng: máy tách màu mất nguồn/ổn áp.'); }
+  if (G.running) {
+    const missing = mandatoryRunChecks();
+    if (missing.length) { G.running = false; ui.msg('Máy tự dừng do mất điều kiện bắt buộc: ' + missing.join('; ') + '.'); }
+  }
   if (G.running && !pressOK() && G.sim.t > 0.5) { G.running = false; ui.msg(`Máy báo lỗi áp lực khí thấp (${fmtMPa(prep.pm)} MPa) và tự dừng.`); }
   updateIncidents(dt); maybeWater();
   if (G.running && G.sim.fx.noPower) { G.running = false; }
@@ -4869,15 +4893,17 @@ function engineStep(dt) {
   }
 }
 const clamp01 = v => Math.max(0, Math.min(1, v));
+const PRODUCT_PURITY_CAP = SIM.PURITY_CAP || 99.6;
 
 function qualityPoints(purity, target, maxPts = 225) {
-  // Tại đúng chuẩn kỹ thuật nhận 80% điểm; càng sạch càng tiến dần tới 100%.
+  // Tại đúng chuẩn kỹ thuật nhận 80% điểm. 99,6% là trần thực tế của game và nhận đủ điểm chất lượng.
   // Thấp hơn chuẩn vẫn nhận điểm tỷ lệ, về 0 khi thấp hơn chuẩn 5 điểm %.
-  if (purity >= target) {
-    const span = Math.max(0.1, 100 - target);
-    return Math.round(maxPts * (0.80 + 0.20 * clamp01((purity - target) / span)));
+  const p = Math.min(PRODUCT_PURITY_CAP, purity);
+  if (p >= target) {
+    const span = Math.max(0.1, PRODUCT_PURITY_CAP - target);
+    return Math.round(maxPts * (0.80 + 0.20 * clamp01((p - target) / span)));
   }
-  return Math.round(maxPts * 0.80 * clamp01((purity - (target - 5)) / 5));
+  return Math.round(maxPts * 0.80 * clamp01((p - (target - 5)) / 5));
 }
 
 function lossGrade(loss) {
@@ -4961,9 +4987,16 @@ function sampleFormData() {
   const grp = (o, g) => Object.keys(o).reduce((a, k) => a + (GR[k] === g ? o[k] : 0), 0);
   const accN = st.acceptGood + st.acceptBad, rejN = st.rejectGood + st.rejectBad, allN = accN + rejN || 1;
   const inVd = grp(st.passByType, 'vd') + grp(st.rejByType, 'vd'), inBb = grp(st.passByType, 'bb') + grp(st.rejByType, 'bb');
+  const rawAccVd = grp(st.passByType, 'vd'), rawAccBb = grp(st.passByType, 'bb');
+  const rawPurity = accN ? st.acceptGood / accN * 100 : PRODUCT_PURITY_CAP;
+  const accPurity = Math.min(PRODUCT_PURITY_CAP, rawPurity);
+  const accBadPct = Math.max(0, 100 - accPurity);
+  const rawBad = rawAccVd + rawAccBb;
+  const accVdPct = rawBad > 0 ? accBadPct * rawAccVd / rawBad : accBadPct * 0.5;
+  const accBbPct = Math.max(0, accBadPct - accVdPct);
   const nsIn = sim.feedTime ? sim.feedSum / sim.feedTime : G.P.feed;
   const flow = SIM.threePassSummary(sim, G.passCfg);
-  return { accN, rejN, allN, inVd, inBb, accVd: grp(st.passByType, 'vd'), accBb: grp(st.passByType, 'bb'), st, flow, nsIn, nsAcc: nsIn * accN / allN, nsRej: nsIn * rejN / allN };
+  return { accN, rejN, allN, inVd, inBb, accVd: rawAccVd, accBb: rawAccBb, accPurity, accBadPct, accVdPct, accBbPct, st, flow, nsIn, nsAcc: nsIn * accN / allN, nsRej: nsIn * rejN / allN };
 }
 
 // ================== SCENE: nhà xưởng và thiết bị (khối thô) ==================
@@ -6523,7 +6556,7 @@ const PCTL = [
   { k: 'dur', name: 'Độ rộng', min: 0, max: 100, sub: () => '0–100', hint: 'Càng tăng → thời gian mở van lâu, vùng thổi rộng, dễ loại nhầm hạt tốt.' },
 ];
 const PASS_GUIDE = {
-  1: '<b>Lần 1 – Tách chính:</b> ưu tiên thành phẩm ≥ 99% hạt tốt. PP1 còn khoảng 40–50% hạt tốt có thể là bình thường vì sẽ được thu hồi tiếp.',
+  1: '<b>Lần 1 – Tách chính:</b> ưu tiên thành phẩm ≥ 99% hạt tốt; trần mô phỏng thực tế là 99,6%. PP1 còn khoảng 40–50% hạt tốt có thể là bình thường vì sẽ được thu hồi tiếp.',
   2: '<b>Lần 2 – Thu hồi PP1:</b> TP2 quay lại L1; điều chỉnh để PP2 còn khoảng 10–15% hạt tốt.',
   3: '<b>Lần 3 – Làm sạch phế:</b> TP3 quay lại L2; tỷ lệ hạt tốt trong phế cuối không thể thấp hơn 1,5%. Mức đánh giá: 1,5–2% Rất tốt, >2–3,5% Tốt, >3,5–<5% Chấp nhận được, từ 5% trở lên Không đạt.'
 };
@@ -6724,7 +6757,7 @@ ui.result = lot => {
     </div>`;
 
   const machineBreakdown = `<table class="kv">
-    <tr><td>Chất lượng thành phẩm</td><td><b>${lot.parts.qPts} / 225</b></td><td class="dim">càng sạch càng cao</td></tr>
+    <tr><td>Chất lượng thành phẩm</td><td><b>${lot.parts.qPts} / 225</b></td><td class="dim">tối đa tại 99,6%</td></tr>
     <tr><td>Hạt tốt trong phế cuối (Lần 3)</td><td><b>${lot.parts.lPts} / 175</b></td><td class="dim">càng thấp càng cao</td></tr>
     <tr><td>Năng suất</td><td><b>${lot.parts.fPts} / 100</b></td><td class="dim">càng tốt càng cao</td></tr>
   </table>`;
@@ -6744,10 +6777,11 @@ ui.result = lot => {
     ${machineBreakdown}
     <table class="kv">${rows.map(r => `<tr><td>${r[0]}</td><td class="${r[3] == null ? '' : (r[3] ? 'y' : 'n')}">${r[1]}</td><td class="dim">${r[2].startsWith('tham khảo') ? r[2] : 'mục tiêu ' + r[2]}</td></tr>`).join('')}</table>
 
-    <div class="rules" style="background:#EEF3F8;border-left-color:#4C8BD8"><b style="color:#2F4E8C">Dòng vật liệu 3 lần · Logic v2</b><p>PP1 → Lần 2; TP2 quay lại Lần 1. PP2 → Lần 3; TP3 quay lại Lần 2. Vùng vận hành tốt: PP1 khoảng 40–50% hạt tốt, PP2 khoảng 10–15%. Phế cuối L3 không thể thấp hơn 1,5% và tăng dần khi nguyên liệu lẫn phế nhiều hơn. 1,5–2%: Rất tốt; >2–3,5%: Tốt; >3,5–<5%: Chấp nhận được; từ 5% trở lên: Không đạt.</p></div>
+    <div class="rules" style="background:#FFF4E5;border-left-color:#D97706"><b style="color:#92400E">Liên động bắt buộc trước khi chạy</b><p>Không thể bắt đầu phân loại nếu chưa: <b>bật máy nén khí</b>, <b>mở gàu tải</b>, <b>kiểm tra/xác nhận van điều áp 0,25–0,30 MPa</b>, <b>kiểm tra điện áp ổn áp</b> và <b>mở ổn áp</b>. Nếu một điều kiện này mất trong khi đang chạy, máy tự dừng.</p></div>
+    <div class="rules" style="background:#EEF3F8;border-left-color:#4C8BD8"><b style="color:#2F4E8C">Dòng vật liệu 3 lần · Logic v3</b><p>PP1 → Lần 2; TP2 quay lại Lần 1. PP2 → Lần 3; TP3 quay lại Lần 2. Vùng vận hành tốt: PP1 khoảng 40–50% hạt tốt, PP2 khoảng 10–15%. Phế cuối L3 không thể thấp hơn 1,5% và tăng dần khi nguyên liệu lẫn phế nhiều hơn. 1,5–2%: Rất tốt; >2–3,5%: Tốt; >3,5–<5%: Chấp nhận được; từ 5% trở lên: Không đạt.</p></div>
     <table class="form"><caption>Phiếu lưu mẫu</caption><tr><th></th><th>Tạp</th><th>Hạt tốt</th><th>Vàng, đen hư</th><th>Bạc bụng</th></tr>
       <tr><td>Nguyên liệu</td><td>${pv(d.inVd + d.inBb, d.allN)}</td><td>${pv(d.allN - d.inVd - d.inBb, d.allN)}</td><td>${pv(d.inVd, d.allN)}</td><td>${pv(d.inBb, d.allN)}</td></tr>
-      <tr><td>Thành phẩm</td><td>${pv(d.st.acceptBad, d.accN)}</td><td>${pv(d.st.acceptGood, d.accN)}</td><td>${pv(d.accVd, d.accN)}</td><td>${pv(d.accBb, d.accN)}</td></tr>
+      <tr><td>Thành phẩm</td><td>${fmtPct(d.accBadPct)}</td><td>${fmtPct(d.accPurity)}</td><td>${fmtPct(d.accVdPct)}</td><td>${fmtPct(d.accBbPct)}</td></tr>
       <tr><td>PP lần 1</td><td colspan="4">Hạt tốt trong PP1: ${fmtP1(m.pass1Loss)} · chuyển sang Lần 2</td></tr>
       <tr><td>PP lần 2</td><td colspan="4">Hạt tốt trong PP2: ${fmtP1(m.pass2Loss)} · TP2 quay lại L1, PP2 chuyển sang L3</td></tr>
       <tr><td>Phế cuối (L3)</td><td colspan="4"><b>Hạt tốt: ${fmtP1(m.finalLoss)} · ${lossGrade(m.finalLoss)}</b> · yêu cầu &lt; ${fmtP1(T.loss)}</td></tr>
@@ -7241,7 +7275,7 @@ function step(dx, dz) {
 
 // ---------- Nhắm và thao tác ----------
 const HOT = {
-  budaiSw: { t: () => prep.budai ? 'Tắt bù đài' : 'Mở bù đài', a: () => ACT.budai() },
+  budaiSw: { t: () => prep.budai ? 'Tắt gàu tải' : 'Mở gàu tải', a: () => ACT.budai() },
   compSw: { t: () => prep.comp ? 'Tắt máy nén khí' : 'Bật máy nén khí', a: () => ACT.comp() },
   dryerSw: { t: () => prep.dryer ? 'Tắt máy sấy khí' : 'Bật máy sấy khí', a: () => ACT.dryer() },
   tank: { t: () => prep.phase === 'close' ? 'Xả van máy nén và bình chứa' : 'Van xả máy nén và bình chứa', a: () => ACT.tank() },
